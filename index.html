@@ -1,119 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MedStudy Hub</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-
 body{
-font-family:Arial,sans-serif;
-background:#050817;
-color:white;
-min-height:100vh;
-overflow-x:hidden;
+    margin:0;
+    min-height:100vh;
+    background:linear-gradient(135deg,#050817,#172554,#7e22ce);
+    color:white;
+    font-family:Arial,sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
 }
 
-body:before{
-content:"";
-position:fixed;
-inset:0;
-pointer-events:none;
-background:
-radial-gradient(circle at 15% 10%,#4338ca55,transparent 30%),
-radial-gradient(circle at 85% 15%,#a21caf55,transparent 30%),
-radial-gradient(circle at 50% 90%,#0891b255,transparent 35%);
-z-index:-1;
+.box{
+    padding:50px;
 }
 
-/* NAVIGATION */
-
-nav{
-height:70px;
-padding:0 5%;
-display:flex;
-align-items:center;
-justify-content:space-between;
-position:sticky;
-top:0;
-z-index:100;
-background:#050817dd;
-backdrop-filter:blur(18px);
-border-bottom:1px solid #ffffff18;
+h1{
+    font-size:60px;
+    margin:0 0 20px;
 }
 
-.logo{
-font-size:21px;
-font-weight:bold;
-display:flex;
-align-items:center;
-gap:10px;
+p{
+    font-size:22px;
+    color:#cbd5e1;
 }
+</style>
 
-.logo span{
-padding:10px;
-border-radius:12px;
-background:linear-gradient(135deg,#ff35b8,#536dff);
-box-shadow:0 0 25px #7c3aed88;
-}
+</head>
 
-nav div:nth-child(2){
-display:flex;
-gap:8px;
-}
+<body>
 
-nav button{
-border:0;
-background:transparent;
-color:#cdd3ee;
-padding:10px 15px;
-border-radius:20px;
-cursor:pointer;
-}
+<div class="box">
+    <h1>🧠 MedStudy Hub</h1>
+    <p>Master Medicine One Question at a Time</p>
+    <p>Website is working ✅</p>
+</div>
 
-nav button:hover{
-background:#ffffff12;
-color:white;
-}
-
-.menu{
-display:none;
-font-size:24px;
-}
-
-/* HOME */
-
-.hero{
-width:90%;
-max-width:1300px;
-margin:auto;
-min-height:570px;
-display:grid;
-grid-template-columns:1fr 1fr;
-align-items:center;
-gap:30px;
-}
-
-.badge{
-display:inline-block;
-padding:9px 16px;
-border-radius:30px;
-background:#7c3aed22;
-border:1px solid #8b5cf655;
-color:#d9d5ff;
-margin-bottom:20px;
-}
-
-.hero h1{
-font-size:clamp(55px,7vw,90px);
-line-height:.95;
-background:linear-gradient(90deg,#ff72d0,#a855f7,#38bdf8);
--webkit-background-clip:text;
-color:transparent;
-}
-
-.hero h2{
-font-size:clamp(28px,4vw,48px);
-margin
+</body>
+</html>
