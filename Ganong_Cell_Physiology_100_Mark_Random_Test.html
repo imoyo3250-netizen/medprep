@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ganong Cell Physiology — 100 Mark Random Test</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#eef2f6;color:#111;margin:0;padding:12px}
+.container{max-width:850px;margin:auto}
+header{background:#202a36;color:white;padding:18px;border-radius:14px;margin-bottom:12px}
+h1{font-size:25px;margin:0 0 8px}
+.subtitle{font-size:14px;opacity:.9}
+#bar{position:sticky;top:8px;z-index:10;background:white;padding:12px;border-radius:12px;box-shadow:0 2px 10px #cbd2d9;margin-bottom:12px}
+#score{font-weight:bold}
+.card{background:white;padding:16px;margin:13px 0;border-radius:13px;box-shadow:0 2px 8px #d4d9df}
+h2{font-size:18px;margin:0 0 12px}
+.statement{border-top:1px solid #e5e7eb;padding:12px 0}
+.statement p{margin:0 0 9px;line-height:1.42}
+button{padding:9px 13px;margin:3px;border-radius:8px;border:1px solid #555;background:white;font-size:15px}
+button:hover{background:#edf1f5}
+button:disabled{opacity:.5}
+.correct{color:#087a35;font-weight:bold}
+.wrong{color:#b00020;font-weight:bold}
+.explanation{margin-top:8px;padding:9px;border-radius:8px;background:#f2f4f6;font-size:14px;line-height:1.4}
+#final .card{border:2px solid #222}
+.small{font-size:12px;color:#555}
+.reset{background:#202a36;color:white;border-color:#202a36}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Ganong Cell Physiology — Final 100-Mark Test</h1>
+<div class="subtitle">100-mark TRUE/FALSE test • Based only on the supplied Ganong pages (approximately pp. 51–68)</div>
+</header>
+
+<div id="bar">
+<b id="score">Score: 0 / 100</b> &nbsp;|&nbsp;
+<span id="answered">Answered: 0 / 100</span>
+<br>
+<span class="small">Correct = +1 • Wrong = −1 • Questions/statements are shuffled each time the test starts.</span>
+</div>
+
+<div id="test"></div>
+<div id="final"></div>
+</div>
+
+<script>
+const questions = [["cAMP",[["cAMP is formed from ATP by the action of adenylyl cyclase.",true,"Ganong states that cAMP is formed from ATP by adenylyl cyclase."],["Adenylyl cyclase converts ATP directly into physiologically active AMP.",false,"Ganong states that adenylyl cyclase converts ATP to cAMP; cAMP is later broken down to AMP by phosphodiesterase."],["Phosphodiesterases break down cAMP to AMP.",true,"The cAMP pathway diagram shows phosphodiesterase converting cAMP to AMP."],["Methylxanthines such as caffeine can inhibit some phosphodiesterase isoforms.",true,"Ganong notes that some phosphodiesterase isoforms are inhibited by methylxanthines such as caffeine and theophylline."],["cAMP activates protein kinase A (PKA).",true,"Ganong identifies PKA as the cyclic nucleotide-dependent protein kinase activated by cAMP."]]],["cAMP / adenylyl cyclase",[["The active catalytic subunit of PKA remains permanently attached to its regulatory subunit after cAMP binding.",false,"Ganong describes cAMP activation of PKA and release of the active catalytic subunit."],["The active catalytic subunit of PKA can move into the nucleus and phosphorylate CREB.",true,"Ganong states that the active catalytic subunit moves to the nucleus and phosphorylates CREB."],["CREB binds DNA and can alter transcription of a number of genes.",true,"Ganong states that CREB binds to DNA and alters gene expression."],["Adenylyl cyclase is described as a membrane-bound protein with 12 transmembrane regions.",true,"Ganong describes adenylyl cyclase as a membrane-bound protein with 12 transmembrane regions."],["All isoforms of adenylyl cyclase have identical regulatory properties.",false,"Ganong states that isoforms have distinct regulatory properties, allowing tissue-specific customization of the pathway."]]],["Gs/Gi",[["Stimulatory heterotrimeric G proteins activate adenylyl cyclase.",true,"Ganong states that stimulatory G proteins (Gs) activate adenylyl cyclase."],["Inhibitory heterotrimeric G proteins activate adenylyl cyclase.",false,"Ganong states that inhibitory G proteins (Gi) inactivate adenylyl cyclase."],["When an appropriate ligand binds a stimulatory receptor, the Gs alpha subunit activates adenylyl cyclase.",true,"This is described in the cAMP system discussion."],["When an appropriate ligand binds an inhibitory receptor, the Gi alpha subunit inhibits adenylyl cyclase.",true,"This is described in the cAMP system discussion."],["Different heterotrimeric G proteins can mediate stimulatory or inhibitory effects on adenylyl cyclase.",true,"Ganong notes that different G proteins mediate stimulatory and inhibitory effects."]]],["cAMP regulation / toxins",[["Receptor specificity helps determine which G-protein/cAMP response occurs.",true,"Ganong notes that receptors are specific and respond to a ligand to produce a select group of related effects."],["Forskolin is commonly used in research to evaluate adenylyl cyclase/cAMP contributions to cellular physiology.",true,"Ganong states this explicitly."],["Cholera toxin can cause prolonged stimulation of adenylyl cyclase by altering Gs.",true,"Ganong states that cholera toxin ADP-ribosylates Gs and inhibits its GTPase activity, producing prolonged stimulation of adenylyl cyclase."],["Pertussis toxin ADP-ribosylates the alpha subunit of Gi.",true,"Ganong states that pertussis toxin ADP-ribosylates the alpha subunit of Gi."],["Pertussis toxin increases Gi function by accelerating GTP hydrolysis.",false,"Ganong states that pertussis toxin inhibits the function of Gi; the toxin ADP-ribosylates Gi."]]],["cAMP amplification / cAMP / cGMP / guanylyl cyclase",[["The cAMP system can amplify the effects of a primary messenger.",true,"Ganong notes that cAMP signaling can produce amplification as well as transduction."],["The effects of protein kinase A are limited exclusively to phosphorylation of membrane proteins.",false,"Ganong states that PKA effects are widespread and can include effects on many cellular targets, including transcription."],["cGMP is another cyclic nucleotide of physiologic importance.",true,"Ganong introduces cyclic guanosine monophosphate (cGMP) as another physiologically important cyclic nucleotide."],["cGMP is important only in vision and has no other physiologic roles.",false,"Ganong states that cGMP is important in vision and in other processes."],["Guanylyl cyclases catalyze the formation of cGMP.",true,"Ganong states that guanylyl cyclases catalyze cGMP formation."]]],["guanylyl cyclase",[["Guanylyl cyclases occur in more than one form.",true,"Ganong describes two forms of guanylyl cyclase."],["One form of guanylyl cyclase is a single-transmembrane-domain receptor.",true,"Ganong describes receptor guanylyl cyclases with a single transmembrane domain."],["Soluble guanylyl cyclase is a membrane-spanning receptor with an extracellular ligand-binding domain.",false,"Ganong describes soluble guanylyl cyclase as an intracellular enzyme, not a membrane-spanning receptor."],["Soluble guanylyl cyclase contains heme.",true,"Ganong states that soluble guanylyl cyclase contains heme."],["Soluble guanylyl cyclase is activated by nitric oxide and NO-containing compounds.",true,"Ganong states this directly."]]],["ANP / EGF/PDGF / growth factors",[["Atrial natriuretic peptide can act through receptor guanylyl cyclase.",true,"The figure and text identify ANP receptor guanylyl cyclases."],["EGF and PDGF receptors are examples of receptors associated with tyrosine kinase activity.",true,"Ganong identifies EGF and PDGF receptors among receptor tyrosine kinase pathways."],["Ganong describes growth factors as increasingly important in regulation of diverse physiologic processes.",true,"This is the opening statement of the growth factors section."],["All growth factors described by Ganong belong to one single chemical class.",false,"Ganong groups them into several categories, including peptides/proteins and cytokines."],["NGF is listed as a growth factor involved in development of nervous system cells.",true,"Ganong lists NGF among factors involved in development of various cell types, including nervous system cells."]]],["growth factors",[["IGF-I is included among growth factors that affect development of various cell types.",true,"Ganong lists insulin-like growth factor I (IGF-I)."],["EGF is an example of a growth factor mentioned in the text.",true,"Ganong lists epidermal growth factor (EGF)."],["Cytokines are described as being produced only by neurons.",false,"Ganong states that cytokines are produced by macrophages and lymphocytes as well as other cells."],["Cytokines have important roles in regulation of the immune system.",true,"Ganong states this directly."],["Colony-stimulating factors regulate proliferation and maturation of red and white blood cells.",true,"Ganong states that more than 20 colony-stimulating factors have been described with these roles."]]],["growth factor receptors / RTK / Ras/MAPK",[["Receptors for EGF and PDGF have a single membrane-spanning domain and intracellular tyrosine kinase activity.",true,"Ganong states this in the growth factor receptor discussion."],["Binding of a growth factor to its receptor can cause receptor dimerization.",true,"Ganong describes ligand binding causing dimerization of two similar receptors."],["Receptor dimerization causes phosphorylation of extracellular receptor domains.",false,"Ganong describes phosphorylation of intracellular tyrosine kinase domains."],["Activated receptor tyrosine kinases can initiate pathways involving small G proteins.",true,"Ganong describes a pathway involving small G protein Ras."],["Ras is activated by conversion of GDP to GTP.",true,"Figure 2-31 shows GDP-to-GTP activation of Ras."]]],["Ras/MAPK / cytokine receptors / JAK-STAT",[["Activated Ras can lead to activation of Raf.",true,"Figure 2-31 shows Ras leading to Raf."],["The Ras pathway shown in Figure 2-31 ends with activation of transcription factors.",true,"The figure shows MAP kinase cascade leading to transcription factor effects."],["MAP kinase activation is unrelated to changes in gene expression.",false,"Ganong states that the pathway ultimately leads to production of transcription factors that alter gene expression."],["Most cytokine receptors do not have intrinsic tyrosine kinase domains.",true,"Ganong states that most cytokine receptors do not have tyrosine kinase domains in their cytoplasmic portions."],["Cytokine receptors can activate Janus tyrosine kinases (JAKs).",true,"Ganong states that cytokine receptors activate JAKs."]]],["JAK-STAT",[["JAKs are located in the cytoplasm and are activated by cytokine receptor signaling.",true,"Ganong describes JAKs as cytoplasmic tyrosine kinases activated by cytokine receptors."],["Activated JAKs phosphorylate STAT proteins.",true,"This is the central sequence described in the JAK-STAT pathway."],["STAT proteins remain permanently in the cytoplasm after phosphorylation.",false,"Ganong states that phosphorylated STATs form dimers and move to the nucleus."],["Phosphorylated STATs can act as transcription factors in the nucleus.",true,"Ganong states that they move to the nucleus and act as transcription factors."],["The JAK-STAT pathway is the only pathway through which cytokine receptors can affect cell function.",false,"Ganong notes that the JAK-STAT pathway can interact with Ras and other signaling pathways."]]],["JAK-STAT",[["Ganong describes four known JAKs.",true,"The text states there are four known JAKs."],["Ganong describes seven known STAT proteins.",true,"The text states there are seven known STATs."],["Figure 2-32 shows inactive JAKs associated with individual receptor chains before ligand binding.",true,"Panel A of Figure 2-32 depicts this."],["In Figure 2-32, ligand binding causes receptor dimerization.",true,"Panel B depicts ligand-induced receptor dimerization."],["JAKs phosphorylate tyrosine residues on the receptor after receptor dimerization.",true,"Panel B/C and the caption describe this sequence."]]],["JAK-STAT / receptor diseases",[["STATs are phosphorylated before they associate with the receptor phosphotyrosine sites.",false,"Ganong describes STAT association with phosphorylated receptor sites before JAK-mediated phosphorylation of STATs."],["Phosphorylated STATs dimerize.",true,"Figure 2-32 caption states that phosphorylated STATs dimerize."],["STAT dimers move to the nucleus.",true,"Figure 2-32 caption states this."],["STAT dimers bind response elements on DNA.",true,"Figure 2-32 caption states this."],["Ganong describes receptor mutations as causes of some human diseases.",true,"Clinical Box 2-9 discusses receptor mutations and associated diseases."]]],["receptor diseases",[["Loss-of-function mutations in the insulin receptor are given as an example in Clinical Box 2-9.",true,"The clinical box lists the insulin receptor among examples of loss-of-function receptor mutations."],["Antibodies against thyroid-stimulating hormone receptors can cause Graves disease.",true,"Clinical Box 2-9 states this."],["Antibodies against nicotinic acetylcholine receptors can cause myasthenia gravis.",true,"Clinical Box 2-9 states this."],["Nephrogenic diabetes insipidus can result from loss of function of V2 vasopressin receptors.",true,"Clinical Box 2-9 gives this example."],["A gain-of-function mutation of the calcium-sensing receptor can cause familial hypercalciuric hypocalcemia.",true,"Clinical Box 2-9 states this."]]],["receptor diseases / Gs diseases",[["A gain-of-function calcium-sensing receptor mutation causes excessive parathyroid hormone secretion.",false,"Ganong states that it causes excessive inhibition of parathyroid hormone secretion."],["Pseudohypoparathyroidism type 1 can involve a mutated Gs alpha subunit that fails to respond to parathyroid hormone.",true,"Clinical Box 2-9 describes this mechanism."],["Testotoxicosis combines gain and loss of function.",true,"Ganong describes testotoxicosis as a disease combining gain and loss of function."],["In testotoxicosis, the activating mutation of Gs alpha is completely temperature-insensitive.",false,"Ganong states that the mutation is temperature-sensitive and active only at the relatively low temperature of the testes."],["At approximately 37°C, the testotoxicosis mutation is replaced by loss of function.",true,"Clinical Box 2-9 states that at 37°C the normal temperature of the rest of the body, it is replaced by loss of function."]]],["Gs diseases",[["McCune-Albright syndrome is associated with a different activating mutation in Gs alpha.",true,"Clinical Box 2-9 describes this."],["McCune-Albright syndrome is associated with rough-bordered areas of skin pigmentation and hypercortisolism.",true,"Clinical Box 2-9 lists these findings."],["The activating Gs alpha mutation in McCune-Albright syndrome occurs during fetal development and creates a mosaic of normal and abnormal cells.",true,"Clinical Box 2-9 states this."],["A mutation that reduces intrinsic GTPase activity of Gs alpha can cause excess cAMP production.",true,"Clinical Box 2-9 describes this mechanism."],["The Gs alpha mutation described as reducing intrinsic GTPase activity can cause somatotroph hyperplasia and excessive growth hormone.",true,"Clinical Box 2-9 states this."]]],["Gs diseases / G-protein disease table",[["The clinical box states that 100% of somatotroph tumors causing acromegaly contain this type of somatic mutation.",false,"Ganong states approximately 40% contain cells with this type of mutation."],["Loss of rhodopsin function is associated with congenital night blindness in the table.",true,"Table 2-6 lists rhodopsin loss and congenital night blindness."],["Loss of the vasopressin receptor 2 is associated with X-linked nephrogenic diabetes insipidus.",true,"Table 2-6 lists this association."],["Gain of the luteinizing hormone receptor is associated with familial male precocious puberty.",true,"Table 2-6 lists this association."],["Loss of the TSH receptor is associated with familial hypothyroidism.",true,"Table 2-6 lists this association."]]],["G-protein disease table / cell organelles",[["Gain of the TSH receptor is associated with familial nonautoimmune hyperthyroidism.",true,"Table 2-6 lists this association."],["Loss of the calcium-sensing receptor is associated with familial hypocalciuric hypercalcemia.",false,"Table 2-6 lists gain of the calcium-sensing receptor with familial hypercalciuric hypocalcemia."],["Loss of the thromboxane A2 receptor is associated with congenital bleeding.",true,"Table 2-6 lists this association."],["Loss of the endothelin receptor B is associated with Hirschsprung disease.",true,"Table 2-6 lists this association."],["The endoplasmic reticulum and Golgi apparatus are important in protein processing and targeting.",true,"The supplied text states this explicitly."]]],["cell organelles / mitochondria / cytoskeleton",[["Lysosomes and peroxisomes contribute to protein and lipid processing.",true,"The supplied text states that lysosomes and peroxisomes contribute to protein and lipid processing."],["Mitochondria are organelles important for oxidative phosphorylation in eukaryotic cells.",true,"The supplied text states this."],["The cytoskeleton is described as a network of three types of filaments.",true,"The supplied text states that the cytoskeleton is a network of three types of filaments."],["Actin filaments are important in cellular contraction, trafficking of organelles, and signaling.",true,"The supplied text lists these roles."],["Intermediate filaments are described as the primary structural microtubules of the cell.",false,"The supplied text describes intermediate filaments as providing structural stability; microtubules are a distinct filament type."]]],["cytoskeleton / motor proteins / cell adhesion",[["Microtubules provide a dynamic structure that allows movement of cellular components around the cell.",true,"The supplied text states this."],["There are three superfamiles of molecular motor proteins described in the supplied text.",true,"The text states that there are three superfamilies of molecular motor proteins."],["Myosin primarily interacts with actin filaments.",true,"The supplied text states that myosin interacts primarily with actin filaments."],["Kinesins and dyneins primarily interact with microtubules.",true,"The supplied text states this."],["Cellular adhesion molecules can tether cells to each other or to extracellular matrix.",true,"The supplied text states this."]]]];
+
+// Shuffle with Fisher-Yates. This makes question/statement order different on each load.
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+const randomizedQuestions = shuffle(questions.map(q=>[q[0],shuffle(q[1].map(s=>[...s]))]));
+const letters=["A","B","C","D","E"];
+let score=0, answered=0;
+const test=document.getElementById("test");
+
+randomizedQuestions.forEach((q,qi)=>{
+  const card=document.createElement("div");
+  card.className="card";
+  let html=`<h2>Q${qi+1}. ${q[0]}</h2>`;
+  q[1].forEach((s,si)=>{
+    html+=`<div class="statement" id="s${qi}_${si}">
+      <p><b>${letters[si]})</b> ${s[0]}</p>
+      <button onclick="answer(${qi},${si},true)">TRUE</button>
+      <button onclick="answer(${qi},${si},false)">FALSE</button>
+      <div class="explanation" id="e${qi}_${si}" style="display:none"></div>
+    </div>`;
+  });
+  card.innerHTML=html;
+  test.appendChild(card);
+});
+
+function answer(qi,si,value){
+  const s=randomizedQuestions[qi][1][si];
+  const box=document.getElementById(`s${qi}_${si}`);
+  const buttons=box.querySelectorAll("button");
+  buttons.forEach(b=>b.disabled=true);
+
+  const correct=value===s[1];
+  score += correct ? 1 : -1;
+  answered++;
+
+  const e=document.getElementById(`e${qi}_${si}`);
+  e.style.display="block";
+  e.innerHTML=correct
+    ? `<span class="correct">Correct: +1</span> — ${s[1] ? "TRUE" : "FALSE"}. ${s[2]}`
+    : `<span class="wrong">Wrong: −1</span> — Correct answer: ${s[1] ? "TRUE" : "FALSE"}. ${s[2]}`;
+
+  document.getElementById("score").textContent=`Score: ${score} / 100`;
+  document.getElementById("answered").textContent=`Answered: ${answered} / 100`;
+
+  if(answered===100){
+    document.getElementById("final").innerHTML=
+      `<div class="card"><h2>FINAL SCORE: ${score} / 100</h2>
+      <p>Percentage: ${score}%</p>
+      <p class="small">The test contains 100 statements from the supplied Ganong Chapter 2 pages. The order was randomized for this attempt.</p>
+      <button class="reset" onclick="location.reload()">Retake — New Random Order</button></div>`;
+    window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+  }
+}
+</script>
+</body>
+</html>

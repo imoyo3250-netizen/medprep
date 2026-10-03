@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ganong Chapter 2 — 100 Mark Test</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#eef2f6;color:#111;margin:0;padding:12px}
+.container{max-width:850px;margin:auto}
+header{background:#202a36;color:white;padding:18px;border-radius:14px;margin-bottom:12px}
+h1{font-size:25px;margin:0 0 8px}
+.subtitle{font-size:14px;opacity:.9}
+#bar{position:sticky;top:8px;z-index:10;background:white;padding:12px;border-radius:12px;box-shadow:0 2px 10px #cbd2d9;margin-bottom:12px}
+#score{font-weight:bold}
+.card{background:white;padding:16px;margin:13px 0;border-radius:13px;box-shadow:0 2px 8px #d4d9df}
+h2{font-size:18px;margin:0 0 12px}
+.statement{border-top:1px solid #e5e7eb;padding:12px 0}
+.statement p{margin:0 0 9px;line-height:1.42}
+button{padding:9px 13px;margin:3px;border-radius:8px;border:1px solid #555;background:white;font-size:15px}
+button:hover{background:#edf1f5}
+button:disabled{opacity:.5}
+.correct{color:#087a35;font-weight:bold}
+.wrong{color:#b00020;font-weight:bold}
+.explanation{margin-top:8px;padding:9px;border-radius:8px;background:#f2f4f6;font-size:14px;line-height:1.4}
+#final .card{border:2px solid #222}
+.small{font-size:12px;color:#555}
+.reset{background:#202a36;color:white;border-color:#202a36}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Ganong Chapter 2 — Overview of Cellular Physiology</h1>
+<div class="subtitle">100-mark TRUE/FALSE test • Based only on the supplied Ganong pages (Chapter 2, approximately pp. 35–50)</div>
+</header>
+
+<div id="bar">
+<b id="score">Score: 0 / 100</b> &nbsp;|&nbsp;
+<span id="answered">Answered: 0 / 100</span>
+<br>
+<span class="small">Correct = +1 • Wrong = −1 • Questions/statements are shuffled each time the test starts.</span>
+</div>
+
+<div id="test"></div>
+<div id="final"></div>
+</div>
+
+<script>
+const questions = [
+["Cell function, homeostasis & membranes",[
+["The cell is described as the fundamental working unit of all organisms.",true,"Ganong introduces the cell as the fundamental working unit of organisms."],
+["Homeostasis refers to mechanisms that maintain constancy of the internal environment.",true,"The chapter describes homeostasis as maintenance of a relatively constant internal environment."],
+["Negative feedback mechanisms continue until a disturbed variable moves farther away from its set point.",false,"Negative feedback acts to oppose a change and continues until the set point is reached."],
+["The plasma membrane is described as a structure made of lipids and proteins that is semipermeable.",true,"Ganong describes the membrane as containing lipids and proteins and being semipermeable."],
+["The chemical structure of membranes is identical in every location and cell type.",false,"Membrane composition and properties vary among locations and cell types."]
+]],
+["Phospholipids & membrane proteins",[
+["Phospholipid molecules have a hydrophilic head and relatively hydrophobic tails.",true,"The head contains the phosphate portion and is relatively soluble in water; the tails are relatively insoluble."],
+["The hydrophilic portion of a phospholipid is directed toward the water-poor interior of the membrane.",false,"Hydrophobic portions meet in the water-poor interior; hydrophilic portions face aqueous environments."],
+["Integral membrane proteins can extend into or through the lipid bilayer.",true,"Ganong distinguishes integral proteins from peripheral proteins and describes integral proteins as extending into or being embedded in the membrane."],
+["Peripheral membrane proteins are attached only by being inserted through the lipid bilayer.",false,"Peripheral proteins are associated with membrane surfaces rather than spanning the bilayer."],
+["Membrane proteins can function as pumps, carriers, channels, receptors, enzymes, and cell-adhesion molecules.",true,"The chapter lists these among the diverse functions of membrane proteins."]
+]],
+["Membrane composition & transport proteins",[
+["On average, protein makes up about 50% of the mass of the plasma membrane.",true,"The supplied text states that protein makes up, on average, 50% of membrane mass."],
+["Ganong states that there is approximately one protein molecule for every 50 phospholipid molecules.",true,"This numerical comparison is given in the membrane discussion."],
+["Carrier proteins transport substances only against electrochemical gradients.",false,"Carriers can transport substances down electrochemical gradients by facilitated diffusion; some transport systems perform active transport."],
+["Ion channels permit the passage of ions when they are activated.",true,"The chapter describes ion channels as pathways for ion movement when activated."],
+["Receptors bind ligands or messenger molecules and initiate physiological changes inside the cell.",true,"This is the role of membrane receptors described in the text."]
+]],
+["Mitochondria",[
+["Ganong describes mitochondria as having evolved after aerobic bacteria were engulfed by eukaryotic cells.",true,"The chapter gives this evolutionary origin as the endosymbiotic explanation."],
+["Mitochondria provide eukaryotic cells with the ability to form energy-rich ATP by oxidative phosphorylation.",true,"This is explicitly described in the mitochondria section."],
+["Mitochondria have no role in regulation of apoptosis.",false,"Ganong states that mitochondria perform several functions, including a role in regulating apoptosis."],
+["Mitochondria are generally depicted as sausage-shaped organelles in the chapter.",true,"This description appears in the supplied text."],
+["Every mitochondrial protein is encoded by mitochondrial DNA.",false,"Most mitochondrial proteins are encoded by nuclear genes; mitochondrial DNA encodes a smaller subset."]
+]],
+["Mitochondrial DNA & oxidative phosphorylation",[
+["Human mitochondrial DNA is double-stranded and contains approximately 16,500 base pairs.",true,"The chapter gives approximately 16,500 base pairs for human mitochondrial DNA."],
+["Mitochondrial DNA encodes 13 protein subunits of oxidative-phosphorylation complexes.",true,"Ganong states that mitochondrial DNA codes for 13 protein subunits."],
+["Mitochondrial DNA codes for all the protein subunits in complexes I–V.",false,"Most protein subunits are encoded by nuclear DNA; the chapter gives 13 mitochondrial-DNA-coded subunits."],
+["Complex II is succinate dehydrogenase-ubiquinone oxidoreductase.",true,"The supplied text identifies complex II in this way."],
+["Complex IV is cytochrome c oxidase.",true,"Ganong identifies complex IV as cytochrome c oxidase."]
+]],
+["Mitochondrial inheritance & disease",[
+["Mitochondria are inherited maternally.",true,"The chapter states that mitochondrial inheritance is maternal."],
+["Mitochondrial DNA has a mutation rate approximately 10 times that of nuclear DNA.",true,"The supplied text gives this comparison."],
+["Mitochondrial disorders can be caused by mutations in mitochondrial or nuclear DNA.",true,"Ganong states that mitochondrial disorders may arise from mutations in either genome."],
+["Mitochondrial diseases always affect every tissue equally.",false,"The chapter notes highly variable patterns and tissue-specific effects."],
+["Symptoms of mitochondrial disease can include altered motor control, gastrointestinal dysfunction, altered growth, diabetes, seizures, and visual/hearing problems.",true,"These examples are listed in the mitochondrial disease clinical box."]
+]],
+["Lysosomes",[
+["Lysosomes contain hydrolytic enzymes involved in intracellular digestion.",true,"Ganong describes lysosomes as containing hydrolytic enzymes that digest material."],
+["The interior of lysosomes is more acidic than the cytoplasm.",true,"The lysosomal lumen is maintained at an acidic pH."],
+["A proton pump helps maintain the acidic lysosomal interior.",true,"The text states that the interior is kept acidic by the action of a proton pump, or H+ ATPase."],
+["Lysosomal enzymes are most efficient at the neutral cytosolic pH of about 7.2.",false,"They function best at the acidic pH of the lysosomal compartment."],
+["Lysosomes can contain more than 40 types of hydrolytic enzymes.",true,"The supplied text states that some lysosomes contain over 40 types."]
+]],
+["Lysosomal diseases & peroxisomes",[
+["Congenital absence of a lysosomal enzyme can cause a lysosomal storage disease.",true,"The clinical box explains that missing lysosomal enzymes lead to lysosomal diseases."],
+["Gaucher disease is associated with deficiency of β-glucosidase.",true,"The clinical box identifies β-glucosidase deficiency in Gaucher disease."],
+["Tay-Sachs disease is caused by loss of hexosaminidase A.",true,"This is stated in the lysosomal disease clinical box."],
+["Peroxisomes are approximately 0.5 μm in diameter.",true,"The peroxisome section gives approximately 0.5 μm."],
+["Peroxisomes contain no enzymes involved in oxidation or catalysis.",false,"Peroxisomes contain oxidases and catalase and participate in oxidative and catabolic reactions."]
+]],
+["Peroxisomes & PPARs",[
+["Peroxisomes can produce H2O2 through oxidases.",true,"The supplied text states that peroxisomes can produce H2O2 through oxidases."],
+["Peroxisomes can break down H2O2 through catalase.",true,"Catalase in peroxisomes can break down H2O2."],
+["Peroxisomal proteins are directed to the organelle by signal sequences with the help of protein chaperones.",true,"This mechanism is described in the peroxisome section."],
+["Peroxisome proliferation can be stimulated by compounds acting on peroxisome proliferator-activated receptors (PPARs).",true,"Ganong describes PPARs and their effects on peroxisome proliferation."],
+["PPARs are membrane ion channels.",false,"PPARs are members of the nuclear receptor superfamily."]
+]],
+["Cytoskeleton",[
+["The cytoskeleton helps maintain cell structure and permits cells to change shape and move.",true,"Ganong describes these as major functions of the cytoskeleton."],
+["The three major cytoskeletal elements shown are microtubules, intermediate filaments, and microfilaments.",true,"Figure 2-5 presents these three major elements."],
+["Microtubules are approximately 25 nm in diameter.",true,"The supplied figure lists microtubules at about 25 nm."],
+["Intermediate filaments are approximately 7 nm in diameter.",false,"The figure lists intermediate filaments at about 10 nm; actin filaments are about 7 nm."],
+["Actin is the major protein of microfilaments.",true,"Ganong identifies microfilaments as actin-containing solid fibers."]
+]],
+["Microtubules",[
+["Microtubules are long, hollow structures with a diameter of about 25 nm.",true,"This description appears in the microtubule section."],
+["Microtubules are composed of α- and β-tubulin.",true,"The chapter states that microtubules are made of two globular protein subunits, α- and β-tubulin."],
+["The α- and β-tubulin subunits form heterodimers.",true,"Ganong describes α- and β-tubulin as heterodimers that aggregate to form microtubules."],
+["Microtubules are completely nonpolar structures with no plus or minus ends.",false,"They are polar, with plus and minus ends having different assembly behavior."],
+["Microtubules provide tracks for molecular motors transporting organelles and other cargo.",true,"The chapter describes microtubules as tracks for molecular-motor transport."]
+]],
+["Microtubule drugs & intermediate filaments",[
+["Colchicine prevents microtubule assembly.",true,"Ganong states that microtubule assembly is prevented by colchicine."],
+["Paclitaxel binds to microtubules and makes them so stable that they cannot move.",true,"This is the mechanism described for paclitaxel in the supplied text."],
+["Intermediate filaments are generally 8–14 nm in diameter.",true,"The chapter gives this approximate range."],
+["Intermediate filaments are identical in protein composition in every cell type.",false,"Some intermediate filaments are cell-type specific."],
+["Keratin is an example of an intermediate filament protein.",true,"The chapter discusses keratin among intermediate-filament proteins."]
+]],
+["Microfilaments & actin",[
+["Microfilaments are long, solid fibers made up of actin.",true,"Ganong describes microfilaments this way."],
+["Microfilaments are generally about 5–9 nm in diameter.",true,"The supplied text gives this diameter range."],
+["F-actin refers to intact microfilaments.",true,"The text distinguishes F-actin as intact microfilaments."],
+["G-actin refers to polymerized actin filaments.",false,"G-actin refers to globular, unpolymerized actin subunits."],
+["Actin filaments interact with integrin receptors and participate in focal adhesions.",true,"The supplied text describes these interactions."]
+]],
+["Molecular motors",[
+["Molecular motors use ATP to produce movement along cytoskeletal filaments.",true,"Ganong states that molecular motors are ATPases and convert ATP energy into movement."],
+["The molecular motors discussed include kinesin, dynein, and myosin.",true,"These are the three superfamilies named in the chapter."],
+["Conventional kinesin generally moves cargo toward the plus end of microtubules.",true,"The text states that conventional kinesin moves cargo toward the plus end."],
+["Cytoplasmic dynein generally moves cargo toward the plus end of microtubules.",false,"Cytoplasmic dynein tends to move cargo toward the minus end."],
+["Myosin V can move along microfilaments.",true,"The figure and text identify myosin V as a motor associated with actin/microfilaments."]
+]],
+["Centrosomes & cilia",[
+["The centrosome is a microtubule-organizing center containing γ-tubulin.",true,"The chapter identifies centrosomes as MTOCs containing γ-tubulin."],
+["A centriole contains nine circumferential triplets of microtubules.",true,"Ganong gives nine triplets arranged as a regular cylinder."],
+["Cilia contain an axoneme with a 9+2 arrangement of microtubules.",true,"The chapter describes nine outer doublets and two inner microtubules."],
+["The basal body of a cilium has nine circumferential triplet microtubules.",true,"The supplied text states this."],
+["Primary ciliary dyskinesia is a disorder in which ciliary structure or function is always normal.",false,"It is an inherited disorder affecting ciliary structure and/or function."]
+]],
+["Ciliary disease clinical details",[
+["Primary ciliary dyskinesia can impair mucociliary clearance in the conducting airways.",true,"The clinical box states that altered cilia can slow the mucociliary escalator."],
+["Impaired mucociliary clearance can result in airway obstruction and recurrent infection.",true,"These consequences are described in the clinical box."],
+["Ciliary defects in sperm can contribute to infertility.",true,"The clinical box notes loss of motility and infertility in association with ciliary dysfunction."],
+["Ciliary disease can have effects on tissues including the respiratory tract, retinal cells, and kidney.",true,"Several affected tissues are listed in the clinical box."],
+["Primary ciliary dyskinesia is caused exclusively by an acquired bacterial infection.",false,"It is described as a set of inherited disorders."]
+]],
+["Cell adhesion molecules",[
+["Cell adhesion molecules (CAMs) help attach cells to the basal lamina and to each other.",true,"This is stated in the CAM section."],
+["CAMs can transmit signals into and out of cells.",true,"The chapter explains that CAMs have structural and signaling functions."],
+["Integrins are heterodimers that bind to extracellular matrix receptors.",true,"Ganong lists integrins among the four broad CAM families and describes their binding to ECM components."],
+["Cadherins are calcium-dependent molecules involved in homophilic adhesion.",true,"The text describes cadherins as Ca2+-dependent molecules mediating homophilic reactions."],
+["Selectins contain lectin-like domains and are one of the four broad CAM families.",true,"The chapter lists selectins among the four CAM families."]
+]],
+["Intercellular junctions",[
+["Tight junctions are also known as zonula occludens.",true,"The supplied text gives this synonym."],
+["Desmosomes provide strong mechanical attachment between adjacent cells.",true,"Desmosomes are described as junctions that hold cells together with strength and stability."],
+["Gap junctions allow rapid electrical activity and exchange of various small molecules between cells.",true,"The chapter describes their electrical and chemical communication roles."],
+["Hemidesmosomes attach cells to each other by binding adjacent cell membranes together.",false,"Hemidesmosomes attach cells to the basal lamina."],
+["Focal adhesions attach cells to the basal lamina and involve actin filaments.",true,"The supplied text describes focal adhesions as attachments involving actin filaments."]
+]],
+["Gap junctions",[
+["Gap junction channels are formed from connexons.",true,"The text states that connexons from each cell form the gap-junction channel."],
+["Each connexon consists of six protein subunits called connexins.",true,"This is explicitly stated in the gap-junction section."],
+["Connexons from neighboring cells align to form a continuous channel between the cells.",true,"This arrangement permits substances to pass between adjacent cells."],
+["Gap-junction channel diameter is estimated at approximately 0.8–1.4 nm.",true,"The supplied text gives this range."],
+["Gap junctions are nonspecific conduits that allow passage of every cellular molecule regardless of size.",false,"They permit passage of small molecules and ions, not every molecule."]
+]],
+["Nucleus",[
+["The nucleus is present in all eukaryotic cells that divide.",true,"Ganong states that a nucleus is present in all eukaryotic cells that divide."],
+["The nucleus contains chromosomes that carry the hereditary species and individual characteristics of the animal.",true,"This is stated in the supplied text."],
+["A chromosome is made up of a giant molecule of DNA.",true,"The chapter describes chromosomes in this way."],
+["DNA is arranged around histone proteins to form nucleosomes.",true,"The supplied text states that DNA is wrapped around histone proteins to form nucleosomes."],
+["During cell division, chromatin becomes less condensed and chromosomes become less visible.",false,"During cell division, chromatin becomes highly condensed and chromosomes become visible."]
+]],
+["Nuclear envelope & nucleolus",[
+["The nuclear envelope is a double membrane.",true,"Ganong describes the membrane surrounding the nucleus as a double membrane."],
+["The spaces between the two layers of the nuclear envelope are called the perinuclear cistern.",true,"This is the terminology used in the supplied text."],
+["Nuclear pore complexes provide regulated pathways for transport of proteins and mRNA.",true,"The chapter describes many transport pathways through nuclear pore complexes."],
+["The nucleolus is a patchwork of granules rich in RNA.",true,"Ganong describes the nucleolus this way."],
+["The nucleolus is the site where most cellular ATP is synthesized.",false,"The nucleolus is associated with ribosomal synthesis; ATP production is not its function."]
+]],
+["Endoplasmic reticulum & ribosomes",[
+["Rough endoplasmic reticulum has ribosomes attached to its cytoplasmic side.",true,"This distinguishes rough ER from smooth ER."],
+["Smooth endoplasmic reticulum lacks attached ribosomes.",true,"Ganong states that ribosomes are absent from smooth ER."],
+["Rough ER is concerned with protein synthesis and the initial folding of polypeptide chains.",true,"The supplied text describes these functions."],
+["Smooth ER is involved in steroid synthesis in steroid-secreting cells.",true,"This function is explicitly given."],
+["Free ribosomes synthesize all proteins destined for secretion from the cell.",false,"Proteins destined for secretion are synthesized on ribosomes associated with rough ER."]
+]],
+["Ribosomes & protein targeting",[
+["Eukaryotic ribosomes contain 60S and 40S subunits.",true,"The chapter gives these subunits for eukaryotic ribosomes."],
+["Ribosomes are sites of protein synthesis.",true,"Ganong identifies ribosomes as sites of protein synthesis."],
+["Proteins that acquire appropriate signal peptides become associated with the endoplasmic reticulum.",true,"The supplied figure/text describes signal sequences directing proteins to rough ER."],
+["Proteins synthesized on free ribosomes include cytoplasmic proteins and proteins destined for peroxisomes and mitochondria.",true,"This is explicitly stated."],
+["Signal sequences always remain permanently attached to the mature protein.",false,"The figure/text shows signal sequences can be cleaved."]
+]],
+["Golgi apparatus & vesicular traffic",[
+["The Golgi apparatus is a collection of membrane-enclosed sacs stacked like dinner plates.",true,"This is the description in the supplied text."],
+["The cis face of the Golgi is near the endoplasmic reticulum.",true,"The cis face is described as being near the ER."],
+["The trans face of the Golgi is near the plasma membrane.",true,"The trans face is oriented toward the plasma membrane."],
+["The Golgi apparatus modifies, sorts, and packages proteins and lipids.",true,"These are major functions described in the chapter."],
+["Vesicular traffic is completely independent of regulatory proteins such as GTP- and GDP-binding proteins.",false,"The chapter describes regulatory proteins, including GTP/GDP-binding proteins, as important in vesicular traffic."]
+]],
+["Quality control & apoptosis",[
+["Quality control mechanisms help ensure that proteins are correctly synthesized, folded, and transported.",true,"Ganong describes these processes as quality control."],
+["Damaged DNA can be detected and repaired as part of cellular quality control.",true,"The supplied text includes damaged DNA detection and repair."],
+["Misfolded proteins can be degraded in lysosomes and proteasomes.",true,"The chapter states that defective structures and abnormal proteins are degraded in these systems."],
+["Apoptosis is another name for programmed cell death.",true,"Ganong explicitly defines apoptosis as programmed cell death."],
+["Apoptosis normally produces the same degree of inflammation as uncontrolled necrotic cell injury.",false,"Apoptosis is an organized process and is distinguished from inflammatory necrotic cell death."]
+]],
+["Apoptosis clinical & physiological examples",[
+["Apoptosis occurs during normal development.",true,"The chapter states that apoptosis is common during development."],
+["Apoptosis occurs in the adult CNS in the normal turnover and elimination of neurons.",true,"Ganong discusses apoptosis in the adult nervous system."],
+["Apoptosis participates in the immune system by removing clones of immunocytes.",true,"This is one of the examples given."],
+["Glucocorticoids can induce apoptosis in lymphocytes.",true,"The supplied text states that apoptosis is an important factor in glucocorticoid effects on lymphocytes."],
+["Caspases are a group of cysteine proteases involved in apoptosis.",true,"Ganong identifies activation of caspases as a common pathway bringing about apoptosis."]
+]],
+["Exocytosis",[
+["Exocytosis involves fusion of secretory vesicles with the plasma membrane.",true,"This is the mechanism described in the exocytosis section."],
+["The contents of a secretory vesicle are released outside the cell during exocytosis.",true,"Fusion allows vesicular contents to be released extracellularly."],
+["The area of fusion breaks down, leaving the vesicle contents outside while the cell membrane remains intact.",true,"This is the sequence described by Ganong."],
+["Exocytosis described in the chapter is a Ca2+-independent process.",false,"The chapter explicitly calls exocytosis a Ca2+-dependent process."],
+["SNARE proteins participate in vesicle targeting and fusion.",true,"The supplied text describes v-SNARE/t-SNARE interactions in vesicular traffic and exocytosis."]
+]],
+["Endocytosis",[
+["Endocytosis is the reverse of exocytosis in the sense that plasma membrane is internalized to form vesicles.",true,"Ganong introduces endocytosis as the reverse of exocytosis."],
+["Phagocytosis involves engulfment of large particles or dead cells.",true,"This is the definition given in the text."],
+["Pinocytosis involves uptake of extracellular fluid in small vesicles.",true,"Ganong describes pinocytosis as cell drinking and contrasts it with phagocytosis."],
+["Endocytosis includes phagocytosis, pinocytosis, and clathrin-mediated endocytosis.",true,"These are among the types listed."],
+["During endocytosis, the cell membrane is permanently lost with every vesicle formed.",false,"Endocytosis is coupled to exocytosis to maintain the normal cell-surface area."]
+]],
+["Clathrin-mediated endocytosis",[
+["Clathrin molecules have a characteristic triskelion shape with three legs radiating from a central hub.",true,"This is described and illustrated in Figure 2-13."],
+["Clathrin molecules form a geometric array during formation of a clathrin-coated vesicle.",true,"Ganong describes this process."],
+["Dynamin participates in the fission of the vesicle from the membrane.",true,"The text states that GTP-binding protein dynamin is involved in the final step of vesicle formation."],
+["After a clathrin-coated vesicle forms, clathrin molecules remain permanently attached to it.",false,"The clathrin triskelia recycle and can form another vesicle."],
+["Clathrin-mediated endocytosis is responsible for internalization of receptors and ligands.",true,"Examples include nerve growth factor and low-density lipoproteins."]
+]],
+["Rafts & caveolae",[
+["Some plasma-membrane regions are enriched in cholesterol and sphingolipids and are called rafts.",true,"This is stated in the rafts and caveolae section."],
+["Caveolae are small flask-shaped depressions of the plasma membrane.",true,"The text describes caveolae as little caves formed when raft walls become infiltered."],
+["Caveolin is associated with caveolae.",true,"The chapter discusses cholesterol interaction with caveolin and caveolae."],
+["Caveolae are found only in neurons.",false,"The chapter gives caveolae as membrane structures in cells such as vascular smooth muscle cells."],
+["Cholesterol can interact directly with caveolin.",true,"The supplied text states that cholesterol can interact directly with caveolin."]
+]]
+];
+
+// Shuffle with Fisher-Yates. This makes question/statement order different on each load.
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+const randomizedQuestions = shuffle(questions.map(q=>[q[0],shuffle(q[1].map(s=>[...s]))]));
+const letters=["A","B","C","D","E"];
+let score=0, answered=0;
+const test=document.getElementById("test");
+
+randomizedQuestions.forEach((q,qi)=>{
+  const card=document.createElement("div");
+  card.className="card";
+  let html=`<h2>Q${qi+1}. ${q[0]}</h2>`;
+  q[1].forEach((s,si)=>{
+    html+=`<div class="statement" id="s${qi}_${si}">
+      <p><b>${letters[si]})</b> ${s[0]}</p>
+      <button onclick="answer(${qi},${si},true)">TRUE</button>
+      <button onclick="answer(${qi},${si},false)">FALSE</button>
+      <div class="explanation" id="e${qi}_${si}" style="display:none"></div>
+    </div>`;
+  });
+  card.innerHTML=html;
+  test.appendChild(card);
+});
+
+function answer(qi,si,value){
+  const s=randomizedQuestions[qi][1][si];
+  const box=document.getElementById(`s${qi}_${si}`);
+  const buttons=box.querySelectorAll("button");
+  buttons.forEach(b=>b.disabled=true);
+
+  const correct=value===s[1];
+  score += correct ? 1 : -1;
+  answered++;
+
+  const e=document.getElementById(`e${qi}_${si}`);
+  e.style.display="block";
+  e.innerHTML=correct
+    ? `<span class="correct">Correct: +1</span> — ${s[1] ? "TRUE" : "FALSE"}. ${s[2]}`
+    : `<span class="wrong">Wrong: −1</span> — Correct answer: ${s[1] ? "TRUE" : "FALSE"}. ${s[2]}`;
+
+  document.getElementById("score").textContent=`Score: ${score} / 100`;
+  document.getElementById("answered").textContent=`Answered: ${answered} / 100`;
+
+  if(answered===100){
+    document.getElementById("final").innerHTML=
+      `<div class="card"><h2>FINAL SCORE: ${score} / 100</h2>
+      <p>Percentage: ${score}%</p>
+      <p class="small">The test contains 100 statements from the supplied Ganong Chapter 2 pages. The order was randomized for this attempt.</p>
+      <button class="reset" onclick="location.reload()">Retake — New Random Order</button></div>`;
+    window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+  }
+}
+</script>
+</body>
+</html>
