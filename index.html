@@ -2,230 +2,118 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MedStudy Hub</title>
 
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
-
-:root{
-    --bg:#050817;
-    --bg2:#0b1028;
-    --text:#ffffff;
-    --muted:#aab3d0;
-    --border:rgba(255,255,255,.12);
-
-    --phys:#ff3157;
-    --phys2:#ff7547;
-
-    --anat:#00d69b;
-    --anat2:#00a8a8;
-
-    --emb:#a743ff;
-    --emb2:#e25cff;
-}
-
-html{
-    scroll-behavior:smooth;
-}
+*{box-sizing:border-box;margin:0;padding:0}
 
 body{
-    font-family:Arial,Helvetica,sans-serif;
-    color:var(--text);
-    min-height:100vh;
-    background:
-        radial-gradient(circle at 10% 10%,rgba(70,70,255,.20),transparent 30%),
-        radial-gradient(circle at 90% 10%,rgba(180,50,255,.15),transparent 30%),
-        radial-gradient(circle at 50% 90%,rgba(0,210,255,.08),transparent 30%),
-        var(--bg);
-    overflow-x:hidden;
+font-family:Arial,sans-serif;
+background:#050817;
+color:white;
+min-height:100vh;
+overflow-x:hidden;
 }
 
-/* subtle futuristic grid */
-body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    background:
-        linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
-    background-size:45px 45px;
-    mask-image:linear-gradient(to bottom,black,transparent);
+body:before{
+content:"";
+position:fixed;
+inset:0;
+pointer-events:none;
+background:
+radial-gradient(circle at 15% 10%,#4338ca55,transparent 30%),
+radial-gradient(circle at 85% 15%,#a21caf55,transparent 30%),
+radial-gradient(circle at 50% 90%,#0891b255,transparent 35%);
+z-index:-1;
 }
 
-/* ================= NAVBAR ================= */
+/* NAVIGATION */
 
-.navbar{
-    position:sticky;
-    top:0;
-    z-index:1000;
-
-    height:72px;
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    padding:0 5%;
-
-    background:rgba(4,7,22,.84);
-    backdrop-filter:blur(20px);
-
-    border-bottom:1px solid var(--border);
+nav{
+height:70px;
+padding:0 5%;
+display:flex;
+align-items:center;
+justify-content:space-between;
+position:sticky;
+top:0;
+z-index:100;
+background:#050817dd;
+backdrop-filter:blur(18px);
+border-bottom:1px solid #ffffff18;
 }
 
 .logo{
-    display:flex;
-    align-items:center;
-    gap:10px;
-
-    font-size:21px;
-    font-weight:800;
+font-size:21px;
+font-weight:bold;
+display:flex;
+align-items:center;
+gap:10px;
 }
 
-.logo-icon{
-    width:40px;
-    height:40px;
-
-    display:grid;
-    place-items:center;
-
-    border-radius:12px;
-
-    background:linear-gradient(135deg,#ff42d0,#477dff);
-
-    box-shadow:0 0 25px rgba(151,67,255,.55);
+.logo span{
+padding:10px;
+border-radius:12px;
+background:linear-gradient(135deg,#ff35b8,#536dff);
+box-shadow:0 0 25px #7c3aed88;
 }
 
-.nav-links{
-    display:flex;
-    align-items:center;
-    gap:5px;
+nav div:nth-child(2){
+display:flex;
+gap:8px;
 }
 
-.nav-links button{
-    border:0;
-    background:transparent;
-    color:#dce2ff;
-
-    padding:10px 15px;
-    border-radius:25px;
-
-    cursor:pointer;
-    font-size:14px;
-
-    transition:.25s;
+nav button{
+border:0;
+background:transparent;
+color:#cdd3ee;
+padding:10px 15px;
+border-radius:20px;
+cursor:pointer;
 }
 
-.nav-links button:hover{
-    background:rgba(255,255,255,.09);
-    color:white;
+nav button:hover{
+background:#ffffff12;
+color:white;
 }
 
-.nav-actions{
-    display:flex;
-    align-items:center;
-    gap:10px;
+.menu{
+display:none;
+font-size:24px;
 }
 
-.search-mini{
-    display:flex;
-    align-items:center;
-    gap:8px;
-
-    padding:9px 14px;
-
-    border-radius:30px;
-
-    background:rgba(255,255,255,.06);
-    border:1px solid var(--border);
-}
-
-.search-mini input{
-    width:130px;
-
-    border:0;
-    outline:none;
-    background:transparent;
-
-    color:white;
-}
-
-.search-mini input::placeholder{
-    color:#929bb8;
-}
-
-.theme-btn{
-    width:42px;
-    height:42px;
-
-    border-radius:50%;
-    border:1px solid var(--border);
-
-    background:rgba(255,255,255,.07);
-    color:white;
-
-    cursor:pointer;
-}
-
-.menu-btn{
-    display:none;
-
-    border:0;
-    background:transparent;
-
-    color:white;
-    font-size:25px;
-
-    cursor:pointer;
-}
-
-/* ================= HERO ================= */
+/* HOME */
 
 .hero{
-    width:90%;
-    max-width:1400px;
-
-    min-height:560px;
-
-    margin:auto;
-
-    display:grid;
-    grid-template-columns:1fr 1fr;
-
-    align-items:center;
-    gap:30px;
-
-    padding:65px 0 40px;
-}
-
-.hero-content{
-    animation:slideIn .8s ease;
+width:90%;
+max-width:1300px;
+margin:auto;
+min-height:570px;
+display:grid;
+grid-template-columns:1fr 1fr;
+align-items:center;
+gap:30px;
 }
 
 .badge{
-    display:inline-flex;
-
-    padding:8px 14px;
-
-    border-radius:30px;
-
-    background:rgba(100,90,255,.12);
-    border:1px solid rgba(129,108,255,.3);
-
-    color:#c8c7ff;
-
-    font-size:13px;
-
-    margin-bottom:22px;
+display:inline-block;
+padding:9px 16px;
+border-radius:30px;
+background:#7c3aed22;
+border:1px solid #8b5cf655;
+color:#d9d5ff;
+margin-bottom:20px;
 }
 
 .hero h1{
-    font-size:clamp(48px,6vw,84px);
-    line-height:.98
+font-size:clamp(55px,7vw,90px);
+line-height:.95;
+background:linear-gradient(90deg,#ff72d0,#a855f7,#38bdf8);
+-webkit-background-clip:text;
+color:transparent;
+}
+
+.hero h2{
+font-size:clamp(28px,4vw,48px);
+margin
