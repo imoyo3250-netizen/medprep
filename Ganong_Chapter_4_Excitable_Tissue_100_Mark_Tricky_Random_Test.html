@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ganong Chapter 4 — Excitable Tissue: Nerve — 100 Mark Test</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#eef2f6;color:#111;margin:0;padding:12px}
+.container{max-width:850px;margin:auto}
+header{background:#202a36;color:white;padding:18px;border-radius:14px;margin-bottom:12px}
+h1{font-size:25px;margin:0 0 8px}
+.subtitle{font-size:14px;opacity:.9}
+#bar{position:sticky;top:8px;z-index:10;background:white;padding:12px;border-radius:12px;box-shadow:0 2px 10px #cbd2d9;margin-bottom:12px}
+#score{font-weight:bold}
+.card{background:white;padding:16px;margin:13px 0;border-radius:13px;box-shadow:0 2px 8px #d4d9df}
+h2{font-size:18px;margin:0 0 12px}
+.statement{border-top:1px solid #e5e7eb;padding:12px 0}
+.statement p{margin:0 0 9px;line-height:1.42}
+button{padding:9px 13px;margin:3px;border-radius:8px;border:1px solid #555;background:white;font-size:15px}
+button:hover{background:#edf1f5}
+button:disabled{opacity:.5}
+.correct{color:#087a35;font-weight:bold}
+.wrong{color:#b00020;font-weight:bold}
+.explanation{margin-top:8px;padding:9px;border-radius:8px;background:#f2f4f6;font-size:14px;line-height:1.4}
+#final .card{border:2px solid #222}
+.small{font-size:12px;color:#555}
+.reset{background:#202a36;color:white;border-color:#202a36}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Ganong Chapter 4 — Excitable Tissue: Nerve</h1>
+<div class="subtitle">100-mark TRUE/FALSE test • Deliberately reworded from the supplied Ganong Chapter 4 pages</div>
+</header>
+
+<div id="bar">
+<b id="score">Score: 0 / 100</b> &nbsp;|&nbsp;
+<span id="answered">Answered: 0 / 100</span>
+<br>
+<span class="small">Correct = +1 • Wrong = −1 • Questions/statements are shuffled each time the test starts.</span>
+</div>
+
+<div id="test"></div>
+<div id="final"></div>
+</div>
+
+<script>
+const questions = [["Neuron structure & organization", [["Although the soma contains the nucleus, it is not regarded as the metabolic center of a neuron.", false, "Ganong describes the cell body (soma), which contains the nucleus, as the metabolic center of the neuron."], ["Dendrites generally receive information rather than serving as the principal site from which propagated impulses leave the neuron.", true, "The supplied text describes dendrites as receiving signals; the axon carries propagated impulses away from the cell body."], ["The initial segment is the terminal portion of an axon immediately adjacent to its terminal buttons.", false, "The initial segment is the first portion of the axon, arising from the axon hillock; terminal buttons are at the axon endings."], ["A neuron's terminal boutons are unrelated to synaptic transmitter release because transmitter-containing structures occur only in the soma.", false, "Ganong places terminal buttons at axon endings and describes synaptic transmitter-containing structures there."], ["Multipolar, bipolar, pseudounipolar, and unipolar neurons differ in how their processes arise from the cell body.", true, "The figure classifies neurons according to their processes and shows these major forms."]]], ["Neuron types & myelin", [["Myelin forms an uninterrupted insulating sleeve along an entire myelinated axon, including the nodes of Ranvier.", false, "Myelin is interrupted at the nodes of Ranvier."], ["In the peripheral nervous system, Schwann cells are responsible for forming myelin around axons.", true, "Ganong states that Schwann cells form myelin in the peripheral nervous system."], ["A pseudounipolar sensory neuron has two completely separate cell processes, one peripheral and one central, arising independently from the soma.", false, "The figure shows a single bifurcated process with peripheral and central branches."], ["Purkinje cells are presented as multipolar neurons with an extensive dendritic tree.", true, "Ganong's figure identifies cerebellar Purkinje cells as multipolar cells with extensive dendritic branching."], ["At rest, neuronal membranes are usually more permeable to Na+ than to K+.", false, "Resting membrane permeability is greater to K+ than to Na+."]]], ["Resting membrane potential", [["A membrane potential requires both an unequal distribution of charge and selective membrane permeability to ions.", true, "Ganong describes both conditions as necessary for development of a membrane potential."], ["The resting membrane potential is normally positioned much nearer the Na+ equilibrium potential than the K+ equilibrium potential.", false, "Because resting K+ permeability is greater, the resting potential is closer to EK."], ["The Na+/K+ ATPase is unnecessary for maintaining the concentration gradients that underlie neuronal electrical activity.", false, "The pump maintains the Na+ and K+ concentration gradients by moving them against their electrochemical gradients."], ["During normal pump operation, three Na+ ions are moved into the cell while two K+ ions leave it.", false, "The pump moves three Na+ out and two K+ into the cell."], ["Because resting Na+ permeability is relatively low, changing extracellular Na+ generally has less effect on resting membrane potential than changing extracellular K+.", true, "Ganong explicitly contrasts the effects of extracellular Na+ and K+ changes."]]], ["Ion gradients & Na⁺-K⁺ ATPase", [["An increase in extracellular K+ tends to make the resting membrane potential more positive rather than more negative.", true, "Hyperkalemia shifts the resting membrane potential toward a less negative value."], ["Hypokalemia moves the resting membrane potential toward threshold by making it less negative.", false, "Hypokalemia tends to hyperpolarize the membrane, making it more negative."], ["The rapid upstroke of the action potential is associated with increased Na+ conductance following opening of voltage-gated Na+ channels.", true, "This is the mechanism described in the action-potential section."], ["The action-potential upstroke is maintained by a negative-feedback loop in which Na+ entry closes additional Na+ channels.", false, "Na+ entry causes further depolarization and opening of Na+ channels, producing positive feedback."], ["The membrane potential must reach the exact Na+ equilibrium potential before a neuronal action potential can begin.", false, "An action potential begins when threshold is reached; it need not reach ENa."]]], ["Action-potential initiation", [["Voltage-gated Na+ channels remain in their activated state throughout the entire action potential.", false, "They rapidly inactivate after activation."], ["The overshoot of the action potential means that the membrane potential temporarily becomes positive.", true, "Ganong describes the membrane potential becoming positive during the overshoot."], ["The peak of a typical neuronal action potential necessarily equals the Na+ equilibrium potential.", false, "The peak usually does not reach ENa because Na+ conductance is transient and other conductances oppose it."], ["Delayed activation of voltage-gated K+ channels contributes to repolarization after the Na+ conductance has begun to fall.", true, "K+ conductance rises later and contributes to repolarization."], ["The after-hyperpolarization is explained partly by the fact that K+ channels close more slowly than Na+ channels.", true, "Persistent K+ conductance allows continued K+ efflux after repolarization begins."]]], ["Na⁺ channels & overshoot", [["During the overshoot, the electrical component of the Na+ driving force is reversed, helping limit further Na+ entry.", true, "Ganong explains that reversal of the electrical gradient limits Na+ influx during the overshoot."], ["Increasing extracellular K+ makes the resting membrane potential more negative and therefore moves it farther from threshold.", false, "Increased extracellular K+ depolarizes the resting membrane potential and moves it closer to threshold."], ["Severe hyperkalemia can eventually impair excitability despite initially depolarizing the resting membrane.", true, "Ganong notes that severe hyperkalemia can impair excitability and cause weakness or conduction problems."], ["A threshold stimulus produces an action potential whose amplitude is determined mainly by how much stronger the stimulus is than threshold.", false, "Action potentials are all-or-none; stronger stimuli do not normally produce proportionally larger individual action potentials."], ["A subthreshold stimulus may alter membrane potential locally without generating a propagated action potential.", true, "Ganong describes local/electrotonic responses produced by subthreshold stimuli."]]], ["K⁺ channels & repolarization", [["Electrotonic potentials become larger as the recording site is moved farther from the stimulating electrode.", false, "Local response magnitude decreases with distance."], ["A depolarizing local potential can trigger an action potential if it brings the membrane to the firing level.", true, "Ganong identifies the firing level/threshold at which a propagated action potential occurs."], ["Hyperpolarization generally makes the membrane potential closer to threshold and therefore immediately increases excitability.", false, "Hyperpolarization moves the membrane farther from threshold."], ["The absolute refractory period corresponds to a period during which another action potential cannot be generated regardless of stimulus strength.", true, "That is the defining property of the absolute refractory period."], ["During the relative refractory period, a stimulus stronger than normal can sometimes initiate another action potential.", true, "Ganong states that a stronger stimulus can excite the neuron during the relative refractory period."]]], ["Hyperkalemia, hypokalemia & excitability", [["The relative refractory period begins because every voltage-gated Na+ channel remains permanently inactivated.", false, "Na+ channels recover from inactivation; persistent K+ conductance also contributes to the relative refractory period."], ["An action potential propagates because local current from an active region helps bring an adjacent region of membrane to threshold.", true, "Ganong describes local circuit currents as the basis of propagation."], ["Unlike an electrotonic potential, a normal action potential does not progressively decay in amplitude as it travels along a healthy axon.", true, "The action potential is regenerated along the axon."], ["Myelinated axons conduct impulses by regenerating the action potential at successive nodes of Ranvier.", true, "This is saltatory conduction."], ["Saltatory conduction means that the action potential physically jumps through the myelin itself without any local current flow.", false, "Local current spreads through the internodal region; the action potential is regenerated at the nodes."]]], ["All-or-none & electrotonic potentials", [["Large-diameter fibers generally conduct faster than smaller fibers of comparable type.", true, "Ganong relates conduction velocity directly to fiber diameter."], ["Aα fibers are among the fastest mammalian fibers and are associated with proprioception and somatic motor function.", true, "The table lists Aα fibers for these functions and gives the highest conduction velocities."], ["Aβ fibers are principally associated with pain and temperature, whereas Aδ fibers carry touch and pressure.", false, "Aβ fibers are associated with touch and pressure; Aδ fibers with pain and temperature."], ["Aγ fibers provide motor innervation to muscle spindles.", true, "Ganong's table lists this function for Aγ fibers."], ["B fibers are unmyelinated postganglionic sympathetic fibers.", false, "B fibers are myelinated preganglionic autonomic fibers; C fibers include postganglionic sympathetic fibers."]]], ["Refractory periods", [["C fibers conduct more rapidly than Aδ fibers because their lack of myelin reduces electrical resistance.", false, "C fibers are unmyelinated and have much slower conduction velocities than Aδ fibers."], ["Group III sensory fibers correspond approximately to Aδ fibers.", true, "Ganong's numerical classification associates group III with Aδ fibers."], ["Group IV sensory fibers are myelinated fibers that correspond to the fastest proprioceptive afferents.", false, "Group IV corresponds to unmyelinated C fibers."], ["Fast anterograde axonal transport is substantially faster than slow anterograde transport.", true, "Ganong gives about 400 mm/day for fast transport versus about 0.5–10 mm/day for slow transport."], ["Retrograde transport moves materials from the soma toward the nerve terminal.", false, "Retrograde transport moves from the nerve ending toward the cell body."]]], ["Conduction of action potentials", [["Kinesin is associated with anterograde transport, whereas dynein is associated with retrograde transport.", true, "The axonal transport figure associates these motor proteins with those directions."], ["Axonal transport is confined to proteins synthesized inside the axon itself.", false, "Most protein synthesis occurs primarily in the soma, and axonal transport carries proteins and other materials along the axon."], ["Microglia are described as immune-related cells of the CNS.", true, "Ganong describes microglia as part of the CNS immune system."], ["Astrocytes are the principal cells responsible for forming myelin around CNS axons.", false, "Oligodendrocytes form CNS myelin."], ["Astrocytic processes can contact both capillaries and neurons.", true, "The figure and text describe astrocyte end-feet/processes contacting capillaries and neuronal elements."]]], ["Saltatory conduction", [["An oligodendrocyte normally forms myelin around only one axon segment, in the same way as a Schwann cell.", false, "Oligodendrocytes can extend processes to myelinate multiple axons; Schwann cells form individual myelin segments."], ["Schwann cells provide myelin in the peripheral nervous system.", true, "This is stated in Ganong."], ["Loss of myelin can impair conduction because the insulating properties needed for efficient current flow are reduced.", true, "Demyelination causes leakage of current and impaired conduction."], ["Multiple sclerosis is presented as an autoimmune demyelinating disease of the CNS.", true, "Ganong's clinical box describes MS as an autoimmune disease affecting CNS myelin."], ["Guillain-Barré syndrome is primarily a disorder of oligodendrocyte myelin in the CNS.", false, "Ganong associates Guillain-Barré syndrome with peripheral demyelination."]]], ["Mammalian nerve-fiber types", [["Local anesthetics enhance nerve conduction by increasing the opening probability of voltage-gated Na+ channels.", false, "Local anesthetics block voltage-gated Na+ channels and reduce excitability/conduction."], ["The smallest unmyelinated nociceptive fibers are among the most sensitive to local anesthetic blockade.", true, "Ganong states that unmyelinated C fibers are most sensitive, followed by sequentially larger fibers."], ["Motor nerve fibers are generally more resistant to local anesthetic blockade than small nociceptive fibers.", true, "The clinical box states that larger motor fibers are more resistant."], ["Neurotrophins are involved only in neuronal signaling and have no role in neuronal survival or growth.", false, "Ganong describes neurotrophins as necessary for neuronal survival and growth."], ["NGF is listed with TrkA, whereas BDNF is listed with TrkB.", true, "This is shown in the neurotrophin table."]]], ["Sensory-fiber classification", [["NT-3 is associated with TrkC and can also act through TrkB.", true, "Ganong's table lists TrkC and TrkB for NT-3."], ["The p75 neurotrophin receptor invariably produces survival and growth whenever it is activated.", false, "Ganong notes that p75 can produce effects opposite to usual growth-promoting actions and can promote apoptosis."], ["Peripheral axonal regeneration is generally more favorable than regeneration after CNS injury.", true, "Ganong explains that the peripheral environment is more supportive of regeneration."], ["After peripheral nerve injury, the distal axon remains fully functional while only the proximal stump changes.", false, "The distal axon degenerates; regeneration involves growth from the proximal stump."], ["Schwann cells can provide growth-promoting signals that help guide regenerating peripheral axons.", true, "This mechanism is described in the axonal-regeneration clinical box."]]], ["Axonal transport", [["CNS injury can create an environment less favorable for axonal regeneration, including astrocytic proliferation and inhibitory factors.", true, "Ganong describes these changes after CNS injury."], ["A moderate depolarization caused by hyperkalemia can bring the resting membrane potential closer to threshold.", true, "This is the physiological basis described in the hyperkalemia section."], ["A rise in extracellular K+ invariably increases excitability without any possibility of conduction failure.", false, "Severe hyperkalemia can impair excitability and conduction."], ["The Na+/K+ ATPase directly produces the millisecond-scale rising phase of each action potential.", false, "The rapid action-potential upstroke is produced by voltage-gated Na+ channels; the pump maintains ion gradients."], ["The Na+/K+ ATPase helps prevent gradual dissipation of Na+ and K+ concentration gradients over time.", true, "Ganong explains that the pump prevents the gradients from dissipating."]]], ["Glia", [["At rest, K+ leakage contributes importantly to the negative resting membrane potential.", true, "Greater resting K+ permeability is a major determinant of the resting potential."], ["The membrane potential of a resting neuron is normally around +70 mV.", false, "Ganong gives a resting membrane potential of about −70 mV."], ["The initial segment contains a high concentration of voltage-gated Na+ channels and is important for action-potential initiation.", true, "The chapter notes high Na+ channel density in the initial segment."], ["Nodes of Ranvier contain fewer voltage-gated Na+ channels than the soma.", false, "Na+ channels are highly concentrated at nodes; the chapter gives lower densities in the cell body than in the initial segment/nodes."], ["Myelin allows depolarization to travel rapidly from one node to the next while the action potential is regenerated at the nodes.", true, "This describes saltatory conduction."]]], ["Myelin-forming cells", [["The action potential is normally conducted in only one direction because the membrane behind the wave is refractory.", true, "The refractory state behind the action potential prevents immediate re-excitation."], ["A stronger-than-threshold stimulus normally increases the amplitude of an individual action potential in an all-or-none fiber.", false, "Action-potential amplitude is not graded with stimulus strength once threshold is reached."], ["The firing level and resting membrane potential refer to exactly the same membrane voltage.", false, "The firing level/threshold is more positive than the resting membrane potential."], ["A depolarizing stimulus that remains below threshold can still produce an electrotonic response.", true, "Subthreshold stimuli produce local/electrotonic potentials."], ["C fibers are the largest and fastest fibers listed in Ganong's mammalian fiber table.", false, "C fibers are among the smallest and slowest, and are unmyelinated."]]], ["Local anesthetics", [["Aβ fibers conduct faster than Aδ fibers.", true, "Ganong's table gives higher conduction velocities for Aβ fibers than Aδ fibers."], ["B fibers conduct more rapidly than C fibers because B fibers are myelinated.", true, "B fibers are myelinated and have higher conduction velocities than unmyelinated C fibers."], ["Retrograde axonal transport can return material taken up at nerve endings toward the cell body.", true, "Ganong describes this function of retrograde transport."], ["Slow anterograde transport occurs at approximately 400 mm/day.", false, "About 400 mm/day is given for fast anterograde transport; slow transport is about 0.5–10 mm/day."], ["Microglia increase in number and become activated in several CNS injuries and diseases.", true, "Ganong describes microglial activation/proliferation in injury and disease."]]], ["Neurotrophins", [["Astrocytes are characterized in the CNS by star-like shapes and processes that contact capillaries and neurons.", true, "This description appears in the glia section."], ["Schwann cells form myelin around CNS axons, whereas oligodendrocytes form myelin around peripheral axons.", false, "The relationship is the reverse: oligodendrocytes in CNS, Schwann cells in PNS."], ["A local anesthetic can block action-potential conduction without necessarily damaging the nerve itself.", true, "The clinical box describes local/regional anesthesia as temporary interruption of neural traffic."], ["Ester- and amide-linked compounds are the two major categories of local anesthetics described.", true, "Ganong gives these two categories."], ["NGF is described as being transported retrogradely from nerve endings toward the cell body.", true, "Ganong describes NGF uptake at nerve endings followed by retrograde transport."]]], ["Demyelination & regeneration", [["Neurotrophins act through high-affinity tyrosine kinase-associated Trk receptors.", true, "The text states that established neurotrophins bind high-affinity Trk receptors."], ["A p75 receptor activated in the absence of a neurotrophin can never promote apoptosis.", false, "Ganong states that activation of p75 in the absence of neurotrophin can promote apoptosis."], ["Peripheral nerve regeneration is aided by growth-promoting signals associated with Schwann cells.", true, "This is described in the axonal-regeneration section."], ["Central nervous system axons generally regenerate more readily than peripheral axons after injury.", false, "Ganong states that recovery of peripheral nerves is generally more favorable than that of central nerves."], ["The membrane potential of a neuron at rest is determined exclusively by the Na+ equilibrium potential.", false, "Ganong explains that the resting membrane potential is influenced predominantly by K+ because resting permeability to K+ is much greater than to Na+."]]]];
+
+function shuffle(arr){
+  arr=[...arr];
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function shuffleBalanced(groups){
+  const out=[];
+  let lastAnswerByPos=[null,null,null,null,null];
+
+  groups.forEach(q=>{
+    const statements=q[1].map(s=>[...s]);
+    let best=null,bestPenalty=Infinity;
+
+    for(let attempt=0;attempt<80;attempt++){
+      const candidate=shuffle(statements.map(s=>[...s]));
+      let penalty=0;
+
+      candidate.forEach((s,i)=>{
+        if(lastAnswerByPos[i]!==null && lastAnswerByPos[i]===s[1]) penalty+=6;
+      });
+
+      for(let i=1;i<candidate.length;i++){
+        if(candidate[i][1]===candidate[i-1][1]) penalty+=1;
+      }
+
+      if(penalty<bestPenalty){bestPenalty=penalty;best=candidate;}
+      if(penalty===0)break;
+    }
+
+    best.forEach((s,i)=>lastAnswerByPos[i]=s[1]);
+    out.push([q[0],best]);
+  });
+  return out;
+}
+
+const randomizedQuestions=shuffleBalanced(shuffle(questions));
+const letters=["A","B","C","D","E"];
+let score=0,answered=0;
+const test=document.getElementById("test");
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+randomizedQuestions.forEach((q,qi)=>{
+  const card=document.createElement("div");
+  card.className="card";
+  let html=`<h2>Q${qi+1}. ${escapeHtml(q[0])}</h2>`;
+
+  q[1].forEach((s,si)=>{
+    html+=`<div class="statement" id="s${qi}_${si}">
+      <p><b>${letters[si]})</b> ${escapeHtml(s[0])}</p>
+      <button onclick="answer(${qi},${si},true)">TRUE</button>
+      <button onclick="answer(${qi},${si},false)">FALSE</button>
+      <div class="explanation" id="e${qi}_${si}" style="display:none"></div>
+    </div>`;
+  });
+
+  card.innerHTML=html;
+  test.appendChild(card);
+});
+
+function answer(qi,si,value){
+  const s=randomizedQuestions[qi][1][si];
+  const box=document.getElementById(`s${qi}_${si}`);
+  box.querySelectorAll("button").forEach(b=>b.disabled=true);
+
+  const correct=value===s[1];
+  score+=correct?1:-1;
+  answered++;
+
+  const e=document.getElementById(`e${qi}_${si}`);
+  e.style.display="block";
+  e.innerHTML=correct
+    ? `<span class="correct">Correct: +1</span> — ${s[1]?"TRUE":"FALSE"}. ${escapeHtml(s[2])}`
+    : `<span class="wrong">Wrong: −1</span> — Correct answer: ${s[1]?"TRUE":"FALSE"}. ${escapeHtml(s[2])}`;
+
+  document.getElementById("score").textContent=`Score: ${score} / 100`;
+  document.getElementById("answered").textContent=`Answered: ${answered} / 100`;
+
+  if(answered===100){
+    document.getElementById("final").innerHTML=
+      `<div class="card"><h2>FINAL SCORE: ${score} / 100</h2>
+      <p>Percentage: ${score}%</p>
+      <p class="small">100 deliberately reworded TRUE/FALSE statements based on the supplied Ganong Chapter 4 pages. The section and statement positions were randomized for this attempt.</p>
+      <button class="reset" onclick="location.reload()">Retake — New Random Order</button></div>`;
+    window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+  }
+}
+</script>
+</body>
+</html>
