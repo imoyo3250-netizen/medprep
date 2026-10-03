@@ -1,257 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedStudy Hub</title>
 
-<title>MedStudy Hub</title>
+    <style>
+        body{
+            margin:0;
+            font-family:Arial,sans-serif;
+            background:#07111f;
+            color:white;
+            text-align:center;
+        }
 
-<style>
+        header{
+            padding:60px 20px;
+        }
 
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
+        h1{
+            font-size:48px;
+            margin-bottom:10px;
+        }
 
-body{
-    font-family:Arial, Helvetica, sans-serif;
-    background:#07111f;
-    color:#eaf2f8;
-    line-height:1.5;
-}
+        p{
+            color:#aebdcc;
+            font-size:18px;
+        }
 
-/* NAVBAR */
+        .subjects{
+            display:flex;
+            justify-content:center;
+            gap:20px;
+            flex-wrap:wrap;
+            padding:20px;
+        }
 
-nav{
-    width:100%;
-    padding:18px 7%;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:#091522;
-    border-bottom:1px solid #1c3145;
-    position:sticky;
-    top:0;
-    z-index:100;
-}
+        .card{
+            width:250px;
+            padding:30px;
+            background:#0d1d2d;
+            border:1px solid #294155;
+            border-radius:15px;
+        }
 
-.logo{
-    font-size:24px;
-    font-weight:bold;
-    color:#ffffff;
-}
+        .card h2{
+            margin-top:0;
+        }
 
-.logo span{
-    color:#4cc9f0;
-}
+        .button{
+            display:inline-block;
+            margin-top:15px;
+            padding:12px 20px;
+            background:#2388b8;
+            color:white;
+            text-decoration:none;
+            border-radius:8px;
+        }
+    </style>
+</head>
 
-.nav-links{
-    display:flex;
-    gap:25px;
-}
+<body>
 
-.nav-links a{
-    color:#b9c8d6;
-    text-decoration:none;
-    font-size:15px;
-}
+<header>
+    <h1>🧠 MedStudy Hub</h1>
+    <p>Master Medicine One Question at a Time</p>
+</header>
 
-.nav-links a:hover{
-    color:#4cc9f0;
-}
+<div class="subjects">
 
-/* HERO */
+    <div class="card">
+        <h2>🫀 Physiology</h2>
+        <p>Ganong-based question bank</p>
+        <a href="#physiology" class="button">View Tests</a>
+    </div>
 
-.hero{
-    max-width:1200px;
-    margin:auto;
-    padding:80px 7% 65px;
-}
+    <div class="card">
+        <h2>🦴 Anatomy</h2>
+        <p>Anatomy question bank</p>
+        <a href="#anatomy" class="button">View Tests</a>
+    </div>
 
-.hero-content{
-    max-width:750px;
-}
+    <div class="card">
+        <h2>🧬 Embryology</h2>
+        <p>Embryology question bank</p>
+        <a href="#embryology" class="button">View Tests</a>
+    </div>
 
-.badge{
-    display:inline-block;
-    padding:7px 13px;
-    border-radius:20px;
-    background:#10283a;
-    color:#65d6f5;
-    border:1px solid #21475e;
-    font-size:13px;
-    margin-bottom:20px;
-}
+</div>
 
-.hero h1{
-    font-size:clamp(42px,7vw,72px);
-    line-height:1.05;
-    margin-bottom:20px;
-}
-
-.hero h1 span{
-    color:#4cc9f0;
-}
-
-.hero p{
-    color:#aebdcc;
-    font-size:18px;
-    max-width:650px;
-}
-
-.hero-buttons{
-    margin-top:30px;
-}
-
-.primary-btn{
-    display:inline-block;
-    background:#2388b8;
-    color:white;
-    text-decoration:none;
-    padding:13px 22px;
-    border-radius:9px;
-    font-weight:bold;
-}
-
-.primary-btn:hover{
-    background:#2fa9df;
-}
-
-/* STATS */
-
-.stats{
-    max-width:1200px;
-    margin:0 auto 55px;
-    padding:0 7%;
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:15px;
-}
-
-.stat{
-    background:#0b1b2b;
-    border:1px solid #1b3449;
-    border-radius:12px;
-    padding:20px;
-}
-
-.stat strong{
-    display:block;
-    font-size:27px;
-    color:#ffffff;
-}
-
-.stat span{
-    color:#8fa4b7;
-    font-size:14px;
-}
-
-/* MAIN */
-
-main{
-    max-width:1200px;
-    margin:auto;
-    padding:0 7% 70px;
-}
-
-.section-title{
-    margin-bottom:25px;
-}
-
-.section-title h2{
-    font-size:32px;
-    margin-bottom:5px;
-}
-
-.section-title p{
-    color:#8fa4b7;
-}
-
-/* SEARCH */
-
-.search-box{
-    width:100%;
-    margin-bottom:35px;
-}
-
-.search-box input{
-    width:100%;
-    padding:15px 18px;
-    border-radius:10px;
-    border:1px solid #294155;
-    background:#0b1b2b;
-    color:white;
-    font-size:16px;
-    outline:none;
-}
-
-.search-box input:focus{
-    border-color:#4cc9f0;
-}
-
-/* SUBJECT */
-
-.subject{
-    margin-bottom:55px;
-}
-
-.subject-header{
-    display:flex;
-    align-items:center;
-    gap:13px;
-    margin-bottom:18px;
-}
-
-.subject-icon{
-    width:42px;
-    height:42px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:10px;
-    background:#10283a;
-    font-size:21px;
-}
-
-.subject-header h3{
-    font-size:25px;
-}
-
-.subject-header p{
-    color:#8195a8;
-    font-size:13px;
-}
-
-/* TEST GRID */
-
-.test-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:18px;
-}
-
-.test-card{
-    background:#0b1b2b;
-    border:1px solid #1b3449;
-    border-radius:13px;
-    padding:22px;
-    transition:0.2s;
-}
-
-.test-card:hover{
-    transform:translateY(-3px);
-    border-color:#37637e;
-}
-
-.test-number{
-    font-size:12px;
-    color:#4cc9f0;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    margin-bottom:8px;
-}
-
-.test-card h4{
-    font-size:19px;
-    margin-bottom:8
+</body>
+</html>
