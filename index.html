@@ -1,91 +1,219 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>MedStudy Hub</title>
 
     <style>
-        body{
-            margin:0;
-            font-family:Arial,sans-serif;
-            background:#07111f;
-            color:white;
-            text-align:center;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        header{
-            padding:60px 20px;
+        html {
+            scroll-behavior: smooth;
         }
 
-        h1{
-            font-size:48px;
-            margin-bottom:10px;
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #071522;
+            color: #f4f7fb;
+            min-height: 100vh;
         }
 
-        p{
-            color:#aebdcc;
-            font-size:18px;
+        a {
+            text-decoration: none;
+            color: inherit;
         }
 
-        .subjects{
-            display:flex;
-            justify-content:center;
-            gap:20px;
-            flex-wrap:wrap;
-            padding:20px;
+        button {
+            font-family: inherit;
         }
 
-        .card{
-            width:250px;
-            padding:30px;
-            background:#0d1d2d;
-            border:1px solid #294155;
-            border-radius:15px;
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            width: 100%;
+            border-bottom: 1px solid #19344a;
+            background: #081827;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .card h2{
-            margin-top:0;
+        .nav {
+            max-width: 1200px;
+            margin: auto;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
         }
 
-        .button{
-            display:inline-block;
-            margin-top:15px;
-            padding:12px 20px;
-            background:#2388b8;
-            color:white;
-            text-decoration:none;
-            border-radius:8px;
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            white-space: nowrap;
         }
-    </style>
-</head>
 
-<body>
+        .logo span {
+            color: #19bfe8;
+        }
 
-<header>
-    <h1>🧠 MedStudy Hub</h1>
-    <p>Master Medicine One Question at a Time</p>
-</header>
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
 
-<div class="subjects">
+        .nav-links button {
+            background: none;
+            border: none;
+            color: #b9c9d8;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 8px 2px;
+        }
 
-    <div class="card">
-        <h2>🫀 Physiology</h2>
-        <p>Ganong-based question bank</p>
-        <a href="#physiology" class="button">View Tests</a>
-    </div>
+        .nav-links button:hover {
+            color: #20c7ed;
+        }
 
-    <div class="card">
-        <h2>🦴 Anatomy</h2>
-        <p>Anatomy question bank</p>
-        <a href="#anatomy" class="button">View Tests</a>
-    </div>
+        /* =========================
+           MAIN
+        ========================= */
 
-    <div class="card">
-        <h2>🧬 Embryology</h2>
-        <p>Embryology question bank</p>
-        <a href="#embryology" class="button">View Tests</a>
-    </div>
+        main {
+            max-width: 1200px;
+            margin: auto;
+            padding: 55px 25px 30px;
+        }
 
-</div>
+        .page {
+            display: none;
+        }
 
-</body>
-</html>
+        .page.active {
+            display: block;
+        }
+
+        /* =========================
+           HOME
+        ========================= */
+
+        .hero {
+            text-align: center;
+            max-width: 850px;
+            margin: 20px auto 55px;
+        }
+
+        .badge {
+            display: inline-block;
+            border: 1px solid #1b91b8;
+            color: #23c5ed;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 22px;
+            background: #0b2638;
+        }
+
+        .hero h1 {
+            font-size: clamp(38px, 7vw, 68px);
+            line-height: 1.05;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: #20c7ed;
+        }
+
+        .hero p {
+            color: #aebdca;
+            font-size: 17px;
+            line-height: 1.7;
+            max-width: 720px;
+            margin: auto;
+        }
+
+        /* =========================
+           SUBJECT CARDS
+        ========================= */
+
+        .subjects {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .subject-card {
+            background: #0b1d2d;
+            border: 1px solid #1b3b52;
+            border-radius: 18px;
+            padding: 30px 22px;
+            min-height: 260px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: 0.2s ease;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-4px);
+            border-color: #20bfe8;
+            background: #0d2234;
+        }
+
+        .subject-icon {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+
+        .subject-card h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .subject-card p {
+            color: #9fb1bf;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .view-btn {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            background: #119bd0;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .view-btn:hover {
+            background: #16b8ed;
+            transform: translateY(-1px);
+        }
+
+        /* =========================
+           SUBJECT PAGES
+        ========================= */
+
+        .subject-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+       
