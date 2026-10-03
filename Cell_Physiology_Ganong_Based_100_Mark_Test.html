@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cell Physiology Test - Ganong Based</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f6f8;color:#111;margin:0;padding:15px}
+.container{max-width:800px;margin:auto}
+h1{text-align:center}
+.card{background:white;padding:16px;margin:15px 0;border-radius:12px;box-shadow:0 2px 8px #ccc}
+button{padding:9px 16px;margin:5px;border-radius:8px;border:1px solid #555;background:white;font-size:16px}
+button:hover{background:#eee}
+button:disabled{opacity:.5}
+.correct{color:green;font-weight:bold}
+.wrong{color:red;font-weight:bold}
+.explanation{margin-top:8px;padding:8px;background:#f0f0f0}
+#bar{position:sticky;top:0;background:white;padding:12px;border-radius:10px;z-index:5}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Cell Physiology Test</h1>
+<div id="bar">
+<b id="score">Score: 0 / 100</b> |
+<span id="answered">Answered: 0 / 100</span>
+<br>
+<small>20 questions × 5 statements = 100 marks. Correct = +1. Wrong = −1.</small>
+</div>
+<div id="test"></div>
+<div id="final"></div>
+</div>
+
+<script>
+const questions = [
+
+["Resting membrane potential",[
+["The resting membrane potential of many excitable cells is determined mainly by the selective permeability of the membrane to K+.",true,"At rest, K+ permeability is high relative to Na+ permeability, so the K+ equilibrium tendency strongly influences Vm."],
+["If a membrane were permeable only to K+, its membrane potential would equal the Na+ equilibrium potential.",false,"It would approach the K+ equilibrium potential."],
+["Increasing extracellular K+ concentration generally makes the resting membrane potential less negative.",true,"The reduced K+ concentration gradient decreases the tendency for K+ to leave the cell."],
+["The Na+-K+ pump is completely irrelevant to maintenance of ionic gradients.",false,"It maintains Na+ and K+ gradients that are essential for long-term membrane function."],
+["The resting membrane potential is always exactly equal to the K+ equilibrium potential.",false,"Real cell membranes have permeability to several ions, so Vm is not generally identical to EK."]
+]],
+
+["Nernst and equilibrium potentials",[
+["The Nernst equation predicts the equilibrium potential for an ion when its electrochemical driving force is zero.",true,"At equilibrium, the electrical and chemical driving forces balance."],
+["Changing the concentration ratio of an ion across a membrane changes its equilibrium potential.",true,"The equilibrium potential depends on the concentration ratio."],
+["For a cation, reversing the concentration gradient reverses the sign of its equilibrium potential.",true,"The direction of the chemical gradient determines the polarity required for equilibrium."],
+["The Nernst potential is independent of temperature.",false,"Temperature is included in the Nernst relationship."],
+["The Nernst equation by itself gives the complete membrane potential when several ions are permeable.",false,"With multiple permeant ions, membrane potential depends on relative permeabilities as well as concentrations."]
+]],
+
+["Na+-K+ pump",[
+["The Na+-K+ ATPase moves Na+ out of the cell and K+ into the cell.",true,"This transport requires ATP."],
+["The Na+-K+ pump moves three Na+ ions outward for every two K+ ions moved inward.",true,"This makes the pump electrogenic."],
+["The pump directly establishes the membrane's selective permeability to K+.",false,"Selective permeability is primarily determined by membrane ion channels; the pump maintains gradients."],
+["Inhibition of the Na+-K+ pump eventually disrupts cellular Na+ and K+ gradients.",true,"The gradients gradually dissipate without continued active transport."],
+["The Na+-K+ pump is a form of facilitated diffusion.",false,"It is primary active transport because it uses ATP directly."]
+]],
+
+["Membrane transport",[
+["Facilitated diffusion can occur down an electrochemical gradient without direct ATP use by the transporter.",true,"The driving force is the existing electrochemical gradient."],
+["A carrier involved in facilitated diffusion can show saturation.",true,"There is a finite number of carrier molecules and binding sites."],
+["Simple lipid diffusion is generally more important for Na+ than for steroid hormones.",false,"Steroid hormones are lipid soluble and cross membranes readily; Na+ does not."],
+["Primary active transport directly uses cellular energy to move substances against their electrochemical gradients.",true,"ATP hydrolysis is a common energy source."],
+["Secondary active transport obtains its energy directly from ATP hydrolysis by the cotransporter itself.",false,"It uses the energy stored in an ion electrochemical gradient, often established by primary active transport."]
+]],
+
+["Osmosis and tonicity",[
+["Water moves across a selectively permeable membrane toward the side with greater effective osmotic concentration.",true,"Water movement tends to reduce the osmotic gradient."],
+["An increase in extracellular effective osmolarity can cause a cell to lose water.",true,"Water moves out toward the hypertonic extracellular environment."],
+["Urea contributes to osmolarity but is always an effective osmole across every cell membrane.",false,"An effective osmole must exert a sustained osmotic effect; permeability matters."],
+["Cell volume is affected by the amount of osmotically active solute inside and outside the cell.",true,"Osmotically active particles influence water distribution."],
+["A solution can have the same osmolarity as plasma but still be isotonic in every situation.",false,"Tonicity depends on effective osmoles and membrane permeability, not osmolarity alone."]
+]],
+
+["Membrane proteins and receptors",[
+["Ion channels provide pathways through which ions can cross the lipid bilayer.",true,"The hydrophobic lipid core strongly restricts free ion movement."],
+["Voltage-gated channels respond primarily to changes in membrane potential.",true,"Their opening probability changes with voltage."],
+["Ligand-gated channels can change their conductance when a chemical messenger binds.",true,"Binding alters channel conformation."],
+["G-protein-coupled receptors must always be ion channels themselves.",false,"They are receptors that signal through G proteins and downstream effectors."],
+["Receptor-mediated signaling can amplify a small extracellular signal inside a cell.",true,"Enzymes and second-messenger cascades can produce amplification."]
+]],
+
+["Second messengers",[
+["Cyclic AMP can act as an intracellular second messenger.",true,"It mediates effects of several hormone and neurotransmitter receptors."],
+["Adenylyl cyclase catalyzes formation of cyclic AMP from ATP.",true,"This is a major cAMP-generating pathway."],
+["Phospholipase C can generate IP3 and DAG from membrane phospholipids.",true,"These are important second messengers in many signaling pathways."],
+["IP3 promotes release of Ca2+ from the endoplasmic reticulum.",true,"IP3 acts on IP3-gated Ca2+ channels in the ER membrane."],
+["DAG is freely soluble in the cytosol and is the principal messenger that releases Ca2+ from the ER.",false,"DAG remains associated with membranes and helps activate protein kinase C; IP3 promotes ER Ca2+ release."]
+]],
+
+["Cell signaling and G proteins",[
+["Gs stimulation generally increases adenylyl cyclase activity.",true,"Gs activates adenylyl cyclase through its alpha subunit."],
+["Gi signaling generally decreases adenylyl cyclase activity.",true,"Gi can inhibit adenylyl cyclase."],
+["Gq signaling is associated with activation of phospholipase C.",true,"This promotes IP3/DAG signaling."],
+["A G-protein alpha subunit remains permanently bound to GTP after receptor activation.",false,"GTP is hydrolyzed to GDP, terminating the active state."],
+["The same second messenger can produce different effects in different cells.",true,"Responses depend on the receptors, enzymes, channels and target proteins expressed by the cell."]
+]],
+
+["Calcium as a cellular signal",[
+["Cytosolic Ca2+ concentration is normally kept far below extracellular Ca2+ concentration.",true,"This steep gradient permits Ca2+ to function as a signal."],
+["Calcium can activate intracellular proteins after entering the cytosol.",true,"Ca2+ binds regulatory proteins and activates signaling pathways."],
+["Calmodulin is an important intracellular calcium-binding regulatory protein.",true,"Ca2+-calmodulin regulates several enzymes and cellular processes."],
+["The sarcoplasmic reticulum is irrelevant to intracellular Ca2+ regulation.",false,"It is a major intracellular Ca2+ store in muscle."],
+["Prolonged elevation of cytosolic Ca2+ can be harmful to cells.",true,"Excess Ca2+ can activate damaging enzymes and disrupt cell function."]
+]],
+
+["Cell junctions and epithelial transport",[
+["Tight junctions can restrict movement of substances through the paracellular pathway.",true,"They regulate permeability between adjacent epithelial cells."],
+["Gap junctions permit direct intercellular communication through channels connecting neighboring cells.",true,"Small ions and molecules can pass between cells."],
+["Desmosomes primarily allow rapid electrical communication between cells.",false,"Gap junctions provide electrical/metabolic coupling; desmosomes provide mechanical adhesion."],
+["Epithelial polarity means different membrane domains can have different transport proteins.",true,"Apical and basolateral membranes often have distinct functions."],
+["The Na+-K+ pump on the basolateral membrane can help drive secondary active transport across epithelia.",true,"It maintains the Na+ gradient used by many cotransporters."]
+]],
+
+["Intracellular pH",[
+["Cells regulate intracellular pH despite continuous production of acids.",true,"Buffering and membrane transport systems contribute to pH regulation."],
+["Bicarbonate can participate in cellular acid-base regulation.",true,"The bicarbonate/CO2 system is an important buffer system."],
+["Ion transporters can contribute to regulation of intracellular pH.",true,"Examples include Na+/H+ exchange and bicarbonate transport systems."],
+["Intracellular pH has no effect on enzyme activity.",false,"Many enzymes are sensitive to pH."],
+["Carbon dioxide can readily cross many cell membranes because it is lipid soluble.",true,"CO2 diffusion is important in acid-base physiology."]
+]],
+
+["Cellular excitability",[
+["Excitable cells include neurons and muscle cells.",true,"Their membranes can generate electrical signals."],
+["An action potential results from rapid changes in membrane ion permeability.",true,"Voltage-dependent channels produce characteristic permeability changes."],
+["The threshold potential is the membrane potential at which an action potential becomes inevitable under the appropriate conditions.",true,"Beyond threshold, regenerative channel activation produces the spike."],
+["Action potentials normally decrease progressively in amplitude as they travel along an axon.",false,"They are regenerated along the axon and normally do not decrement like passive potentials."],
+["The refractory period helps limit the maximum frequency of action potentials.",true,"During refractory periods, another action potential is difficult or impossible to initiate."]
+]],
+
+["Voltage-gated Na+ channels",[
+["Voltage-gated Na+ channels have activation and inactivation processes.",true,"Both contribute to the time course of Na+ current."],
+["Na+ channel inactivation contributes to termination of the rapid Na+ current during an action potential.",true,"The channel enters an inactivated state after activation."],
+["A voltage-gated Na+ channel can reopen immediately during its absolute refractory period.",false,"During absolute refractoriness, many Na+ channels are inactivated."],
+["The Na+ equilibrium potential favors Na+ entry when the membrane potential is well below ENa.",true,"The electrochemical driving force is inward."],
+["Tetrodotoxin is known to block certain voltage-gated Na+ channels.",true,"It prevents Na+ current in sensitive excitable tissues."]
+]],
+
+["Action potential phases",[
+["Depolarization of a typical neuronal action potential is associated with increased Na+ permeability.",true,"Opening of voltage-gated Na+ channels produces inward Na+ current."],
+["Repolarization is promoted by reduced Na+ permeability and increased K+ permeability.",true,"K+ efflux contributes strongly to repolarization."],
+["Afterhyperpolarization can result from continued K+ conductance after the main repolarization phase.",true,"K+ channels may remain open briefly."],
+["The rising phase of a typical neuronal action potential is primarily caused by Cl− entering the cell.",false,"Rapid Na+ entry is the major cause in typical neurons."],
+["The action potential is an example of a purely passive electrical response.",false,"It is an active regenerative response involving voltage-gated channels."]
+]],
+
+["Resting conductance and membrane resistance",[
+["Opening more ion channels generally increases membrane conductance to that ion.",true,"Conductance is related to the number and properties of open channels."],
+["Membrane resistance and membrane conductance are inversely related.",true,"Greater conductance corresponds to lower resistance."],
+["Increasing membrane conductance always makes the membrane potential more positive.",false,"The effect depends on which ion's conductance increases and its equilibrium potential."],
+["A current can change membrane potential when it alters the charge distribution across the membrane.",true,"Membrane potential reflects charge separation across the membrane."],
+["The membrane behaves partly like a capacitor because charge can be separated across its insulating lipid core.",true,"The lipid bilayer separates conductive ionic solutions."]
+]],
+
+["Cellular volume regulation",[
+["Cells can use ion transport to regulate their volume.",true,"Transport of solutes affects intracellular osmotic content and therefore water."],
+["Regulatory volume decrease commonly involves loss of intracellular osmolytes followed by water.",true,"This reduces cell volume after swelling."],
+["Regulatory volume increase can follow cell shrinkage.",true,"Cells can accumulate ions and organic osmolytes to restore volume."],
+["Cell volume is completely independent of extracellular osmolarity.",false,"Extracellular osmolarity strongly influences water movement."],
+["Persistent severe swelling can impair cell function and damage membranes.",true,"Extreme volume changes can disrupt cellular structures."]
+]],
+
+["Lysosomes and intracellular digestion",[
+["Lysosomes contain enzymes involved in degradation of cellular material.",true,"They participate in intracellular digestion."],
+["Lysosomal enzymes function optimally in an acidic environment.",true,"The lysosomal lumen is maintained at a low pH."],
+["Autophagy can deliver damaged cellular components to lysosomes for degradation.",true,"It is an important cellular quality-control process."],
+["Lysosomes synthesize all cytosolic proteins.",false,"Most cytosolic proteins are synthesized on free ribosomes."],
+["Lysosomal dysfunction can lead to accumulation of undegraded cellular material.",true,"This is characteristic of lysosomal storage disorders."]
+]],
+
+["Mitochondria and ATP",[
+["Mitochondria are major sites of aerobic ATP production.",true,"Oxidative phosphorylation occurs in mitochondria."],
+["The inner mitochondrial membrane contains the electron transport chain.",true,"The respiratory complexes are located in the inner membrane."],
+["The mitochondrial proton gradient is used by ATP synthase to generate ATP.",true,"Proton flow through ATP synthase drives phosphorylation of ADP."],
+["Oxygen is the final electron acceptor in the mitochondrial electron transport chain.",true,"It is reduced to water at the end of the chain."],
+["ATP production by oxidative phosphorylation does not depend on an electrochemical proton gradient.",false,"The proton-motive force is central to oxidative phosphorylation."]
+]],
+
+["Apoptosis and cell death",[
+["Apoptosis is a regulated form of cell death.",true,"It involves an organized cellular program."],
+["Caspases are important enzymes in apoptosis.",true,"They participate in the proteolytic cascade of apoptosis."],
+["Apoptosis typically causes the same degree of surrounding inflammation as uncontrolled necrotic cell injury.",false,"Apoptotic cell removal generally causes much less inflammation."],
+["Mitochondria can participate in intrinsic apoptotic signaling.",true,"Mitochondrial pathways can promote caspase activation."],
+["Apoptosis is always caused by bacterial infection.",false,"It can occur during normal development and in response to many forms of cellular stress."]
+]],
+
+["Integrated cell physiology",[
+["The electrochemical gradient of an ion combines its concentration gradient and electrical gradient.",true,"Both chemical and electrical forces influence ion movement."],
+["A change in extracellular ion concentration can alter both ion equilibrium potential and cellular excitability.",true,"Changing the gradient changes driving forces and can change membrane potential."],
+["Ion channels and pumps perform identical functions.",false,"Channels permit passive ion movement down electrochemical gradients; pumps use energy for active transport."],
+["Cell signaling can alter ion channel activity and therefore change membrane excitability.",true,"Receptors and second messengers can regulate channels."],
+["The properties of a cell membrane can be understood without considering its proteins.",false,"Channels, pumps, receptors and other membrane proteins are central to cell physiology."]
+]]
+];
+
+const letters=["A","B","C","D","E"];
+let score=0, answered=0;
+
+const test=document.getElementById("test");
+
+questions.forEach((q,qi)=>{
+  const card=document.createElement("div");
+  card.className="card";
+  let html=`<h2>Q${qi+1}. ${q[0]}</h2>`;
+  q[1].forEach((s,si)=>{
+    html+=`<div class="statement" id="s${qi}_${si}">
+      <p><b>${letters[si]})</b> ${s[0]}</p>
+      <button onclick="answer(${qi},${si},true)">TRUE</button>
+      <button onclick="answer(${qi},${si},false)">FALSE</button>
+      <div class="explanation" id="e${qi}_${si}" style="display:none"></div>
+    </div>`;
+  });
+  card.innerHTML=html;
+  test.appendChild(card);
+});
+
+function answer(qi,si,value){
+  const s=questions[qi][1][si];
+  const box=document.getElementById(`s${qi}_${si}`);
+  const buttons=box.querySelectorAll("button");
+  buttons.forEach(b=>b.disabled=true);
+
+  const correct=value===s[1];
+  score += correct ? 1 : -1;
+  answered++;
+
+  const e=document.getElementById(`e${qi}_${si}`);
+  e.style.display="block";
+  e.innerHTML=correct
+    ? `<span class="correct">Correct: +1</span> — ${s[1] ? "TRUE" : "FALSE"}. ${s[2]}`
+    : `<span class="wrong">Wrong: −1</span> — Correct answer: ${s[1] ? "TRUE" : "FALSE"}. ${s[2]}`;
+
+  document.getElementById("score").textContent=`Score: ${score} / 100`;
+  document.getElementById("answered").textContent=`Answered: ${answered} / 100`;
+
+  if(answered===100){
+    document.getElementById("final").innerHTML=
+      `<div class="card"><h2>FINAL SCORE: ${score} / 100</h2>
+      <p>Percentage: ${score}%</p>
+      <button onclick="location.reload()">Retake Test</button></div>`;
+  }
+}
+</script>
+</body>
+</html>
