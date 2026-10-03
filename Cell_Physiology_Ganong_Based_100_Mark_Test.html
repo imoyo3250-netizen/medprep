@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+9<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -191,57 +191,4 @@ const questions = [
 ["A change in extracellular ion concentration can alter both ion equilibrium potential and cellular excitability.",true,"Changing the gradient changes driving forces and can change membrane potential."],
 ["Ion channels and pumps perform identical functions.",false,"Channels permit passive ion movement down electrochemical gradients; pumps use energy for active transport."],
 ["Cell signaling can alter ion channel activity and therefore change membrane excitability.",true,"Receptors and second messengers can regulate channels."],
-["The properties of a cell membrane can be understood without considering its proteins.",false,"Channels, pumps, receptors and other membrane proteins are central to cell physiology."]
-]]
-];
 
-const letters=["A","B","C","D","E"];
-let score=0, answered=0;
-
-const test=document.getElementById("test");
-
-questions.forEach((q,qi)=>{
-  const card=document.createElement("div");
-  card.className="card";
-  let html=`<h2>Q${qi+1}. ${q[0]}</h2>`;
-  q[1].forEach((s,si)=>{
-    html+=`<div class="statement" id="s${qi}_${si}">
-      <p><b>${letters[si]})</b> ${s[0]}</p>
-      <button onclick="answer(${qi},${si},true)">TRUE</button>
-      <button onclick="answer(${qi},${si},false)">FALSE</button>
-      <div class="explanation" id="e${qi}_${si}" style="display:none"></div>
-    </div>`;
-  });
-  card.innerHTML=html;
-  test.appendChild(card);
-});
-
-function answer(qi,si,value){
-  const s=questions[qi][1][si];
-  const box=document.getElementById(`s${qi}_${si}`);
-  const buttons=box.querySelectorAll("button");
-  buttons.forEach(b=>b.disabled=true);
-
-  const correct=value===s[1];
-  score += correct ? 1 : -1;
-  answered++;
-
-  const e=document.getElementById(`e${qi}_${si}`);
-  e.style.display="block";
-  e.innerHTML=correct
-    ? `<span class="correct">Correct: +1</span> — ${s[1] ? "TRUE" : "FALSE"}. ${s[2]}`
-    : `<span class="wrong">Wrong: −1</span> — Correct answer: ${s[1] ? "TRUE" : "FALSE"}. ${s[2]}`;
-
-  document.getElementById("score").textContent=`Score: ${score} / 100`;
-  document.getElementById("answered").textContent=`Answered: ${answered} / 100`;
-
-  if(answered===100){
-    document.getElementById("final").innerHTML=
-      `<div class="card"><h2>FINAL SCORE: ${score} / 100</h2>
-      <p>Percentage: ${score}%</p>
-      <button onclick="location.reload()">Retake Test</button></div>`;
-  }
-}
-</script>
-</body>
-</html>
