@@ -1,68 +1,231 @@
-8<!DOCTYPE html>
-<html>
-Redesign my existing GitHub Pages website homepage (index.html) into a colourful, modern medical question-bank website.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-IMPORTANT:
-First inspect my repository and identify the existing quiz HTML files. DO NOT delete, rename, overwrite, or modify the existing quiz/test HTML files.
+<title>MedStudy Hub</title>
 
-I only want you to redesign the homepage/navigation so users can easily find the existing tests.
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
 
-WEBSITE NAME:
-"MedStudy Hub"
+:root{
+    --bg:#050817;
+    --bg2:#0b1028;
+    --text:#ffffff;
+    --muted:#aab3d0;
+    --border:rgba(255,255,255,.12);
 
-TAGLINE:
-"Practice. Test. Master Medicine."
+    --phys:#ff3157;
+    --phys2:#ff7547;
 
-DESIGN:
-Make it look like a real professional medical study platform, NOT a plain HTML website.
+    --anat:#00d69b;
+    --anat2:#00a8a8;
 
-Use:
-- Beautiful gradients
-- Colourful subject cards
-- Rounded corners
-- Modern typography
-- Soft shadows
-- Subtle animations
-- Hover effects
-- Medical icons/emojis
-- Responsive design for Android, iPhone, tablet and desktop
-- Clean professional spacing
-- Modern medical/academic aesthetic
+    --emb:#a743ff;
+    --emb2:#e25cff;
+}
 
-Use these subject colours:
-- 🧬 Embryology — purple/blue
-- 🦴 Anatomy — green/teal
-- 🫀 Physiology — red/orange
+html{
+    scroll-behavior:smooth;
+}
 
-HOMEPAGE:
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    color:var(--text);
+    min-height:100vh;
+    background:
+        radial-gradient(circle at 10% 10%,rgba(70,70,255,.20),transparent 30%),
+        radial-gradient(circle at 90% 10%,rgba(180,50,255,.15),transparent 30%),
+        radial-gradient(circle at 50% 90%,rgba(0,210,255,.08),transparent 30%),
+        var(--bg);
+    overflow-x:hidden;
+}
 
-Create a large hero section containing:
+/* subtle futuristic grid */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:
+        linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+    background-size:45px 45px;
+    mask-image:linear-gradient(to bottom,black,transparent);
+}
 
-🧠 MedStudy Hub
+/* ================= NAVBAR ================= */
 
-"Master Medicine One Question at a Time"
+.navbar{
+    position:sticky;
+    top:0;
+    z-index:1000;
 
-"Practice randomized medical questions and strengthen your knowledge."
+    height:72px;
 
-Add a large button:
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 
-"EXPLORE QUESTION BANK →"
+    padding:0 5%;
 
-Below it, create three large clickable subject cards:
+    background:rgba(4,7,22,.84);
+    backdrop-filter:blur(20px);
 
-🧬 EMBRYOLOGY
-"Embryology Question Bank"
-"Explore Tests →"
+    border-bottom:1px solid var(--border);
+}
 
-🦴 ANATOMY
-"Anatomy Question Bank"
-"Explore Tests →"
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
 
-🫀 PHYSIOLOGY
-"Physiology Question Bank"
-"Explore Tests →"
+    font-size:21px;
+    font-weight:800;
+}
 
-When the user clicks one of these cards, show ONLY that subject's question
-  </ul>
-</body>
-</html>
+.logo-icon{
+    width:40px;
+    height:40px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:12px;
+
+    background:linear-gradient(135deg,#ff42d0,#477dff);
+
+    box-shadow:0 0 25px rgba(151,67,255,.55);
+}
+
+.nav-links{
+    display:flex;
+    align-items:center;
+    gap:5px;
+}
+
+.nav-links button{
+    border:0;
+    background:transparent;
+    color:#dce2ff;
+
+    padding:10px 15px;
+    border-radius:25px;
+
+    cursor:pointer;
+    font-size:14px;
+
+    transition:.25s;
+}
+
+.nav-links button:hover{
+    background:rgba(255,255,255,.09);
+    color:white;
+}
+
+.nav-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.search-mini{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    padding:9px 14px;
+
+    border-radius:30px;
+
+    background:rgba(255,255,255,.06);
+    border:1px solid var(--border);
+}
+
+.search-mini input{
+    width:130px;
+
+    border:0;
+    outline:none;
+    background:transparent;
+
+    color:white;
+}
+
+.search-mini input::placeholder{
+    color:#929bb8;
+}
+
+.theme-btn{
+    width:42px;
+    height:42px;
+
+    border-radius:50%;
+    border:1px solid var(--border);
+
+    background:rgba(255,255,255,.07);
+    color:white;
+
+    cursor:pointer;
+}
+
+.menu-btn{
+    display:none;
+
+    border:0;
+    background:transparent;
+
+    color:white;
+    font-size:25px;
+
+    cursor:pointer;
+}
+
+/* ================= HERO ================= */
+
+.hero{
+    width:90%;
+    max-width:1400px;
+
+    min-height:560px;
+
+    margin:auto;
+
+    display:grid;
+    grid-template-columns:1fr 1fr;
+
+    align-items:center;
+    gap:30px;
+
+    padding:65px 0 40px;
+}
+
+.hero-content{
+    animation:slideIn .8s ease;
+}
+
+.badge{
+    display:inline-flex;
+
+    padding:8px 14px;
+
+    border-radius:30px;
+
+    background:rgba(100,90,255,.12);
+    border:1px solid rgba(129,108,255,.3);
+
+    color:#c8c7ff;
+
+    font-size:13px;
+
+    margin-bottom:22px;
+}
+
+.hero h1{
+    font-size:clamp(48px,6vw,84px);
+    line-height:.98
