@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Langman Chapter 2–3 Extreme True/False</title>
+<style>
+body{margin:0;background:#f2f4f7;color:#172033;font-family:Arial,sans-serif}
+header{background:#075e5b;color:#fff;padding:18px;text-align:center;position:sticky;top:0;z-index:10}
+h1{font-size:20px;margin:0 0 5px} header p{margin:0;font-size:12px}
+main{max-width:880px;margin:auto;padding:12px}
+.info,.card,.stat,.result{background:#fff;border-radius:14px;box-shadow:0 2px 10px #0001}
+.info{padding:14px;font-size:13px;line-height:1.5}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.stat{padding:10px;text-align:center} .stat b{display:block;font-size:20px} .stat span{font-size:11px;color:#667085}
+.controls{display:flex;gap:8px;margin:12px 0}
+.controls button{border:0;border-radius:10px;padding:12px 15px;font-weight:800;color:#fff;background:#075e5b;cursor:pointer}
+.controls button:last-child{background:#172033}
+.card{padding:17px;margin:12px 0}
+.num{font-size:12px;font-weight:800;color:#075e5b;margin-bottom:8px}
+.statement{font-size:17px;font-weight:800;line-height:1.48}
+.buttons{display:flex;gap:10px;margin-top:16px}
+.answer{flex:1;border:0;border-radius:10px;padding:14px;background:#e9edf2;color:#172033;font-weight:900;font-size:15px;cursor:pointer}
+.answer:disabled{opacity:.65;cursor:default}
+.feedback{display:none;margin-top:12px;padding:12px;border-radius:9px;font-size:13px;line-height:1.5}
+.good{background:#e9f8ef;border:1px solid #8bd3a5}
+.bad{background:#fff0f0;border:1px solid #e89a9a}
+.result{display:none;padding:18px;margin:12px 0}
+.big{font-size:32px;font-weight:900;color:#075e5b}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.statement{font-size:16px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Langman Ch. 2–3 — EXTREME True / False</h1>
+<p>100 marks • +1 correct • −1 wrong • 0 unanswered • randomized</p>
+</header>
+<main>
+<div class="info">
+<b>Source:</b> Langman's Medical Embryology, 12th edition — <b>only the supplied pages/screenshots</b> (pp. 25–35).<br>
+<b>Difficulty:</b> very high. The wording is intentionally direct, but the trap is usually one exact detail: sequence, hormone, timing, location, cell type, meiotic stage, or mechanism.<br>
+<b>Randomization:</b> questions are shuffled every attempt, and the TRUE/FALSE button positions are independently shuffled.
+</div>
+<div class="stats">
+<div class="stat"><b id="score">0</b><span>Score</span></div>
+<div class="stat"><b id="done">0</b><span>Answered</span></div>
+<div class="stat"><b id="right">0</b><span>Correct</span></div>
+<div class="stat"><b id="wrong">0</b><span>Wrong</span></div>
+</div>
+<div class="controls">
+<button onclick="newTest()">↻ New Random Attempt</button>
+<button onclick="finish()">Finish Test</button>
+</div>
+<div id="result" class="result"></div>
+<div id="quiz"></div>
+</main>
+<script>
+const BANK=[["Type A dark spermatogonia represent the first cells in the process of spermatogenesis.", true, "Langman Fig. 2.22 identifies Type A spermatogonia as the first cells in spermatogenesis."], ["Type B spermatogonia arise directly from primary spermatocytes.", false, "The sequence shown is Type A spermatogonia → Type B spermatogonia → primary spermatocytes."], ["Cytoplasmic bridges connect cells in successive divisions during spermatogenesis.", true, "Langman states that clones of cells are established and cytoplasmic bridges join cells in each succeeding division."], ["Spermatogenic clones are completely separated from one another immediately after each division.", false, "Cytoplasmic bridges keep developing cells connected until individual sperm are separated from residual bodies."], ["The number of individual interconnected cells in a spermatogenic clone is greater than the number depicted in Figure 2.22.", true, "The figure caption explicitly states this."], ["Primary spermatocytes are produced after the Type B spermatogonia stage.", true, "The diagram places primary spermatocytes after Type B spermatogonia."], ["Secondary spermatocytes are formed before the first meiotic division.", false, "The first meiotic division produces secondary spermatocytes."], ["The first meiotic division produces secondary spermatocytes.", true, "Figure 2.23 labels the products of the first meiotic division as secondary spermatocytes."], ["The second meiotic division produces spermatids.", true, "Figure 2.23 shows spermatids after the second meiotic division."], ["A secondary spermatocyte is the direct product of the second meiotic division.", false, "Secondary spermatocytes are products of meiosis I."], ["A spermatid is the immediate product of the second meiotic division.", true, "Figure 2.23 shows the second meiotic division followed by spermatids."], ["Four spermatids can arise from a single primary spermatocyte.", true, "The sequence in Figure 2.23 shows one primary spermatocyte lineage producing four spermatids."], ["Four primary spermatocytes arise from one secondary spermatocyte.", false, "The sequence proceeds from primary spermatocyte to secondary spermatocytes, not the reverse."], ["Spermiogenesis is the transformation of spermatids into spermatozoa.", true, "Langman defines spermiogenesis as the transformation of spermatids into spermatozoa."], ["Spermiogenesis is another name for the first meiotic division.", false, "Spermiogenesis follows meiosis and involves morphological transformation of spermatids."], ["Formation of the acrosome is one of the changes occurring during spermiogenesis.", true, "Langman lists acrosome formation as a major change."], ["The acrosome covers approximately the entire nuclear surface of the spermatozoon.", false, "Langman states that the acrosome covers half of the nuclear surface."], ["The acrosome contains enzymes that assist penetration of the egg and its surrounding layers.", true, "This is stated in the description of spermiogenesis."], ["Condensation of the nucleus occurs during spermiogenesis.", true, "Nuclear condensation is listed as a spermiogenic change."], ["Shedding of excess cytoplasm produces residual bodies during spermiogenesis.", true, "Excess cytoplasm is shed as residual bodies."], ["Residual bodies remain attached permanently to mature spermatozoa.", false, "Residual bodies are phagocytized by Sertoli cells."], ["Sertoli cells phagocytize residual bodies.", true, "Langman explicitly states this."], ["The time required for a spermatogonium to develop into a mature spermatozoon is approximately 74 days.", true, "Langman gives approximately 74 days."], ["Approximately 300 million sperm cells are produced daily.", true, "The supplied text states approximately 300 million sperm cells are produced daily."], ["Mature spermatozoa enter the lumen of seminiferous tubules when they are fully formed.", true, "Langman states that when fully formed, spermatozoa enter the lumen."], ["Spermatozoa are immediately highly motile upon entering the seminiferous tubule lumen.", false, "They are initially only slightly motile and acquire full motility in the epididymis."], ["Full sperm motility is acquired in the epididymis.", true, "Langman states that spermatozoa obtain full motility in the epididymis."], ["LH promotes spermatogenesis by binding directly to Sertoli cells.", false, "LH binds Leydig cells and stimulates testosterone production; testosterone promotes spermatogenesis."], ["LH stimulates Leydig cells.", true, "Langman states that LH binds receptors on Leydig cells."], ["FSH is essential for spermatogenesis because it binds to Sertoli cells.", true, "The supplied text states this."], ["FSH stimulates Sertoli cells to produce testosterone.", false, "LH stimulates Leydig cells to produce testosterone; FSH acts on Sertoli cells."], ["FSH binding to Sertoli cells stimulates testicular fluid production.", true, "The supplied text states that FSH binding to Sertoli cells stimulates testicular fluid production."], ["FSH binding to Sertoli cells stimulates synthesis of intracellular androgen receptor proteins.", true, "This is explicitly stated."], ["Testosterone is produced by Sertoli cells in response to FSH.", false, "Testosterone is produced by Leydig cells following LH stimulation."], ["In females, oogonia arise from primordial germ cells.", true, "Langman states that primordial germ cells form oogonia in the female."], ["Oogenesis begins at puberty.", false, "Langman states that oogenesis begins before birth."], ["Spermatogenesis begins before birth in males.", false, "The male primordial cells remain dormant until puberty, when they differentiate into spermatogonia."], ["Male primordial cells remain dormant until puberty.", true, "This is stated in the summary."], ["Some oogonia enter meiosis and become primary oocytes.", true, "Langman states that after repeated mitotic divisions, some oogonia enter meiosis I to form primary oocytes."], ["Primary oocytes are formed by meiosis II.", false, "Primary oocytes arise when oogonia enter meiosis I."], ["By the seventh month, many oogonia have become atretic.", true, "The summary states this."], ["Only primary oocytes survive indefinitely from fetal life without atresia.", false, "Many germ cells become atretic during fetal development."], ["Primary oocytes remain arrested in prophase of the first meiotic division.", true, "Langman states that primary oocytes remain in prophase of meiosis I until later development."], ["Primary oocytes complete meiosis I before birth.", false, "They remain arrested in prophase I before birth."], ["At puberty, a pool of growing follicles is recruited each month.", true, "Langman states that each month 15 to 20 follicles begin to grow."], ["Every follicle recruited at puberty reaches full maturity.", false, "Only one usually reaches full maturity; the others degenerate."], ["FSH rescues follicles from the pool of continuously forming primary follicles.", true, "Langman states that FSH rescues 15 to 20 follicles from a pool of continuously forming primary follicles."], ["The recruited follicles normally all ovulate during the same cycle.", false, "Usually only one reaches full maturity and is discharged."], ["The follicles that do not reach full maturity usually become atretic.", true, "Langman states that the other follicles degenerate and become atretic."], ["A follicle becomes atretic when its oocyte and surrounding follicular cells degenerate.", true, "This is stated in the description of follicular atresia."], ["A corpus atreticum forms after an atretic follicle is replaced by connective tissue.", true, "Langman states that connective tissue replaces the degenerating follicle, forming a corpus atreticum."], ["The corpus atreticum is formed from a follicle that successfully ovulated.", false, "It forms from an atretic follicle."], ["Growing follicles progress through primary, vesicular, and mature vesicular stages.", true, "Langman lists these three stages."], ["The mature vesicular follicle is also called a Graafian follicle.", true, "Langman uses mature vesicular or Graafian follicle."], ["The primordial follicle is the final stage immediately before ovulation.", false, "The mature vesicular/Graafian follicle precedes ovulation."], ["During follicular maturation, FSH receptors are produced by follicular cells.", true, "The supplied figure description states this."], ["Estrogens produced by follicular and thecal cells stimulate increased LH production by the pituitary gland.", true, "This is stated in the Figure 3.2 text."], ["An LH surge causes the primary oocyte to complete meiosis I.", true, "Langman states this."], ["The LH surge causes the primary oocyte to complete meiosis II before ovulation.", false, "The secondary oocyte enters meiosis II but remains arrested in metaphase II until fertilization."], ["After meiosis I, the oocyte is a secondary oocyte.", true, "Langman states that meiosis I is completed and a secondary oocyte is formed."], ["After meiosis I, the first polar body is formed.", true, "The supplied text states that a secondary oocyte and polar body are formed."], ["The secondary oocyte immediately completes meiosis II after meiosis I.", false, "It enters meiosis II and becomes arrested in metaphase II."], ["The secondary oocyte is arrested in metaphase II approximately 3 hours before ovulation.", true, "Langman gives this timing."], ["The secondary oocyte remains arrested in metaphase II until fertilization.", true, "Langman states that meiosis II will not be completed until fertilization."], ["Ovulation is caused by a fall in LH concentration.", false, "An abrupt increase in LH is associated with ovulation."], ["Immediately before ovulation, the mature vesicular follicle grows to approximately 25 mm.", true, "Langman gives approximately 25 mm."], ["The ovarian surface bulges locally before ovulation.", true, "Langman describes local bulging at the ovarian surface."], ["Avascularity of the ovarian surface at the apex is described before ovulation.", true, "Langman states that an avascular spot appears at the apex."], ["LH increases collagenase activity at the follicular apex.", true, "The supplied text states this."], ["LH prevents local muscular contractions of the ovarian wall.", false, "Local muscular contractions increase in response to the LH surge."], ["Prostaglandin levels increase in response to the LH surge.", true, "Langman states this."], ["Local muscular contractions help extrude the oocyte.", true, "The contractions extrude the oocyte with surrounding cumulus cells."], ["The oocyte is extruded alone without surrounding cumulus cells.", false, "It is extruded with its surrounding granulosa cells from the cumulus oophorus."], ["Some cumulus oophorus cells rearrange around the zona pellucida to form the corona radiata.", true, "Langman states this."], ["After ovulation, granulosa cells remaining in the follicle disappear immediately.", false, "They remain and, with theca interna cells, form the corpus luteum."], ["Granulosa cells and theca interna cells contribute to formation of the corpus luteum.", true, "Langman explicitly states this."], ["Corpus luteum cells become vascularized under the influence of LH.", true, "Langman states this."], ["The corpus luteum secretes only estrogen.", false, "It secretes estrogen and progesterone."], ["Progesterone from the corpus luteum helps place the uterine mucosa into the secretory stage.", true, "Langman states this."], ["The corpus luteum is formed before ovulation.", false, "It forms after ovulation from the ruptured follicle."], ["If fertilization does not occur, the corpus luteum reaches maximum development approximately 9 days after ovulation.", true, "This timing is stated."], ["If fertilization does not occur, the corpus luteum becomes the corpus albicans.", true, "It undergoes luteolysis and is replaced by fibrotic scar tissue."], ["Corpus albicans formation requires human chorionic gonadotropin.", false, "hCG prevents degeneration of the corpus luteum when fertilization occurs."], ["hCG prevents degeneration of the corpus luteum when fertilization occurs.", true, "Langman states this."], ["The corpus luteum of pregnancy is maintained by hCG.", true, "The supplied text identifies hCG as preventing corpus luteum degeneration."], ["The corpus luteum of pregnancy normally degenerates before the end of the third month.", false, "It may remain until the end of the fourth month before regressing slowly."], ["The placenta becomes adequate for maintenance of pregnancy after the fourth month.", true, "Langman states that progesterone secretion by the trophoblastic component becomes adequate then."], ["Removal of the corpus luteum of pregnancy before the fourth month usually causes abortion.", true, "This is stated."], ["Fertilization normally occurs in the ampulla of the uterine tube.", true, "Langman identifies the ampulla as the usual site."], ["The ampulla is the narrowest part of the uterine tube.", false, "Langman describes it as the widest part."], ["The ampulla is the widest part of the uterine tube.", true, "This is explicitly stated."], ["The ampulla is close to the ovary.", true, "Langman states this."], ["Sperm may remain viable in the female reproductive tract for several days.", true, "The supplied text states this."], ["All sperm deposited in the vagina reach the cervix.", false, "Only about 1% enter the cervix."], ["Approximately 1% of sperm deposited in the vagina enter the cervix.", true, "Langman gives this figure."], ["Sperm movement from cervix to uterus occurs only by their own propulsion.", false, "Muscular contractions of uterus and uterine tube contribute; sperm also move themselves."], ["Sperm movement from cervix to uterus is aided by muscular contractions.", true, "Langman states this."], ["The journey from cervix to ovum can take as little as 30 minutes or as long as 6 days.", true, "The supplied text gives this range."], ["Sperm become less motile after reaching the isthmus.", true, "Langman states that after reaching the isthmus, sperm become less motile and cease migration."], ["At ovulation, sperm become motile again.", true, "The supplied text states this."]];
+let bank=[],score=0,done=0,right=0,wrong=0;
+const scoreEl=document.getElementById('score'),doneEl=document.getElementById('done'),
+rightEl=document.getElementById('right'),wrongEl=document.getElementById('wrong');
+
+function sh(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function safe(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+function newTest(){
+ bank=sh(BANK.map(x=>[...x]));
+ score=done=right=wrong=0;
+ document.getElementById('result').style.display='none';
+ const q=document.getElementById('quiz');q.innerHTML='';
+ bank.forEach((x,i)=>{
+   const order=sh([true,false]);
+   const c=document.createElement('div');c.className='card';
+   c.innerHTML=
+    '<div class="num">QUESTION '+(i+1)+' / 100</div>'+
+    '<div class="statement">'+safe(x[0])+'</div>'+
+    '<div class="buttons">'+
+      order.map(v=>'<button class="answer" onclick="pick(this,'+i+','+v+')">'+(v?'TRUE':'FALSE')+'</button>').join('')+
+    '</div>'+
+    '<div id="f'+i+'" class="feedback"></div>';
+   q.appendChild(c);
+ });
+ update();window.scrollTo(0,0);
+}
+
+function pick(btn,i,val){
+ const card=btn.closest('.card');
+ if(card.dataset.done)return;
+ card.dataset.done='1';
+ const x=bank[i],ok=(val===x[1]);
+ card.querySelectorAll('button').forEach(b=>b.disabled=true);
+ done++;
+ if(ok){right++;score++}else{wrong++;score--}
+ const f=document.getElementById('f'+i);
+ f.style.display='block';
+ f.className='feedback '+(ok?'good':'bad');
+ f.innerHTML='<b>'+(ok?'✓ CORRECT':'✗ WRONG — −1 mark')+
+   '</b><br>Correct answer: <b>'+(x[1]?'TRUE':'FALSE')+
+   '</b><br>'+safe(x[2]);
+ update();
+}
+
+function update(){
+ scoreEl.textContent=score;doneEl.textContent=done;
+ rightEl.textContent=right;wrongEl.textContent=wrong;
+}
+
+function finish(){
+ const r=document.getElementById('result');
+ r.style.display='block';
+ r.innerHTML='<div class="big">'+score+' / 100</div>'+
+ '<p>Correct: <b>'+right+'</b> &nbsp; Wrong: <b>'+wrong+
+ '</b> &nbsp; Unanswered: <b>'+(100-done)+'</b></p>'+
+ '<p>Marking: +1 correct, −1 wrong, 0 unanswered.</p>';
+ r.scrollIntoView({behavior:'smooth'});
+}
+newTest();
+</script>
+</body>
+</html>

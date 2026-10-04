@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Embryology Gametogenesis — 100 Mark Test</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;color:#17202a}
+header{background:#111827;color:#fff;padding:22px 18px;position:sticky;top:0;z-index:5;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+h1{margin:0;font-size:24px}
+.subtitle{margin-top:6px;color:#cbd5e1;font-size:14px}
+.warning{background:#fff3cd;color:#664d03;border:1px solid #ffecb5;padding:12px 14px;border-radius:10px;margin:16px auto;max-width:1000px;font-size:14px}
+#scorebox{max-width:1000px;margin:0 auto;padding:10px 14px;font-weight:bold}
+main{max-width:1000px;margin:0 auto;padding:0 14px 40px}
+.section{background:#fff;border-radius:14px;margin:18px 0;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.section h2{margin:0 0 14px;font-size:19px;color:#1f4e79}
+.q{border-top:1px solid #e5e7eb;padding:16px 0}
+.q:first-child{border-top:0}
+.statement{font-size:16px;line-height:1.45;margin-bottom:10px}
+.buttons{display:flex;gap:10px}
+button{border:0;border-radius:9px;padding:10px 18px;font-weight:bold;cursor:pointer;font-size:14px}
+.trueBtn{background:#dbeafe;color:#1e3a8a}
+.falseBtn{background:#fee2e2;color:#991b1b}
+button:disabled{opacity:.55;cursor:not-allowed}
+.correct{margin-top:10px;padding:10px 12px;border-radius:9px;background:#dcfce7;color:#166534;font-weight:bold}
+.wrong{margin-top:10px;padding:10px 12px;border-radius:9px;background:#fee2e2;color:#991b1b;font-weight:bold}
+.explanation{margin-top:8px;padding:10px;background:#f8fafc;border-left:4px solid #64748b;color:#334155;font-weight:normal;line-height:1.45}
+#final{display:none;background:#111827;color:#fff;border-radius:14px;padding:22px;margin:20px auto;max-width:1000px;text-align:center}
+#final button{background:#fff;color:#111827;margin-top:12px}
+</style>
+</head>
+<body>
+<header>
+<h1>Embryology — Gametogenesis 100 Mark Test</h1>
+<div class="subtitle">Langman's Medical Embryology • Chapter 1 &amp; Chapter 2 • 100 TRUE/FALSE statements • +1 correct • −1 wrong</div>
+</header>
+
+<div class="warning">
+<b>WARNING:</b> Negative marking is active.
+Each correct answer gives <b>+1</b> and each incorrect answer gives <b>−1</b>.
+Questions are randomized on every load and retake.
+The TRUE/FALSE answer distribution is <b>not deliberately balanced</b>.
+</div>
+
+<div id="scorebox">Score: <span id="score">0</span> &nbsp;|&nbsp; Answered: <span id="answered">0</span>/100</div>
+<main id="test"></main>
+
+<div id="final">
+<h2>Test Complete</h2>
+<div>Your final score: <span id="finalscore"></span>/100</div>
+<button onclick="render()">Retake — New Random Order</button>
+</div>
+
+<script>
+const sourceQuestions = [["A gene located within a region of tightly coiled heterochromatin is generally in a state that favors transcription.", false, "Langman states that heterochromatin is tightly coiled and transcriptionally inactive; euchromatin is the less-condensed form associated with transcription."], ["Nucleosomes consist of DNA associated with histone proteins, and linker DNA connects neighboring nucleosomes.", true, "The supplied text describes nucleosomes as histone protein complexes with approximately 140 base pairs of DNA and linker DNA between them."], ["Histone H1 is described as one of the core histones around which DNA is wrapped to form the nucleosome.", false, "Langman distinguishes H1 histones as proteins associated with linker DNA between nucleosomes rather than the core histone complex."], ["Genes may contain exons that contribute to protein coding and introns that are removed from the initial RNA transcript.", true, "The chapter describes exons as regions translated into proteins and introns as intervening regions that are not translated and are removed from the initial transcript."], ["The promoter region is positioned downstream of the transcription termination site in the typical gene shown.", false, "In the figure, the promoter is upstream of the transcription initiation site and the transcribed region."], ["The TATA box is located within the promoter region and participates in the initiation of transcription.", true, "Langman identifies the TATA sequence as part of the promoter region involved in RNA polymerase binding and transcription initiation."], ["The translation initiation site identifies the first amino acid in the protein.", true, "The supplied text explicitly describes the translation initiation site as designating the first amino acid in a protein."], ["The transcription initiation site and translation initiation site necessarily refer to the same nucleotide position.", false, "They are distinct: transcription initiation marks the beginning of RNA transcription, whereas the translation initiation site identifies the first amino acid/coding start."], ["A 3′ untranslated region may contain the poly-A addition site involved in mRNA stabilization and nuclear export.", true, "Langman states that the 3′ untranslated region includes a sequence containing the poly-A addition site that assists in stabilizing mRNA and allows it to exit the nucleus."], ["The poly-A addition site is described as the signal that directly specifies the final amino acid of a protein.", false, "It is involved in mRNA processing/stability; the text does not identify it as a protein-coding signal."], ["RNA polymerase II binds the promoter region with the assistance of transcription factors.", true, "The chapter explains that RNA polymerase II requires additional proteins called transcription factors to bind appropriately to the promoter/TATA region."], ["Transcription factors function only by binding RNA and never interact with DNA.", false, "They have DNA-binding domains and can bind regulatory DNA sequences."], ["A transcription factor can possess a DNA-binding domain and a separate transactivating domain.", true, "Langman describes transcription factors as having a specific DNA-binding domain and a transactivating domain."], ["Enhancers must be located immediately adjacent to the promoter to regulate transcription.", false, "Enhancers can be located far from the promoter as well as near it."], ["Enhancers can increase transcription by altering chromatin or facilitating transcription-factor binding.", true, "The supplied text describes enhancers as regulatory DNA elements that affect promoter efficiency and transcription rate."], ["A silencer is a regulatory DNA element that can inhibit transcription.", true, "Langman states that enhancers that inhibit transcription are called silencers."], ["The same gene must always use the same enhancer in every tissue.", false, "Different tissues can use separate enhancers to regulate expression of the same gene in a tissue-specific manner."], ["PAX6-associated regulatory elements illustrate how different enhancers can contribute to expression of a gene in different tissues.", true, "The text gives PAX6 as an example in which separate enhancers regulate expression in pancreas, eye, and neural tube."], ["DNA methylation of cytosine bases in promoter regions generally increases transcription of the affected genes.", false, "Langman states that methylation of cytosine bases in promoter regions silences genes and represses transcription."], ["DNA methylation contributes to X-chromosome inactivation in females.", true, "The chapter explicitly identifies methylation as a mechanism responsible for X-chromosome inactivation."], ["Genomic imprinting can involve methylation-dependent differences in expression according to parental origin.", true, "Langman describes genomic imprinting in which either the paternal or maternal gene is expressed while the other is silenced."], ["Methylation changes during spermatogenesis and oogenesis can establish imprinting patterns.", true, "The supplied text states that approximately 40–50 human genes are imprinted and that methylation patterns are established during spermatogenesis and oogenesis."], ["Methylation can silence DNA partly by altering histone binding and producing tightly coiled chromatin.", true, "Langman describes methylation as inhibiting transcription-factor binding or altering histone binding, stabilizing nucleosomes and tightly coiling DNA."], ["The initial RNA transcript is already a mature cytoplasmic mRNA because it contains no introns.", false, "The initial transcript is nuclear RNA/pre-mRNA and contains introns that must be removed."], ["Spliceosomes participate in removal of introns from the initial RNA transcript.", true, "The supplied text states that spliceosomes, containing small nuclear RNAs and proteins, recognize splice sites and remove introns."], ["Alternative splicing allows different exon combinations to be used to generate different proteins from a single gene.", true, "Langman describes alternative splicing as a mechanism by which different introns/exons are selected to produce different proteins."], ["Different proteins produced from one gene by alternative splicing are called different genes.", false, "They are called splice isoforms or splice variants and arise from the same gene."], ["Post-translational modification can alter a protein after it has been synthesized.", true, "Langman states that proteins may undergo post-translational modifications such as phosphorylation or cleavage."], ["Every protein encoded by a gene becomes active immediately after translation without any further processing.", false, "Some proteins must be phosphorylated, cleaved, combined with other proteins, or released from specific regions to become active."], ["Induction involves one group of cells or tissues causing another group to change its fate.", true, "Langman defines induction as a process in which one group, the inducer, causes another group, the responder, to change its fate."], ["The responding tissue's ability to react to an inducing signal is called competence.", true, "Competence is the capacity to respond and must be conferred by a competence factor."], ["The tissue providing the inducing signal is called the responder.", false, "The signaling tissue is the inducer; the tissue responding to the signal is the responder."], ["Many inductive interactions occur between epithelial and mesenchymal tissues.", true, "The chapter explicitly states that many inductive interactions occur between epithelial and mesenchymal cells."], ["An epithelial tissue is characterized by cells that are generally joined together in sheets or tubes.", true, "Langman contrasts epithelial cells, which are joined in tubes or sheets, with dispersed mesenchymal cells."], ["Mesenchymal cells are described as being embedded in extracellular matrix rather than forming tightly joined sheets.", true, "The supplied text describes mesenchymal cells as fibroblastic in appearance and dispersed in extracellular matrices."], ["Once an inducer has sent an initial signal, no further interaction between the tissues is necessary.", false, "Langman states that crosstalk between the two tissues or cell types is essential for differentiation to continue."], ["Paracrine signaling depends on factors that diffuse over short distances between cells.", true, "Paracrine interactions are established by diffusible factors acting over short distances."], ["Juxtacrine signaling requires diffusible factors to travel from one cell to another.", false, "Juxtacrine signaling involves direct cell-to-cell interactions and does not involve diffusible factors."], ["A receptor may have an extracellular ligand-binding domain, a transmembrane domain, and a cytoplasmic domain.", true, "These three regions are described for the receptor in the signal-transduction pathway."], ["Binding of a ligand to its receptor can cause a conformational change that activates the receptor's cytoplasmic domain.", true, "The figure and text describe ligand binding followed by receptor activation."], ["A typical activated receptor initiates no intracellular enzyme activity and acts only as a structural anchor.", false, "The activated receptor often has enzymatic activity, commonly kinase activity, that phosphorylates other proteins."], ["Protein phosphorylation can create a cascade that ultimately activates a transcription factor.", true, "Langman describes phosphorylation cascades leading to activation of transcription factors and gene expression."], ["The phosphate groups transferred during the signaling cascade are supplied directly by DNA.", false, "The text states that kinase activity phosphorylates proteins using ATP as the substrate."], ["The final transcription factor in a signaling pathway can enter the nucleus and regulate gene expression.", true, "The supplied figure shows activated protein complexes acting as transcription factors in the nucleus."], ["Signal-transduction pathways are necessarily linear and never interact with other signaling pathways.", false, "Langman emphasizes crosstalk and interconnected signaling pathways."], ["Redundancy in signaling pathways means that loss of one signaling protein can sometimes be compensated for by related proteins.", true, "The chapter discusses redundancy and family members that may compensate for loss of one component."], ["Loss of a signaling protein can never cause abnormal development because related pathways always compensate completely.", false, "Langman states that loss of function can result in abnormal development or death despite redundancy."], ["The Notch receptor is an example of juxtacrine signaling.", true, "Notch signaling is given as an example of direct cell-to-cell/juxtacrine signaling."], ["Delta, Serrate, and Jagged are extracellular ligands that can bind Notch receptors on neighboring cells.", true, "These ligands are named in the supplied section on Notch signaling."], ["Notch signaling requires the ligand to diffuse freely through extracellular fluid before reaching a distant receptor.", false, "Notch signaling is juxtacrine: the ligand on one cell interacts with the receptor on an adjacent cell."], ["Extracellular matrix molecules can provide substrates on which cells attach and migrate.", true, "Langman describes extracellular matrix molecules as providing substrates for cellular attachment and migration."], ["Proteoglycans, glycoproteins, fibronectin, and laminin are among extracellular matrix components discussed in the chapter.", true, "These molecules are specifically listed in the juxtacrine/extracellular-matrix discussion."], ["Integrins can link extracellular matrix molecules to the cell's cytoskeletal machinery.", true, "The text describes integrins as receptors that integrate matrix molecules with the cell's cytoskeletal machinery."], ["Gap junctions allow direct communication between adjacent cells through channels.", true, "Langman describes gap junctions as channels between adjacent cells through which small molecules and ions can pass."], ["Gap junctions are constructed from collagen molecules.", false, "The supplied text states that gap junctions are made from connexin proteins that form channels."], ["Paracrine signaling factors are also called growth and differentiation factors (GDFs).", true, "Langman uses both terms for many paracrine signaling molecules."], ["The four major GDF families named in the chapter are FGF, WNT, hedgehog, and TGF-β.", true, "These four families are explicitly listed."], ["All members of a GDF family bind the same receptor and therefore have identical developmental effects.", false, "The text states that each family interacts with its own family of receptors and individual factors can have specific effects."], ["FGF proteins can be produced as different isoforms through differences in RNA splicing or initiation codons.", true, "Langman states that FGF genes can produce hundreds of protein isoforms by altering RNA splicing or initiation codons."], ["FGFs are particularly important for angiogenesis, axon growth, and mesodermal differentiation.", true, "These functions are explicitly described."], ["Serotonin and norepinephrine are presented only as neurotransmitters and have no developmental signaling role.", false, "Langman states that these molecules can also act through paracrine signaling during embryological development."], ["Serotonin can act through G-protein-coupled receptors.", true, "The text states that most serotonin receptors are G-protein-coupled receptors."], ["The chapter describes apoptosis as programmed cell death.", true, "This definition appears explicitly in the hedgehog/signaling discussion."], ["The main role of apoptosis during development is to increase the number of cells in every developing tissue.", false, "Apoptosis is programmed cell death and participates in shaping tissues, including removal of interdigital cells."], ["Primordial germ cells are formed in the epiblast.", true, "Langman states that primordial germ cells are formed in the epiblast during the second week."], ["Primordial germ cells initially move directly from the epiblast into the developing gonads without entering the yolk-sac region.", false, "They move through the primitive streak and are found in the wall of the yolk sac before migrating toward the developing gonads."], ["During the fourth week, primordial germ cells migrate from the yolk-sac wall toward the developing gonads.", true, "This migration is described in the supplied Chapter 2 page."], ["Primordial germ cells reach the developing gonads by the end of the sixth week.", false, "Langman states that they arrive by the end of the fifth week."], ["Mitotic divisions increase the number of primordial germ cells during their migration and after arrival at the gonad.", true, "The text explicitly describes mitotic increase during migration and after arrival."], ["Gametogenesis includes reduction of chromosome number by meiosis and cytodifferentiation for maturation.", true, "Both processes are identified as components of gametogenesis."], ["Teratomas are described as tumors that may contain tissues from several germ layers.", true, "The clinical correlate describes tissues such as hair, muscle, gut epithelium, and bone."], ["A teratoma containing multiple tissue types necessarily originates from a normal somatic cell that has lost its nucleus.", false, "Langman discusses primordial germ cells and pluripotential cells as possible origins."], ["Humans have approximately 23,000 genes distributed among 46 chromosomes.", true, "This figure is given in the chromosome theory section."], ["Genes located on the same chromosome tend to be inherited together and are called linked genes.", true, "This is the definition supplied."], ["The 22 pairs of autosomes constitute all human chromosomes except the sex chromosomes.", true, "Langman describes 22 pairs of matching chromosomes as autosomes and one pair as sex chromosomes."], ["A normal human somatic cell is haploid because it contains one chromosome from each homologous pair.", false, "Somatic cells are diploid, with 23 homologous pairs."], ["A normal gamete contains 23 chromosomes.", true, "The text identifies gametes as haploid with 23 chromosomes."], ["Fertilization restores the diploid chromosome number of 46.", true, "Union of two haploid gametes restores diploidy."], ["A chromosome that has replicated its DNA is described as having two sister chromatids joined at the centromere.", true, "The chromosome theory section describes this structure before mitosis."], ["During prophase of mitosis, chromosomes become shorter, thicker, and more visible.", true, "This is described as the onset of prophase."], ["Synapsis between homologous chromosomes is a defining event of normal mitotic prophase.", false, "Synapsis is characteristic of meiosis I."], ["At metaphase of mitosis, chromosomes line up at the equatorial plane.", true, "Langman describes this metaphase arrangement."], ["Mitotic spindle microtubules extend from the centromere toward the centriole.", true, "The figure/text describes microtubules extending from centromeres toward centrioles."], ["At anaphase of mitosis, homologous chromosomes remain paired while the cell divides.", false, "Sister chromatids separate and migrate to opposite poles."], ["After mitosis, daughter cells receive the same chromosome number as the original cell.", true, "Mitosis preserves chromosome number."], ["Meiosis occurs in germ cells and generates male and female gametes.", true, "Langman defines meiosis as the cell division occurring in germ cells to generate gametes."], ["Meiosis I and meiosis II together reduce a diploid cell to haploid cells by two successive chromosome-separation events.", true, "Meiosis I separates homologs and meiosis II separates sister chromatids."], ["Before meiosis I, the DNA of primary spermatocytes and primary oocytes is replicated.", true, "Langman states that the 46 chromosomes are duplicated into sister chromatids before meiosis I."], ["During meiosis I, homologous chromosomes pair with one another in a process called synapsis.", true, "This is explicitly stated."], ["The homologous chromosomes separate during meiosis II, while sister chromatids separate during meiosis I.", false, "The reverse is true: homologs separate in meiosis I and sister chromatids in meiosis II."], ["A chromosome can remain double-structured after meiosis I because its sister chromatids have not yet separated.", true, "This is a key distinction between meiosis I and II."], ["Crossing over is an exchange of chromatid segments between paired homologous chromosomes.", true, "Langman defines crossover as exchange of chromatid segments between paired homologs."], ["Crossing over normally occurs between identical sister chromatids of the same chromosome.", false, "The important exchange occurs between homologous chromatids, classically nonsister chromatids."], ["Chiasmata are temporary sites associated with exchange between homologous chromatids.", true, "Langman describes points of interchange as chiasmata."], ["Random distribution of homologous chromosomes contributes to genetic variability.", true, "This is explicitly listed as a source of genetic variability."], ["Every normal gamete contains exactly one maternal and one paternal chromosome from each homologous pair.", false, "Independent assortment means a gamete receives one homolog from each pair, but not necessarily a predetermined maternal/paternal combination."], ["The haploid chromosome number ensures that fertilization can restore the diploid number.", true, "Each gamete has 23 chromosomes and their union restores 46."], ["One primary oocyte ultimately produces four equivalent mature ova.", false, "Only one mature oocyte results; the other products are polar bodies."], ["A primary spermatocyte produces four daughter cells after the two meiotic divisions.", true, "Langman describes four daughter cells from a primary spermatocyte."], ["All four products of normal spermatocyte meiosis can develop into spermatozoa.", true, "The figure indicates four spermatids that develop into spermatozoa."]];
+let questions=[], score=0, answered=0, locked=new Set();
+const total=sourceQuestions.length;
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function render(){
+  score=0; answered=0; locked=new Set();
+  document.getElementById('score').textContent=score;
+  document.getElementById('answered').textContent=answered;
+  document.getElementById('final').style.display='none';
+
+  const root=document.getElementById('test');
+  root.innerHTML='';
+  questions=shuffle([...sourceQuestions]);
+
+  for(let start=0; start<questions.length; start+=10){
+    const section=document.createElement('section');
+    section.className='section';
+    const heading=document.createElement('h2');
+    heading.textContent='Section '+(Math.floor(start/10)+1);
+    section.appendChild(heading);
+
+    questions.slice(start,start+10).forEach((q,idx)=>{
+      const i=start+idx, id='q'+i;
+      const wrap=document.createElement('div');
+      wrap.className='q';
+
+      const statement=document.createElement('div');
+      statement.className='statement';
+      statement.innerHTML='<b>'+(i+1)+'.</b> '+q[0];
+
+      const buttons=document.createElement('div');
+      buttons.className='buttons';
+
+      const t=document.createElement('button');
+      t.className='trueBtn'; t.textContent='TRUE';
+
+      const f=document.createElement('button');
+      f.className='falseBtn'; f.textContent='FALSE';
+
+      const result=document.createElement('div');
+
+      t.onclick=()=>answer(id,true,q,t,f,result);
+      f.onclick=()=>answer(id,false,q,t,f,result);
+
+      buttons.appendChild(t);
+      buttons.appendChild(f);
+      wrap.appendChild(statement);
+      wrap.appendChild(buttons);
+      wrap.appendChild(result);
+      section.appendChild(wrap);
+    });
+    root.appendChild(section);
+  }
+}
+
+function answer(id,choice,q,t,f,result){
+  if(locked.has(id)) return;
+  locked.add(id);
+
+  const correct=choice===q[1];
+  score += correct ? 1 : -1;
+  answered++;
+
+  t.disabled=true;
+  f.disabled=true;
+
+  result.className=correct?'correct':'wrong';
+  result.textContent=correct?'✓ Correct (+1)':'✗ Wrong (−1)';
+
+  const explanation=document.createElement('div');
+  explanation.className='explanation';
+  explanation.innerHTML='<b>Explanation:</b> '+q[2]+'<br><b>Correct answer:</b> '+(q[1]?'TRUE':'FALSE');
+  result.appendChild(explanation);
+
+  document.getElementById('score').textContent=score;
+  document.getElementById('answered').textContent=answered;
+
+  if(answered===total){
+    document.getElementById('finalscore').textContent=score;
+    document.getElementById('final').style.display='block';
+    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+  }
+}
+
+render();
+</script>
+</body>
+</html>

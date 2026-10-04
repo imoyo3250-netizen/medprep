@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Langman Chapter 3 - First Week Extreme T/F</title>
+<style>
+:root{--bg:#070b12;--card:#101827;--card2:#0c1320;--text:#f4f7fb;--muted:#aeb9c9;--accent:#58a6ff;--good:#20c997;--bad:#ff5c73;--border:#243149}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#05080d,#0b1220);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+header{position:sticky;top:0;z-index:10;background:rgba(7,11,18,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:16px}
+.header-inner{max-width:950px;margin:auto}
+h1{font-size:22px;margin:0 0 6px}
+.subtitle{color:var(--muted);font-size:13px;line-height:1.45}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.stat{background:#111b2b;border:1px solid var(--border);border-radius:12px;padding:8px 12px;font-size:13px}
+.stat b{color:white}
+.progress{height:7px;background:#172235;border-radius:20px;margin-top:12px;overflow:hidden}
+#bar{height:100%;width:0;background:var(--accent);transition:.2s}
+main{max-width:950px;margin:20px auto;padding:0 12px 60px}
+.section{margin-bottom:18px}
+.section-title{color:#9ecbff;font-size:14px;margin:22px 4px 8px;text-transform:uppercase;letter-spacing:.08em}
+.q{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px;margin:10px 0;box-shadow:0 5px 20px rgba(0,0,0,.15)}
+.statement{font-size:15px;line-height:1.55;margin-bottom:12px}
+.buttons{display:flex;gap:10px}
+button{border:0;border-radius:11px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer}
+.trueBtn{background:#173c35;color:#8ff0cf;border:1px solid #236e5c}
+.falseBtn{background:#3d2029;color:#ffacb9;border:1px solid #713746}
+button:disabled{opacity:.45;cursor:not-allowed}
+.feedback{margin-top:12px;padding:12px;border-radius:11px;display:none;font-size:13px;line-height:1.5}
+.correct{display:block;background:rgba(32,201,151,.1);border:1px solid rgba(32,201,151,.4)}
+.incorrect{display:block;background:rgba(255,92,115,.1);border:1px solid rgba(255,92,115,.4)}
+.explain{color:#dce5f2}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.controls button{background:#172338;color:white;border:1px solid var(--border)}
+#final{display:none;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin-top:25px}
+#final h2{margin-top:0}
+.small{color:var(--muted);font-size:12px}
+@media(max-width:600px){h1{font-size:19px}.statement{font-size:14px}.buttons button{flex:1}}
+</style>
+</head>
+<body>
+<header>
+<div class="header-inner">
+<h1>Langman Chapter 3 — First Week of Development</h1>
+<div class="subtitle">Extreme True/False • Ovulation → Fertilization → Cleavage → Blastocyst → Implantation • Based on the pages supplied from <b>Langman’s Medical Embryology, 12th ed.</b></div>
+<div class="stats">
+<div class="stat">Score: <b id="score">0</b></div>
+<div class="stat">Answered: <b id="answered">0</b>/100</div>
+<div class="stat">Correct: <b id="correct">0</b></div>
+<div class="stat">Wrong: <b id="wrong">0</b></div>
+</div>
+<div class="progress"><div id="bar"></div></div>
+</div>
+</header>
+
+<main>
+<div class="controls">
+<button onclick="newTest()">🔀 New Random Test</button>
+<button onclick="showAnswers()">Show Unanswered Answers</button>
+</div>
+<div id="test"></div>
+<div id="final">
+<h2>Test complete</h2>
+<div id="finalText"></div>
+<p class="small">Scoring: +1 correct, −1 incorrect, 0 unanswered.</p>
+</div>
+</main>
+
+<script>
+const sourceQuestions = [{"q": "Fertilization normally occurs in the ampulla of the uterine tube.", "a": true, "e": "Langman identifies the ampulla as the usual site of fertilization and the widest part of the uterine tube."}, {"q": "The ampulla is the narrowest part of the uterine tube and lies farthest from the ovary.", "a": false, "e": "The ampulla is the widest part of the tube and is close to the ovary."}, {"q": "Only a small fraction of sperm deposited in the vagina reach the site of fertilization.", "a": true, "e": "Langman states that only about 200 to 300 spermatozoa normally reach the site of fertilization from the large initial number."}, {"q": "Spermatozoa can remain in the female reproductive tract for several days.", "a": true, "e": "Langman notes that spermatozoa may remain in the female reproductive tract for several days."}, {"q": "After reaching the cervix, sperm immediately become immotile and permanently cease migration.", "a": false, "e": "Sperm may become temporarily less motile, but at ovulation they become motile again."}, {"q": "Capacitation is a conditioning period in the female reproductive tract that lasts approximately seven hours in humans.", "a": true, "e": "This is the approximate duration given by Langman."}, {"q": "Capacitation occurs primarily after the sperm has already fused with the oocyte.", "a": false, "e": "Capacitation occurs before fertilization and is required for sperm to acquire fertilizing capability."}, {"q": "During capacitation, a glycoprotein coat and seminal plasma proteins are removed from the plasma membrane over the acrosomal region.", "a": true, "e": "Langman describes removal of these components during capacitation."}, {"q": "Only capacitated sperm can normally pass through the corona radiata and undergo the acrosome reaction.", "a": true, "e": "Langman states that only capacitated sperm can pass through the corona cells and undergo the acrosome reaction."}, {"q": "The acrosome reaction is initiated before sperm binding to the zona pellucida.", "a": false, "e": "The acrosome reaction occurs after binding to zona proteins."}, {"q": "The three phases of fertilization described by Langman include penetration of the corona radiata, penetration of the zona pellucida, and fusion of the oocyte and sperm cell membranes.", "a": true, "e": "These are the three listed phases."}, {"q": "ZP3 is described as a zona pellucida protein involved in sperm binding and induction of the acrosome reaction.", "a": true, "e": "Langman identifies ZP3 in both processes."}, {"q": "The zona pellucida is a cellular layer composed mainly of granulosa cells.", "a": false, "e": "The zona pellucida is a glycoprotein shell surrounding the oocyte."}, {"q": "Acrosin and trypsin-like substances are among the enzymes released during the acrosome reaction.", "a": true, "e": "Langman specifically mentions these substances."}, {"q": "The acrosome reaction allows sperm to penetrate the zona pellucida.", "a": true, "e": "The release of acrosomal enzymes contributes to penetration of the zona pellucida."}, {"q": "During phase 1 of fertilization, sperm penetrate the zona pellucida before crossing the corona radiata.", "a": false, "e": "Phase 1 is penetration of the corona radiata; phase 2 is penetration of the zona pellucida."}, {"q": "In phase 2 of fertilization, one or more sperm penetrate the zona pellucida.", "a": true, "e": "This is the sequence shown in Langman's Figure 3.5."}, {"q": "In phase 3, fusion occurs between the sperm cell membrane and the oocyte membrane.", "a": true, "e": "Phase 3 is fusion of the oocyte and sperm cell membranes."}, {"q": "The plasma membrane covering the acrosomal head remains intact throughout the acrosome reaction.", "a": false, "e": "The plasma membrane covering the acrosomal head disappears during the acrosome reaction."}, {"q": "After sperm-oocyte adhesion, fusion is accomplished between the oocyte membrane and the membrane covering the posterior region of the sperm head.", "a": true, "e": "Langman describes this membrane interaction during phase 3."}, {"q": "The entire sperm, including both head and tail, remains permanently outside the oocyte after membrane fusion.", "a": false, "e": "In humans, both the head and tail of the spermatozoon enter the oocyte cytoplasm, although the tail later degenerates."}, {"q": "Once the sperm enters the oocyte, the egg responds with cortical and zona reactions that help prevent polyspermy.", "a": true, "e": "These reactions make the oocyte membrane and zona pellucida resistant to further sperm penetration."}, {"q": "Polyspermy means penetration of more than one spermatozoon into the oocyte.", "a": true, "e": "This is Langman's definition."}, {"q": "The cortical reaction makes the zona pellucida more permissive to additional sperm penetration.", "a": false, "e": "The zona reaction alters the zona pellucida to prevent additional sperm binding and penetration."}, {"q": "The oocyte completes its second meiotic division immediately after ovulation, before sperm entry.", "a": false, "e": "The oocyte completes meiosis II after sperm entry."}, {"q": "Entry of the spermatozoon triggers completion of the oocyte's second meiotic division.", "a": true, "e": "This is one of the immediate responses of the oocyte to sperm entry."}, {"q": "The small daughter cell produced during completion of meiosis II is called the second polar body.", "a": true, "e": "The second polar body receives little cytoplasm."}, {"q": "The larger daughter cell produced after meiosis II is the definitive oocyte.", "a": true, "e": "Langman identifies it as the definitive oocyte, whose nucleus becomes the female pronucleus."}, {"q": "The definitive oocyte receives approximately half of the cytoplasm produced during the second meiotic division.", "a": false, "e": "The second polar body receives very little cytoplasm; the definitive oocyte retains most of it."}, {"q": "The sperm nucleus swells after entering the oocyte and forms the male pronucleus.", "a": true, "e": "This is described in Langman's post-fertilization sequence."}, {"q": "The sperm tail becomes the male pronucleus after entering the oocyte.", "a": false, "e": "The sperm nucleus becomes the male pronucleus; the tail detaches and degenerates."}, {"q": "Male and female pronuclei are morphologically indistinguishable.", "a": true, "e": "Langman states that they are morphologically indistinguishable."}, {"q": "Male and female pronuclei immediately fuse into one nucleus without first replicating their DNA.", "a": false, "e": "Both pronuclei replicate DNA before chromosomes organize for the first mitotic division."}, {"q": "Each pronucleus is haploid before DNA replication.", "a": true, "e": "Both male and female pronuclei are haploid."}, {"q": "After DNA replication, the chromosomes organize on the spindle in preparation for normal mitotic division.", "a": true, "e": "Langman describes this sequence before the two-cell stage."}, {"q": "The first mitotic division of the zygote produces cells with the diploid chromosome number.", "a": true, "e": "The mitotic division restores and maintains the normal diploid chromosome complement in daughter cells."}, {"q": "The first cleavage begins only after implantation in the uterine mucosa.", "a": false, "e": "Cleavage begins before implantation, following fertilization."}, {"q": "Fertilization restores the diploid number of chromosomes, with half derived from each parent.", "a": true, "e": "This is one of the main results of fertilization."}, {"q": "Fertilization determines chromosomal sex because the oocyte may contribute either an X or a Y chromosome.", "a": false, "e": "The oocyte contributes an X chromosome; the sperm contributes either X or Y."}, {"q": "An X-carrying sperm produces a chromosomal female embryo when it fertilizes the oocyte.", "a": true, "e": "XX is the usual chromosomal complement of a female embryo."}, {"q": "A Y-carrying sperm produces a chromosomal male embryo when it fertilizes the oocyte.", "a": true, "e": "XY is the usual chromosomal complement of a male embryo."}, {"q": "Without fertilization, the oocyte usually degenerates about 24 hours after ovulation.", "a": true, "e": "Langman's figure and text state that the unfertilized oocyte degenerates about 24 hours after ovulation."}, {"q": "Cleavage increases the size of the zygote with each division.", "a": false, "e": "Cleavage increases cell number while the individual cells become smaller."}, {"q": "The cells produced by cleavage are called blastomeres.", "a": true, "e": "This is the term Langman uses."}, {"q": "The two-cell stage is reached approximately 30 hours after fertilization.", "a": true, "e": "Langman's Figure 3.8 gives approximately 30 hours."}, {"q": "The four-cell stage is reached approximately 40 hours after fertilization.", "a": true, "e": "Langman's Figure 3.8 gives approximately 40 hours."}, {"q": "The 12- to 16-cell stage is reached approximately 3 days after fertilization.", "a": true, "e": "This timing is given in Figure 3.8."}, {"q": "The late morula stage is reached approximately 4 days after fertilization.", "a": true, "e": "Langman places the late morula at approximately 4 days."}, {"q": "Blastomeres remain surrounded by the zona pellucida throughout the entire first week.", "a": false, "e": "The zona pellucida disappears at the end of the fourth day."}, {"q": "Before the eight-cell stage, blastomeres are relatively loosely arranged.", "a": true, "e": "Langman states that until the eight-cell stage they form a loosely arranged clump."}, {"q": "Compaction begins after the third cleavage and increases cell-cell contact.", "a": true, "e": "Compaction is described after the third cleavage."}, {"q": "Compaction causes blastomeres to lose all contact with one another.", "a": false, "e": "Compaction maximizes contact between blastomeres and forms a compact cell mass."}, {"q": "Compaction contributes to formation of distinct inner and outer cell populations.", "a": true, "e": "Compaction is associated with segregation into inner and outer cells."}, {"q": "Approximately three days after fertilization, further divisions produce a 16-cell morula.", "a": true, "e": "Langman describes this sequence."}, {"q": "The inner cells of the morula contribute to the embryo proper.", "a": true, "e": "The inner cell mass gives rise to tissues of the embryo proper."}, {"q": "The outer cells of the morula contribute to the trophoblast.", "a": true, "e": "The surrounding outer cell mass forms the trophoblast."}, {"q": "The trophoblast later contributes to the placenta.", "a": true, "e": "Langman states that the trophoblast later contributes to the placenta."}, {"q": "The inner cell mass and outer cell mass become distinct only after implantation.", "a": false, "e": "They become distinct during the morula-to-blastocyst transition before implantation."}, {"q": "As the morula enters the uterus, fluid begins to penetrate through the zona pellucida into intercellular spaces of the inner cell mass.", "a": true, "e": "This initiates blastocyst cavity formation."}, {"q": "The blastocyst is characterized by formation of a blastocyst cavity.", "a": true, "e": "The fluid-filled cavity is a defining feature."}, {"q": "At the blastocyst stage, the inner cell mass is also called the embryoblast.", "a": true, "e": "Langman uses embryoblast for the inner cell mass."}, {"q": "The outer cell mass of the blastocyst is called the trophoblast.", "a": true, "e": "This terminology is explicitly given."}, {"q": "The inner cell mass forms the trophoblast, whereas the outer cell mass forms the embryoblast.", "a": false, "e": "The inner cell mass forms the embryoblast; the outer cell mass forms the trophoblast."}, {"q": "The zona pellucida disappears around the time the blastocyst is ready to implant.", "a": true, "e": "Langman describes disappearance of the zona pellucida around the time of implantation."}, {"q": "In humans, trophoblast cells at the embryoblast pole begin to penetrate between epithelial cells of the uterine mucosa at about the sixth day.", "a": true, "e": "This timing and location are given in Figure 3.10."}, {"q": "The blastocyst begins implantation before entering the uterine cavity.", "a": false, "e": "The blastocyst enters the uterine cavity before implantation begins."}, {"q": "L-selectin on trophoblast cells and carbohydrate receptors on the uterine epithelium are implicated in initial blastocyst attachment.", "a": true, "e": "Langman describes this proposed mechanism."}, {"q": "Selectins are carbohydrate-binding proteins.", "a": true, "e": "This is stated in the implantation discussion."}, {"q": "Integrins expressed by the trophoblast interact with extracellular matrix molecules such as laminin and fibronectin.", "a": true, "e": "Langman describes these interactions during attachment and invasion."}, {"q": "Integrin receptors for laminin promote attachment, while receptors for fibronectin stimulate migration.", "a": true, "e": "This distinction is given in the implantation discussion."}, {"q": "The end result of trophoblast-matrix interactions is completely independent of regulation of trophoblast differentiation.", "a": false, "e": "Langman states that these molecules also interact along signal-transduction pathways regulating trophoblast differentiation."}, {"q": "By the end of the first week, the human zygote has passed through the morula and blastocyst stages and has begun implantation.", "a": true, "e": "This is stated at the end of the chapter section."}, {"q": "The corpus luteum forms from granulosa cells alone after ovulation.", "a": false, "e": "Granulosa cells together with cells from the theca interna contribute to the corpus luteum."}, {"q": "After ovulation, granulosa cells and theca interna cells become vascularized under the influence of LH.", "a": true, "e": "Langman describes this luteinization process."}, {"q": "The resulting luteal cells secrete both estrogen and progesterone.", "a": true, "e": "The corpus luteum secretes these hormones."}, {"q": "The corpus luteum promotes the proliferative phase of the endometrium mainly through progesterone.", "a": false, "e": "Progesterone from the corpus luteum promotes the secretory/progestational phase."}, {"q": "If fertilization does not occur, the corpus luteum reaches maximum development approximately nine days after ovulation.", "a": true, "e": "This is the timing given for corpus luteum maximum development."}, {"q": "Degeneration of luteal cells is termed luteolysis.", "a": true, "e": "Langman uses this term for corpus luteum degeneration."}, {"q": "The fibrotic remnant of the degenerating corpus luteum is called the corpus albicans.", "a": true, "e": "The corpus albicans is a mass of fibrotic scar tissue."}, {"q": "If fertilization occurs, the corpus luteum is maintained by human chorionic gonadotropin.", "a": true, "e": "hCG from the syncytiotrophoblast prevents degeneration of the corpus luteum."}, {"q": "Human chorionic gonadotropin causes immediate degeneration of the corpus luteum after fertilization.", "a": false, "e": "hCG maintains the corpus luteum and its progesterone production."}, {"q": "The corpus luteum of pregnancy may persist until the end of the fourth month.", "a": true, "e": "Langman states that it may remain important until then."}, {"q": "Removal of the corpus luteum of pregnancy before the fourth month is generally harmless because placental hormones are already fully adequate.", "a": false, "e": "Removal before the fourth month usually leads to abortion."}, {"q": "The secretory phase of the endometrium begins approximately two to three days after ovulation.", "a": true, "e": "Langman relates its onset to progesterone production by the corpus luteum."}, {"q": "The menstrual phase is marked by shedding of the compact and spongy endometrial layers.", "a": true, "e": "The compact and spongy layers are shed during menstruation."}, {"q": "The basal layer is completely shed during menstruation.", "a": false, "e": "The basal layer remains and regenerates the other layers."}, {"q": "The basal layer contains basal arteries and participates in rebuilding the endometrium.", "a": true, "e": "Langman describes its regenerative role."}, {"q": "The uterine endometrium has three recognizable layers during the secretory phase: compact, spongy, and basal.", "a": true, "e": "These three layers are described in Langman's implantation section."}, {"q": "The myometrium is the mucosal lining of the inner uterine wall.", "a": false, "e": "The endometrium is the mucosal lining; the myometrium is the thick smooth-muscle layer."}, {"q": "The uterus has three main wall layers: endometrium, myometrium, and perimetrium.", "a": true, "e": "This is explicitly stated."}, {"q": "During implantation, the uterus is in the secretory phase.", "a": true, "e": "Langman states that the uterine mucosa is in its secretory phase at implantation."}, {"q": "The blastocyst normally implants along the anterior or posterior wall of the body of the uterus.", "a": true, "e": "Langman describes these as common implantation sites."}, {"q": "The blastocyst normally implants in the cervical canal.", "a": false, "e": "The normal implantation site is the uterine body, commonly anterior or posterior wall."}, {"q": "The proliferative phase of the endometrium is under estrogen influence.", "a": true, "e": "Estrogen promotes growth of the ovarian follicles and parallels endometrial proliferation."}, {"q": "The proliferative phase begins at the end of the menstrual phase.", "a": true, "e": "This timing is given by Langman."}, {"q": "If fertilization does not occur, progesterone secretion from the corpus luteum remains high indefinitely.", "a": false, "e": "The corpus luteum degenerates, progesterone decreases, and menstruation begins."}, {"q": "At the time of implantation, uterine glands and arteries become coiled and the tissue becomes succulent.", "a": true, "e": "These secretory-phase changes prepare the endometrium for implantation."}, {"q": "The uterine endometrium contributes to implantation and later contributes to formation of the placenta.", "a": true, "e": "Langman states both roles."}, {"q": "In the absence of fertilization, the endometrium assists implantation throughout the cycle.", "a": false, "e": "Implantation occurs only if a blastocyst is present; otherwise the menstrual phase follows."}, {"q": "During the first week, the morula reaches the uterine lumen at approximately four days of age.", "a": true, "e": "Figure 3.11 places the advanced morula in the uterine lumen at about four days."}];
+
+let questions=[], answered=0, score=0, correct=0, wrong=0;
+
+function shuffle(a){
+ for(let i=a.length-1;i>0;i--){
+   const j=Math.floor(Math.random()*(i+1));
+   [a[i],a[j]]=[a[j],a[i]];
+ }
+ return a;
+}
+
+function updateStats(){
+ document.getElementById('score').textContent=score;
+ document.getElementById('answered').textContent=answered;
+ document.getElementById('correct').textContent=correct;
+ document.getElementById('wrong').textContent=wrong;
+ document.getElementById('bar').style.width=(answered/100*100)+'%';
+}
+
+function newTest(){
+ questions=shuffle(sourceQuestions.map(x=>({...x})));
+ answered=0; score=0; correct=0; wrong=0;
+ document.getElementById('final').style.display='none';
+ render();
+ updateStats();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function render(){
+ const root=document.getElementById('test');
+ root.innerHTML='';
+ questions.forEach((item,i)=>{
+   const q=document.createElement('div');
+   q.className='q';
+   q.dataset.index=i;
+
+   const statement=document.createElement('div');
+   statement.className='statement';
+   statement.innerHTML='<b>'+(i+1)+'.</b> '+item.q;
+
+   const buttons=document.createElement('div');
+   buttons.className='buttons';
+
+   const t=document.createElement('button');
+   const f=document.createElement('button');
+   t.textContent='TRUE'; f.textContent='FALSE';
+   t.className='trueBtn'; f.className='falseBtn';
+
+   // Randomize answer-button position independently for every question.
+   if(Math.random()<0.5){buttons.append(t,f)}else{buttons.append(f,t)}
+
+   const feedback=document.createElement('div');
+   feedback.className='feedback';
+
+   function answer(choice){
+     if(q.dataset.done==='1') return;
+     q.dataset.done='1';
+     t.disabled=true; f.disabled=true;
+     answered++;
+
+     const isCorrect=choice===item.a;
+     if(isCorrect){score++; correct++; feedback.classList.add('correct');}
+     else{score--; wrong++; feedback.classList.add('incorrect');}
+
+     feedback.innerHTML='<b>'+ (isCorrect?'✓ Correct':'✗ Incorrect') +
+       '</b><br><span class="explain">Correct answer: <b>'+ (item.a?'TRUE':'FALSE') +
+       '</b><br>'+item.e+'</span>';
+
+     q.appendChild(feedback);
+     updateStats();
+
+     if(answered===100){
+       document.getElementById('final').style.display='block';
+       document.getElementById('finalText').innerHTML=
+         '<b>Final score: '+score+'/100</b><br>Correct: '+correct+' • Wrong: '+wrong+
+         '<br><br>'+performanceText(score);
+       document.getElementById('final').scrollIntoView({behavior:'smooth'});
+     }
+   }
+
+   t.onclick=()=>answer(true);
+   f.onclick=()=>answer(false);
+
+   q.append(statement,buttons);
+   root.appendChild(q);
+ });
+}
+
+function performanceText(s){
+ if(s>=90)return 'Excellent. This is exam-level mastery.';
+ if(s>=80)return 'Strong performance. Review the statements you missed.';
+ if(s>=70)return 'Good, but the traps are still catching you.';
+ if(s>=60)return 'Borderline. You need another focused pass through the chapter.';
+ return 'Weak performance. Do not memorize the answers—re-read the relevant Langman sections and retest.';
+}
+
+function showAnswers(){
+ document.querySelectorAll('.q').forEach(q=>{
+   if(q.dataset.done==='1') return;
+   const i=Number(q.dataset.index);
+   const item=questions[i];
+   q.dataset.done='1';
+   const buttons=q.querySelectorAll('button');
+   buttons.forEach(b=>b.disabled=true);
+   const feedback=document.createElement('div');
+   feedback.className='feedback correct';
+   feedback.innerHTML='<b>Answer: '+(item.a?'TRUE':'FALSE')+
+     '</b><br><span class="explain">'+item.e+'</span>';
+   q.appendChild(feedback);
+ });
+}
+
+newTest();
+</script>
+</body>
+</html>
