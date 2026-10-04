@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anatomy Upper Limb 5 — Snell Clinical Anatomy — 100 Mark Test</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;color:#17202a}
+header{background:#111827;color:#fff;padding:22px 18px;position:sticky;top:0;z-index:5;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+h1{margin:0;font-size:24px}
+.subtitle{margin-top:6px;color:#cbd5e1;font-size:14px}
+.warning{background:#fff3cd;color:#664d03;border:1px solid #ffecb5;padding:12px 14px;border-radius:10px;margin:16px auto;max-width:1000px;font-size:14px}
+#scorebox{max-width:1000px;margin:0 auto;padding:10px 14px;font-weight:bold}
+main{max-width:1000px;margin:0 auto;padding:0 14px 40px}
+.section{background:#fff;border-radius:14px;margin:18px 0;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.section h2{margin:0 0 14px;font-size:19px;color:#1f4e79}
+.q{border-top:1px solid #e5e7eb;padding:16px 0}
+.q:first-child{border-top:0}
+.statement{font-size:16px;line-height:1.45;margin-bottom:10px}
+.buttons{display:flex;gap:10px}
+button{border:0;border-radius:9px;padding:10px 18px;font-weight:bold;cursor:pointer;font-size:14px}
+.trueBtn{background:#dbeafe;color:#1e3a8a}
+.falseBtn{background:#fee2e2;color:#991b1b}
+button:disabled{opacity:.55;cursor:not-allowed}
+.correct{margin-top:10px;padding:10px 12px;border-radius:9px;background:#dcfce7;color:#166534;font-weight:bold}
+.wrong{margin-top:10px;padding:10px 12px;border-radius:9px;background:#fee2e2;color:#991b1b;font-weight:bold}
+.explanation{margin-top:8px;padding:10px;background:#f8fafc;border-left:4px solid #64748b;color:#334155;font-weight:normal;line-height:1.45}
+#final{display:none;background:#111827;color:#fff;border-radius:14px;padding:22px;margin:20px auto;max-width:1000px;text-align:center}
+#final button{background:#fff;color:#111827;margin-top:12px}
+</style>
+</head>
+<body>
+<header>
+<h1>Anatomy Upper Limb 5 — Snell Clinical Anatomy</h1>
+<div class="subtitle">100 TRUE/FALSE statements • +1 correct • −1 wrong • Immediate answer and explanation</div>
+</header>
+<div class="warning"><b>WARNING:</b> Negative marking is active. Each correct answer gives <b>+1</b> and each incorrect answer gives <b>−1</b>. Questions and sections are randomized every time you load or retake the test.</div>
+<div id="scorebox">Score: <span id="score">0</span> &nbsp;|&nbsp; Answered: <span id="answered">0</span>/100</div>
+<main id="test"></main>
+<div id="final"><h2>Test Complete</h2><div>Your final score: <span id="finalscore"></span>/100</div><button onclick="render()">Retake — New Random Order</button></div>
+
+<script>
+const sourceSections=[["Interosseous Membrane", [["The membrane binding the shafts of the radius and ulna is described as a strong fibrous structure.", true, "Snell describes the interosseous membrane as a strong membrane uniting the shafts of the radius and ulna."], ["With the forearm bones related through the interosseous membrane, its fibers descend obliquely from the ulna toward the radius.", false, "Snell states that the fibers run obliquely downward and medially from the radius to the ulna."], ["In the midprone position, the interosseous membrane is under tension rather than being completely lax.", true, "The text states that the membrane is taut when the forearm is in the midprone position."], ["Neighboring muscles obtain attachment from the interosseous membrane.", true, "Snell identifies the interosseous membrane as an attachment for neighboring muscles."], ["When force is received at the lower end of the radius, the interosseous membrane transmits it directly to the humerus without involving the ulna.", false, "Snell describes transmission of force from the radius to the ulna and then to the humerus and scapula, not directly to the humerus."]]], ["Flexor Retinaculum", [["At the wrist, the thickened deep fascia that retains the long flexor tendons is the flexor retinaculum.", true, "This is the definition given by Snell."], ["The band responsible for retaining the long flexor tendons is positioned across the posterior rather than the anterior aspect of the wrist.", false, "The flexor retinaculum stretches across the front of the wrist."], ["The concave anterior carpal surface becomes a tunnel for the flexor structures when bridged by the flexor retinaculum.", true, "Snell states that it converts the concave anterior surface of the hand into the carpal tunnel."], ["The medial attachment of the flexor retinaculum includes both the pisiform and the hook of the hamate.", true, "These are the medial attachments stated in Snell."], ["Laterally, the flexor retinaculum reaches the tubercle of the scaphoid and the trapezium.", true, "These are the lateral attachments described by Snell."]]], ["Extensor Retinaculum", [["The thickened deep fascia on the posterior side of the wrist that retains the long extensor tendons is the extensor retinaculum.", true, "Snell describes the extensor retinaculum in this way."], ["By dividing the posterior surface of the distal radius and ulna into separate tendon passages, the extensor retinaculum forms six tunnels.", true, "Snell states that it converts the posterior surface of the distal ends of the radius and ulna into six separate tunnels."], ["Long extensor tendons traversing the extensor retinaculum are associated with synovial sheaths within their separate passages.", true, "The tendons pass through separate tunnels with synovial sheaths."], ["Medially, the extensor retinaculum is anchored to the pisiform and hook of the hamate.", true, "Snell gives these as medial attachments."], ["The lateral attachment of the extensor retinaculum is at the tubercle of the scaphoid rather than the distal end of the radius.", false, "Snell states that it is attached laterally to the distal end of the radius."]]], ["Carpal Tunnel", [["The osseous carpal arrangement together with the flexor retinaculum forms the passage termed the carpal tunnel.", true, "Snell states that the bones of the hand and flexor retinaculum form the carpal tunnel."], ["Among the structures occupying the carpal tunnel is the median nerve.", true, "Snell identifies the median nerve as a structure in the tunnel."], ["The tendon of flexor carpi radialis should be counted among the principal contents of the carpal tunnel proper.", false, "Snell specifically notes that the flexor carpi radialis tendon is not included among the contents of the carpal tunnel; it passes through a separate compartment."], ["The long flexor tendons of the fingers and thumb accompany the median nerve in relation to the carpal tunnel.", true, "The flexor tendons and median nerve are related to the carpal tunnel as described by Snell."], ["The ulnar nerve accompanies the median nerve beneath the flexor retinaculum within the carpal tunnel.", false, "The ulnar nerve is superficial to the flexor retinaculum, not a content of the carpal tunnel."]]], ["Contents of the Anterior Fascial Compartment", [["Within the anterior forearm, pronator teres, flexor carpi radialis, palmaris longus, flexor carpi ulnaris, and flexor digitorum superficialis make up the superficial group.", true, "This is the superficial group listed by Snell."], ["The muscle assigned to the intermediate group of the anterior forearm is flexor digitorum superficialis.", true, "Snell identifies flexor digitorum superficialis as the intermediate muscle."], ["Flexor pollicis longus, flexor digitorum profundus, and pronator quadratus constitute the deep group.", true, "These three muscles are listed by Snell as the deep group."], ["The nerve supply of the anterior compartment can be attributed entirely to the ulnar nerve.", false, "Most are supplied by the median nerve and its branches; flexor carpi ulnaris and the medial half of flexor digitorum profundus are supplied by the ulnar nerve."], ["Both the radial and ulnar arteries contribute to the blood supply of the anterior compartment.", true, "Snell lists the ulnar and radial arteries as the blood supply."]]], ["Nerve Supply of Anterior Compartment", [["Most of the anterior forearm muscles receive their motor supply from the median nerve or one of its branches.", true, "Snell states this explicitly."], ["Flexor carpi ulnaris follows the usual median-nerve pattern of the superficial anterior forearm muscles.", false, "Flexor carpi ulnaris is supplied by the ulnar nerve."], ["Within flexor digitorum profundus, the medial half is the portion associated with ulnar-nerve supply.", true, "Snell gives the medial half of flexor digitorum profundus as ulnar-nerve supplied."], ["The lateral half of flexor digitorum profundus is supplied by the ulnar nerve rather than the median nerve and its anterior interosseous branch.", false, "The lateral half is supplied by the median nerve through its anterior interosseous branch."], ["Pronator quadratus receives its nerve supply through the anterior interosseous branch of the median nerve.", true, "The table identifies the anterior interosseous branch of the median nerve as its nerve supply."]]], ["Pronator Teres", [["The humeral contribution to pronator teres begins at the medial epicondyle of the humerus.", true, "This is the origin listed in Table 9.6."], ["The ulnar head of pronator teres takes origin from the lateral border of the coronoid process of the ulna.", false, "Snell lists the medial border of the coronoid process of the ulna."], ["From its proximal attachment, pronator teres reaches the lateral aspect of the radial shaft.", true, "This is the listed insertion."], ["The nerve approaching pronator teres is the radial nerve.", false, "It is supplied by the median nerve."], ["Pronator teres contributes to both pronation and flexion of the forearm.", true, "The action listed in Snell is pronation and flexion of the forearm."]]], ["Flexor Carpi Radialis and Palmaris Longus", [["The common proximal attachment of flexor carpi radialis includes the medial epicondyle of the humerus.", true, "Snell lists the medial epicondyle as its origin."], ["At its distal end, flexor carpi radialis reaches the bases of the second and third metacarpal bones.", true, "The table lists the bases of the second and third metacarpal bones."], ["The motor nerve of flexor carpi radialis is the ulnar nerve rather than the median nerve.", false, "It is supplied by the median nerve."], ["When present, palmaris longus terminates in the flexor retinaculum and palmar aponeurosis.", true, "This is the listed insertion."], ["Because palmaris longus is required for effective wrist flexion, it is normally present on both sides in every individual.", false, "Snell notes that palmaris longus may be absent on one or both sides in a substantial proportion of people."]]], ["Flexor Carpi Ulnaris", [["The humeral head of flexor carpi ulnaris takes origin from the medial epicondyle.", true, "Snell lists the medial epicondyle as the origin of the humeral head."], ["The ulnar head of flexor carpi ulnaris is attached to the medial aspect of the olecranon process and posterior border of the ulna.", true, "This is the origin given in Table 9.6."], ["Distally, flexor carpi ulnaris is related to the pisiform, hook of hamate, and base of the fifth metacarpal.", true, "These are the listed insertion sites."], ["Flexor carpi ulnaris receives its motor supply from the median nerve.", false, "It is supplied by the ulnar nerve."], ["At the wrist, flexor carpi ulnaris flexes and abducts the hand.", false, "Snell states that it flexes and adducts the hand at the wrist joint."]]], ["Flexor Digitorum Superficialis", [["Flexor digitorum superficialis is formed proximally by humeroulnar and radial heads.", true, "Snell lists these two heads."], ["The humeroulnar head of flexor digitorum superficialis includes attachments at the medial epicondyle and medial border of the coronoid process.", true, "These origins are given in Table 9.6."], ["The radial head of flexor digitorum superficialis takes origin from an oblique line on the posterior surface of the radial shaft.", false, "The radial head arises from the oblique line on the anterior surface of the shaft of the radius."], ["The distal attachment of flexor digitorum superficialis is on the middle phalanges of the medial four fingers.", true, "This is the listed insertion."], ["The principal digital action of flexor digitorum superficialis is flexion of the distal rather than middle phalanges.", false, "It flexes the middle phalanges and assists in flexion of the proximal phalanges and hand."]]], ["Deep Flexors", [["The proximal attachment of flexor pollicis longus is on the anterior surface of the radial shaft.", true, "This is the origin listed by Snell."], ["The tendon of flexor pollicis longus reaches the distal phalanx of the thumb.", true, "This is its listed insertion and action target."], ["Flexor pollicis longus is supplied by the anterior interosseous branch of the median nerve.", true, "The table gives this nerve supply."], ["Flexor digitorum profundus terminates on the middle phalanges of the medial four fingers.", false, "It inserts into the distal phalanges of the medial four fingers."], ["Pronator quadratus takes origin from the posterior surface of the ulnar shaft.", false, "It arises from the anterior surface of the shaft of the ulna."]]], ["Ulnar Artery and Interosseous Branches", [["Of the two terminal branches of the brachial artery, the ulnar artery is the larger.", true, "Snell states that the ulnar artery is the larger terminal branch."], ["The ulnar artery commences in the cubital fossa at approximately the level of the neck of the radius.", true, "This is the level given in Snell."], ["On entering the hand, the ulnar artery accompanies the ulnar nerve anterior to the flexor retinaculum.", true, "Snell describes this relationship explicitly."], ["The anterior and posterior interosseous arteries arise as direct branches of the radial artery.", false, "They arise from the common interosseous artery, a branch of the ulnar artery."], ["The common interosseous artery is the vessel that divides into anterior and posterior interosseous arteries.", true, "Snell states that the common interosseous artery divides into these two arteries."]]], ["Radial Artery", [["Relative to the terminal branches of the brachial artery, the radial artery is the smaller vessel.", true, "Snell describes the radial artery as the smaller terminal branch."], ["The radial artery takes origin in the cubital fossa at approximately the level of the neck of the radius.", true, "This is the stated origin level."], ["In its proximal course, the radial artery travels downward and laterally beneath brachioradialis.", true, "Snell describes this course."], ["Along the middle third of the forearm, the superficial branch of the radial nerve lies lateral to the radial artery.", true, "This relationship is stated in the text."], ["To reach the dorsum of the hand, the radial artery winds around the medial rather than lateral side of the wrist.", false, "Snell states that it winds around the lateral aspect of the wrist."]]], ["Anterior Interosseous Nerve", [["The anterior interosseous nerve is a branch arising from the median nerve.", true, "Snell states that it arises from the median nerve."], ["Its course places the anterior interosseous nerve on the anterior surface of the interosseous membrane.", true, "This is its described course."], ["Between flexor pollicis longus and flexor digitorum profundus is the interval occupied by the anterior interosseous nerve.", true, "Snell gives this relationship."], ["At its distal end, the anterior interosseous nerve terminates on the anterior surface of the carpus.", true, "Snell states that the anterior interosseous nerve ends on the anterior surface of the carpus."], ["Pronator quadratus receives a terminal muscular supply from the anterior interosseous nerve.", true, "It supplies pronator quadratus as a branch of the median nerve."]]], ["Ulnar Nerve", [["Posterior to the medial epicondyle is the route taken by the ulnar nerve at the elbow.", true, "Snell describes its course behind the medial epicondyle."], ["Entry into the forearm occurs as the ulnar nerve passes between the two heads of flexor carpi ulnaris.", true, "This is the stated entry into the forearm."], ["In the forearm, the ulnar nerve lies between flexor carpi ulnaris and flexor digitorum superficialis.", false, "Snell states that it runs between flexor carpi ulnaris and flexor digitorum profundus."], ["In the distal two thirds of the forearm, the ulnar nerve occupies the lateral side of the ulnar artery.", false, "Snell states that the ulnar nerve lies medial to the ulnar artery in this region? Actually the figure/text describes the artery lateral to the nerve; therefore the nerve is medial to the artery."], ["At the wrist, the ulnar nerve reaches the hand anterior to the flexor retinaculum and lateral to the pisiform.", true, "Snell describes this route into the hand."]]], ["Median Nerve and Wrist Relations", [["After leaving the cubital fossa, the median nerve passes between the two heads of pronator teres.", true, "This is the stated course."], ["Beyond pronator teres, the median nerve descends posterior to flexor digitorum superficialis.", true, "Snell describes the median nerve as passing behind flexor digitorum superficialis."], ["Near the wrist, the median nerve emerges from the lateral side of flexor digitorum superficialis.", true, "This relationship is stated in Snell."], ["The median nerve enters the palm by remaining superficial to the flexor retinaculum.", false, "It enters the palm by passing beneath the flexor retinaculum."], ["The palmar cutaneous branch of the median nerve accompanies the median nerve beneath the flexor retinaculum.", false, "The palmar cutaneous branch is superficial to the flexor retinaculum."]]], ["Lateral and Posterior Compartments", [["Snell regards the lateral fascial compartment as functionally part of the posterior fascial compartment.", true, "Snell states this directly."], ["The two muscles listed for the lateral compartment are brachioradialis and extensor carpi radialis longus.", true, "These are the muscles listed in Table 9.7."], ["The principal nerve supply of brachioradialis is provided by the ulnar nerve.", false, "Brachioradialis is supplied by the radial nerve."], ["At the wrist joint, extensor carpi radialis longus produces extension together with abduction of the hand.", true, "This is its listed action."], ["Flexor pollicis longus and flexor digitorum profundus belong to the deep group of the posterior forearm compartment.", false, "Those are anterior-compartment muscles; the posterior deep group includes supinator, abductor pollicis longus, extensor pollicis brevis, extensor pollicis longus, and extensor indicis."]]], ["Deep Branch of Radial Nerve", [["In the cubital fossa, the deep branch of the radial nerve arises from the radial nerve anterior to the lateral epicondyle.", true, "Snell describes this origin in the cubital fossa."], ["After entering supinator, the deep branch of the radial nerve winds around the lateral aspect of the radial neck.", true, "This is its described course."], ["The deep branch descends between the superficial and deep muscle groups of the posterior forearm.", true, "Snell gives this relationship."], ["Among the muscles supplied by the deep branch of the radial nerve, only extensor carpi radialis longus is represented.", false, "Snell lists muscular branches to multiple posterior forearm muscles, including extensor carpi radialis brevis and the extensor muscles."], ["Distally, the deep branch of the radial nerve reaches the posterior aspect of the wrist joint.", true, "Snell states that it eventually reaches the posterior surface of the wrist joint."]]], ["Structures Anterior to Wrist", [["Superficial to the flexor retinaculum, the flexor carpi ulnaris tendon terminates on the pisiform bone.", true, "Snell lists this tendon among structures passing superficial to the flexor retinaculum."], ["At the wrist, the ulnar nerve is situated lateral to the pisiform.", true, "This is the stated relationship."], ["The ulnar artery occupies the lateral side of the ulnar nerve at the wrist.", true, "Snell lists the ulnar artery as lateral to the ulnar nerve."], ["The palmar cutaneous branch of the ulnar nerve remains superficial to the flexor retinaculum.", true, "It is one of the structures passing superficial to the retinaculum."], ["When present, the palmaris longus tendon remains entirely deep to the flexor retinaculum and does not continue into the palmar aponeurosis.", false, "Snell states that, when present, the palmaris longus tendon passes into the flexor retinaculum and the palmar aponeurosis."]]], ["Clinical and Applied Anatomy", [["Snell notes that palmaris longus may be absent on one or both sides in approximately one tenth of individuals.", true, "Snell's clinical note gives this approximate frequency."], ["The absence of palmaris longus produces major functional disability because wrist flexion depends on it.", false, "Snell notes that absence causes no disability."], ["Stenosing synovitis may involve the tendons of abductor pollicis longus and extensor pollicis brevis.", true, "Snell's clinical note describes stenosing synovitis involving these tendons."], ["A distal-third fracture of the radius is among the situations associated with later rupture of the extensor pollicis longus tendon.", true, "Snell notes this association."], ["In tennis elbow, the characteristic tenderness described by Snell is centered over the medial epicondyle.", false, "Snell describes tenderness over the lateral epicondyle, with pain radiating down the lateral side of the forearm."]]]];
+let sections=JSON.parse(JSON.stringify(sourceSections));
+let score=0,answered=0,total=100,locked=new Set();
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function render(){
+  score=0; answered=0; locked=new Set();
+  document.getElementById('score').textContent=score;
+  document.getElementById('answered').textContent=answered;
+  document.getElementById('final').style.display='none';
+
+  const root=document.getElementById('test');
+  root.innerHTML='';
+
+  sections=shuffle(JSON.parse(JSON.stringify(sourceSections)));
+  sections.forEach(s=>shuffle(s[1]));
+
+  sections.forEach((section,si)=>{
+    const box=document.createElement('section');
+    box.className='section';
+
+    const h=document.createElement('h2');
+    h.textContent=(si+1)+'. '+section[0];
+    box.appendChild(h);
+
+    section[1].forEach((q,qi)=>{
+      const id='q'+si+'_'+qi;
+      const wrap=document.createElement('div');
+      wrap.className='q';
+
+      const st=document.createElement('div');
+      st.className='statement';
+      st.innerHTML='<b>'+(qi+1)+'.</b> '+q[0];
+
+      const buttons=document.createElement('div');
+      buttons.className='buttons';
+
+      const t=document.createElement('button');
+      t.className='trueBtn';
+      t.textContent='TRUE';
+
+      const f=document.createElement('button');
+      f.className='falseBtn';
+      f.textContent='FALSE';
+
+      const result=document.createElement('div');
+
+      t.onclick=()=>answer(id,true,q,t,f,result);
+      f.onclick=()=>answer(id,false,q,t,f,result);
+
+      buttons.appendChild(t);
+      buttons.appendChild(f);
+      wrap.appendChild(st);
+      wrap.appendChild(buttons);
+      wrap.appendChild(result);
+      box.appendChild(wrap);
+    });
+
+    root.appendChild(box);
+  });
+}
+
+function answer(id,choice,q,t,f,result){
+  if(locked.has(id)) return;
+  locked.add(id);
+
+  const ok=choice===q[1];
+  score+=ok?1:-1;
+  answered++;
+
+  t.disabled=true;
+  f.disabled=true;
+
+  result.className=ok?'correct':'wrong';
+  result.textContent=ok?'✓ Correct (+1)':'✗ Wrong (−1)';
+
+  const exp=document.createElement('div');
+  exp.className='explanation';
+  exp.innerHTML='<b>Explanation:</b> '+q[2]+'<br><b>Correct answer:</b> '+(q[1]?'TRUE':'FALSE');
+  result.appendChild(exp);
+
+  document.getElementById('score').textContent=score;
+  document.getElementById('answered').textContent=answered;
+
+  if(answered===total){
+    document.getElementById('finalscore').textContent=score;
+    document.getElementById('final').style.display='block';
+    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+  }
+}
+
+render();
+</script>
+</body>
+</html>

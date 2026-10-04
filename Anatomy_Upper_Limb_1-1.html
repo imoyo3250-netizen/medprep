@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anatomy Upper Limb 1 — Snell Clinical Anatomy — 100 Mark Test</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#eef2f6;color:#111;margin:0;padding:12px}
+.container{max-width:900px;margin:auto}
+header{background:#202a36;color:white;padding:18px;border-radius:14px;margin-bottom:12px}
+h1{font-size:25px;margin:0 0 8px}
+.subtitle{font-size:14px;opacity:.92;line-height:1.45}
+#bar{position:sticky;top:8px;z-index:10;background:white;padding:12px;border-radius:12px;box-shadow:0 2px 10px #cbd2d9;margin-bottom:12px}
+#score{font-weight:bold}
+.card{background:white;padding:16px;margin:13px 0;border-radius:13px;box-shadow:0 2px 8px #d4d9df}
+h2{font-size:18px;margin:0 0 12px}
+.statement{border-top:1px solid #e5e7eb;padding:12px 0}
+.statement p{margin:0 0 9px;line-height:1.5}
+button{padding:9px 13px;margin:3px;border-radius:8px;border:1px solid #555;background:white;font-size:15px}
+button:hover{background:#edf1f5}
+button:disabled{opacity:.5}
+.correct{color:#087a35;font-weight:bold}
+.wrong{color:#b00020;font-weight:bold}
+.explanation{margin-top:8px;padding:9px;border-radius:8px;background:#f2f4f6;font-size:14px;line-height:1.45;color:#111}
+#final .card{border:2px solid #222}
+.small{font-size:12px;color:#555}
+.reset{background:#202a36;color:white;border-color:#202a36}
+.warning{background:#fff7d6;border-left:4px solid #d89b00;padding:10px;border-radius:8px;margin-top:10px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Anatomy Upper Limb 1 — Snell Clinical Anatomy</h1>
+<div class="subtitle">100-mark TRUE/FALSE test • 20 sections × 5 statements • Snell Upper Limb • Indirect wording, anatomical relationships, tiny facts and clinical traps.</div>
+<div class="warning">Negative marking: correct = +1 • wrong = −1. Answer key distribution is deliberately uneven (60 TRUE / 40 FALSE). Sections and statements are randomized each time, so the pattern cannot be inferred from question number.</div>
+</header>
+
+<div id="bar">
+<b id="score">Score: 0 / 100</b> &nbsp;|&nbsp;
+<span id="answered">Answered: 0 / 100</span>
+<br>
+<span class="small">Answer carefully. Some statements differ by only one anatomical relationship, attachment, direction, or clinical detail.</span>
+</div>
+
+<div id="test"></div>
+<div id="final"></div>
+</div>
+
+<script>
+const sourceSections = [["1. Basic anatomy & breast — positional traps", [["The upper limb is divided into the shoulder, arm, elbow, forearm, wrist, and hand, with the shoulder representing the junction between the trunk and arm.", true, "Snell divides the upper limb into these regions and describes the shoulder as the junction of the trunk with the arm."], ["Because the shoulder joint is the only connection mentioned for movement, the upper limb is anatomically attached to the trunk exclusively through that joint.", false, "The supplied Snell text also describes the clavicle articulating medially with the sternum and first costal cartilage."], ["The breast is situated in the pectoral region, although Snell does not regard it, strictly speaking, as anatomically part of the upper limb.", true, "That distinction is stated explicitly in the supplied pages."], ["The breast is described as a specialized accessory gland of the skin, but its secretory function is unrelated to milk production.", false, "Snell describes the breast as a specialized accessory gland of the skin that secretes milk."], ["The hand's importance depends partly on the precision with which the thumb can oppose the fingertips, especially the index finger.", true, "The introductory Basic Anatomy passage emphasizes the importance of thumb opposition and the precision of the hand."]]], ["2. Breast structure — wording traps", [["The main duct from each breast lobe opens separately on the summit of the nipple and has a dilated ampulla close to its termination.", true, "This is the arrangement described in Snell."], ["The areola forms the colored ring at the base of the breast and is separated from the nipple by a zone of normal skin.", false, "Snell states that the nipple is surrounded by the colored area called the areola."], ["The glandular lobes are separated by fibrous septa that also function as suspensory ligaments.", true, "Snell gives both the separation and suspensory function of these septa."], ["The retromammary space is a potential compartment occupied principally by dense fibrous tissue rather than loose areolar tissue.", false, "Snell identifies the retromammary space as being filled with loose areolar tissue."], ["The small tubercles around the areola are associated with the areolar glands.", true, "This relationship is stated in the supplied text."]]], ["3. Breast extent & axillary tail — proximal/distal language", [["The vertical extent of the breast is given as approximately the second through sixth ribs.", true, "Snell gives the second to sixth ribs."], ["The breast extends horizontally from the lateral margin of the sternum to the midaxillary line.", true, "This is the horizontal extent stated in Snell."], ["The axillary tail passes inferiorly and medially beneath pectoralis major before ending near the sternum.", false, "Snell describes the axillary tail as extending upward and laterally through the deep fascia over pectoralis major and entering the axilla."], ["The axillary tail is continuous with breast tissue and extends into the axilla after piercing the deep fascia.", true, "This is shown and described in the supplied pages."], ["The breast's stated vertical limits place its upper border at the sixth rib and its lower border at the second rib.", false, "The relationship is reversed: second rib superiorly and sixth rib inferiorly."]]], ["4. Breast developmental changes — subtle distinctions", [["At puberty, enlargement of the female breast is accompanied by elongation of the ducts and an increase in glandular tissue.", true, "Snell describes gradual enlargement, elongation of ducts, and increased size of glandular tissue."], ["During early pregnancy, secretory alveoli appear at the ends of the smaller ducts.", true, "This is stated in Snell."], ["The major breast enlargement of the later part of pregnancy is attributed in Snell primarily to disappearance of the secretory alveoli.", false, "Snell attributes late-pregnancy enlargement mainly to distention of secretory alveoli."], ["After lactation ceases, the secretory alveoli shrink and most disappear, while the breasts may return nearly to their original size.", true, "This is the described post-lactation change."], ["After menopause, breast tissue generally becomes more glandular because ovarian estrogen and progesterone continue to stimulate the breast.", false, "Snell states that the breast atrophies and tends to become more pendulous with the absence of ovarian estrogens and progesterone."]]], ["5. Breast vessels & lymph — directional traps", [["The internal thoracic and intercostal arteries contribute branches to the blood supply of the breast.", true, "Snell lists perforating branches of the internal thoracic artery and intercostal arteries."], ["The lateral thoracic artery, a branch of the axillary artery, contributes to the breast supply.", true, "This is specifically stated."], ["The veins of the breast are described as having a distribution completely independent of the arterial pattern.", false, "Snell states briefly that the veins correspond to the arteries."], ["Lymph from the lateral quadrants is directed toward the anterior axillary or pectoral group of nodes.", true, "This is the major lateral drainage route described."], ["The medial quadrants drain exclusively into axillary nodes and have no pathway toward internal thoracic nodes.", false, "Snell describes vessels from the medial quadrants entering the internal thoracic group."]]], ["6. Breast lymphatic anatomy — clinical traps", [["Some lymph vessels from the medial breast may communicate with lymph vessels of the opposite breast.", true, "Snell explicitly notes such communication."], ["Lymph vessels from the medial quadrants may accompany perforating intercostal vessels toward the internal thoracic nodes.", true, "This pathway is described in the supplied text."], ["A carcinoma in the lateral quadrants cannot reach axillary nodes because lymph from the breast crosses the thoracic wall only medially.", false, "Snell specifically describes lateral drainage to axillary nodes."], ["Knowledge of breast lymphatic drainage has little clinical value because malignant cells do not commonly spread through lymphatic channels.", false, "Snell emphasizes the clinical importance of lymphatic spread of breast malignancy."], ["The anterior axillary or pectoral nodes lie just posterior to the lower border of pectoralis major.", true, "This location is given in Snell."]]], ["7. Breast examination & pathology — one-word changes", [["Retraction of the nipple may result when a carcinoma within the breast substance pulls on the lactiferous ducts.", true, "Snell describes this mechanism during breast examination."], ["A retracted nipple in a patient with breast disease is never associated with an underlying tumor.", false, "Snell identifies carcinoma as one cause of nipple retraction."], ["During examination, raising the arms above the head can help demonstrate tethering of the skin or deeper tissues.", true, "Snell includes this maneuver in the examination description."], ["Skin dimpling may occur when fibrous septa are involved by carcinoma and become shortened or pulled.", true, "Snell explains the role of fibrous septa in dimpling."], ["Breast asymmetry is described as an uncommon finding that should automatically be treated as malignant.", false, "Snell says some degree of asymmetry is common and may result from unequal development."]]], ["8. Breast abscess & mammography — clinical precision", [["An acute breast abscess can occur during lactation.", true, "Snell states this."], ["Because fibrous septa compartmentalize the breast, infection can remain localized to one compartment or lobe.", true, "This is the mechanism described in Snell."], ["Drainage of a breast abscess is preferably performed with a circumferential incision that cuts across the radially arranged ducts.", false, "Snell recommends a radial incision to avoid spreading infection and minimize duct injury."], ["Mammography is a radiographic examination used in screening for benign and malignant tumors and cysts.", true, "This is Snell's description."], ["Mammography is considered useful only after a breast lesion has become several centimeters in diameter.", false, "Snell notes that lesions may be detected when only a few millimeters in diameter."]]], ["9. Developmental anomalies — terminology traps", [["The embryonic milk ridge extends from the axillary region toward the inguinal region.", true, "Snell describes the linear ectodermal thickening extending from the axilla to the inguinal region."], ["In humans, the entire milk ridge normally persists so that multiple mammary glands form from the axilla to the inguinal region.", false, "In humans, most of the ridge disappears; only a small pectoral portion persists."], ["Polythelia refers to supernumerary nipples occurring along the line corresponding to the milk ridge.", true, "Snell defines polythelia in this way."], ["Micromastia describes diffuse enlargement of one or both breasts during puberty.", false, "Micromastia is an excessively small breast due to lack of development."], ["Gynecomastia refers to unilateral or bilateral enlargement of the male breast, often around puberty.", true, "This is the Snell definition."]]], ["10. Clavicle — curves, attachments & fracture traps", [["The clavicle lies horizontally across the root of the neck and connects the upper limb to the axial skeleton.", true, "Snell describes its position and role in transmitting forces to the axial skeleton."], ["The medial two thirds of the clavicle are concave anteriorly, whereas the lateral third is convex anteriorly.", false, "Snell states the medial two thirds are convex forward and the lateral third is concave forward."], ["Medially, the clavicle articulates with the sternum and first costal cartilage.", true, "This is stated in Snell."], ["Laterally, the clavicle articulates with the acromion process of the scapula.", true, "Snell gives the acromioclavicular articulation."], ["The clavicle's function as a strut permits the arm to lie directly against the trunk without being held away from it.", false, "Snell states that the clavicle holds the arm away from the trunk."]]], ["11. Clavicular fracture — fragment movement", [["A common clavicular fracture occurs near the junction of its medial and lateral thirds.", true, "Snell identifies this as the usual site."], ["After this fracture, the lateral fragment is pulled medially and forward partly by the weight of the arm.", true, "This is described in the clinical note."], ["The medial fragment is displaced downward by the deltoid and pectoralis major muscles.", false, "Snell states that the medial fragment is tilted upward by the sternocleidomastoid."], ["The close relationship of the supraclavicular nerves to the clavicle may help explain persistent pain after a clavicular fracture.", true, "Snell gives this clinical explanation."], ["A fracture of the clavicle can never narrow the interval through which the brachial plexus and subclavian vessels pass.", false, "Snell describes possible narrowing and compression of nerves and blood vessels."]]], ["12. Scapula — small landmarks", [["The scapula is a flat triangular bone on the posterior thoracic wall, extending approximately from the second to the seventh rib.", true, "Snell gives these boundaries."], ["The lateral end of the scapular spine forms the acromion, which articulates with the clavicle.", true, "This is stated in Snell."], ["The glenoid cavity is located at the medial border of the scapula and faces directly posteriorly.", false, "It is at the superolateral angle and articulates with the humeral head."], ["The coracoid process projects upward and forward above the glenoid cavity.", true, "Snell describes this direction."], ["The inferior angle of the scapula is approximately at the level of the second rib.", false, "Snell places the inferior angle at the seventh rib and the spine of T7."]]], ["13. Scapular surfaces & fossae", [["The spine divides the posterior surface of the scapula into the supraspinous and infraspinous fossae.", true, "Snell states this directly."], ["The supraspinous fossa lies superior to the spine, while the infraspinous fossa lies inferior to it.", true, "This is the stated relationship."], ["The subscapular fossa is a depression on the posterior surface immediately below the scapular spine.", false, "The subscapular fossa is on the costal/anterior surface; the posterior surface contains the supra- and infraspinous fossae."], ["The scapular spine projects forward from the costal surface and therefore cannot be palpated posteriorly.", false, "Snell states that the spine projects backward and is a posterior feature."], ["The inferior angle and spine of the scapula provide a landmark corresponding to the seventh rib and seventh thoracic vertebra.", true, "Snell gives this relationship."]]], ["14. Humerus — proximal end", [["The head of the humerus forms about one third of a sphere rather than an entire hemisphere.", true, "Snell states that the head forms about one third of a sphere."], ["The greater and lesser tuberosities are separated by the bicipital groove.", true, "This is stated in Snell."], ["The surgical neck is located immediately proximal to the greater and lesser tuberosities.", false, "Snell places the surgical neck below, or distal to, the tuberosities."], ["The deltoid tuberosity is a roughened elevation on the lateral aspect of the humeral shaft.", true, "This is the description in Snell."], ["The spiral groove is on the anterior surface of the humerus and contains the ulnar nerve.", false, "Snell describes the spiral groove on the posterior surface and relates it to the radial nerve."]]], ["15. Humerus — distal end & fossae", [["The medial and lateral epicondyles provide attachment for muscles and ligaments.", true, "Snell states this."], ["The capitulum articulates with the head of the radius.", true, "Snell gives this articulation."], ["The trochlea articulates with the head of the radius while the capitulum articulates with the trochlear notch of the ulna.", false, "The articulations are reversed: trochlea with the ulnar trochlear notch; capitulum with the radial head."], ["The coronoid fossa is anterior and superior to the trochlea and receives the coronoid process during flexion.", true, "Snell describes this."], ["The olecranon fossa lies anterior to the trochlea and receives the coronoid process during extension.", false, "It lies posteriorly and receives the olecranon process during extension."]]], ["16. Axilla — boundaries", [["The axilla is pyramidal, with an apex directed toward the root of the neck and a base directed inferiorly.", true, "This follows Snell's description of the pyramidal space."], ["The anterior wall includes pectoralis major, pectoralis minor, and subclavius.", true, "Snell lists these muscles."], ["The posterior wall is formed solely by serratus anterior and the ribs.", false, "Snell gives subscapularis, latissimus dorsi, and teres major for the posterior wall."], ["The medial wall includes the upper four or five ribs and intercostal spaces covered by serratus anterior.", true, "This is the Snell description."], ["The lateral wall is formed by the scapula and clavicle without contribution from biceps or coracobrachialis.", false, "Snell describes the coracobrachialis and biceps in relation to the lateral wall."]]], ["17. Axilla — contents & clavipectoral fascia", [["The axilla contains the axillary artery and its branches, the axillary vein, and lymph vessels and nodes.", true, "Snell lists these structures among the contents."], ["The clavipectoral fascia is attached superiorly to the clavicle.", true, "Snell describes this attachment."], ["Below, the clavipectoral fascia encloses the pectoralis minor and continues downward as the suspensory ligament of the axilla.", true, "This is described in Snell."], ["The suspensory ligament of the axilla attaches the clavipectoral fascia directly to the skin of the posterior neck.", false, "Snell states that the fascia continues downward as the suspensory ligament of the axilla and joins the fascial floor of the axilla."], ["Pectoralis minor is irrelevant to the anatomical description of the axillary artery because the artery is never divided in relation to it.", false, "Pectoralis minor is an important landmark for describing the axillary artery."]]], ["18. Pectoral muscles — attachment traps", [["Pectoralis major inserts on the lateral lip of the bicipital groove of the humerus.", true, "Snell's table gives this insertion."], ["Pectoralis minor inserts on the coracoid process rather than the acromion.", true, "Snell identifies the coracoid process as its insertion."], ["Subclavius inserts on the first rib and arises from the clavicle.", false, "Snell gives the first costal cartilage as origin and clavicle as insertion."], ["Serratus anterior arises from the upper eight ribs.", true, "Snell's table gives this origin."], ["Serratus anterior is supplied by the thoracodorsal nerve and therefore paralysis produces a winged scapula.", false, "Snell identifies the long thoracic nerve as its supply; the thoracodorsal nerve supplies latissimus dorsi."]]], ["19. Nerve supply & muscle action — tiny-fact traps", [["Pectoralis major receives both medial and lateral pectoral nerves.", true, "Snell's table gives both."], ["Pectoralis minor is supplied by the lateral pectoral nerve alone.", false, "Snell gives the medial pectoral nerve."], ["Subclavius receives a nerve arising from the upper trunk of the brachial plexus, with roots C5 and C6.", true, "Snell's table lists the nerve to subclavius and roots C5,6."], ["Latissimus dorsi is supplied by the long thoracic nerve.", false, "Snell gives the thoracodorsal nerve."], ["Trapezius receives motor supply from the spinal accessory nerve, with C3 and C4 contributing sensory fibers.", true, "This is the arrangement in Snell's table."]]], ["20. Integrated clinical upper-limb traps", [["Paralysis of serratus anterior may allow the medial border of the scapula to project abnormally posteriorly, producing winging.", true, "Snell describes winged scapula with serratus anterior paralysis."], ["A surgical neck fracture of the humerus is described as occurring distal to the humeral shaft rather than near the proximal end.", false, "The surgical neck is immediately distal to the tuberosities at the proximal humerus."], ["A supracondylar fracture may threaten the brachial artery and contribute to ischemic contracture of the forearm.", true, "Snell describes this complication."], ["A fracture of the medial epicondyle cannot involve the ulnar nerve because that nerve is separated from the elbow region by the radial head.", false, "Snell specifically states that the ulnar nerve can become involved in medial epicondyle fractures."], ["The clavicle can act as a strut while also transmitting forces from the upper limb toward the axial skeleton.", true, "Snell states both functions."]]]];
+let sections = JSON.parse(JSON.stringify(sourceSections));
+let score=0, answered=0, total=100, locked=new Set();
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function render(){
+  score=0; answered=0; locked=new Set();
+  document.getElementById('score').textContent='Score: 0 / 100';
+  document.getElementById('answered').textContent='Answered: 0 / 100';
+  document.getElementById('final').innerHTML='';
+  sections=shuffle(JSON.parse(JSON.stringify(sourceSections)));
+  sections.forEach(s=>shuffle(s[1]));
+  const test=document.getElementById('test');
+  test.innerHTML='';
+  let n=0;
+
+  sections.forEach((section,si)=>{
+    const card=document.createElement('div');
+    card.className='card';
+    const h=document.createElement('h2');
+    h.textContent=(si+1)+'. '+section[0];
+    card.appendChild(h);
+
+    section[1].forEach((q,qi)=>{
+      n++;
+      const id=n;
+      const box=document.createElement('div');
+      box.className='statement';
+      box.innerHTML='<p><b>'+n+'.</b> '+q[0]+'</p>';
+
+      const t=document.createElement('button');
+      t.textContent='TRUE';
+      const f=document.createElement('button');
+      f.textContent='FALSE';
+      const result=document.createElement('div');
+
+      t.onclick=()=>answer(id,true,q,t,f,result);
+      f.onclick=()=>answer(id,false,q,t,f,result);
+
+      box.appendChild(t);
+      box.appendChild(f);
+      box.appendChild(result);
+      card.appendChild(box);
+    });
+    test.appendChild(card);
+  });
+}
+
+function answer(id,choice,q,t,f,result){
+  if(locked.has(id)) return;
+  locked.add(id);
+
+  const ok=choice===q[1];
+  score+=ok?1:-1;
+  answered++;
+
+  t.disabled=true;
+  f.disabled=true;
+
+  result.className=ok?'correct':'wrong';
+  result.textContent=ok?'✓ Correct (+1)':'✗ Wrong (−1)';
+
+  const exp=document.createElement('div');
+  exp.className='explanation';
+  exp.innerHTML='<b>Explanation:</b> '+q[2]+'<br><b>Correct answer:</b> '+(q[1]?'TRUE':'FALSE');
+  result.appendChild(exp);
+
+  document.getElementById('score').textContent='Score: '+score+' / 100';
+  document.getElementById('answered').textContent='Answered: '+answered+' / 100';
+
+  if(answered===total){
+    document.getElementById('final').innerHTML=
+      '<div class="card"><h2>Final Score</h2><p><b>'+score+' / 100</b></p>'+
+      '<p class="small">Negative marking applied: +1 for correct, −1 for wrong.</p>'+
+      '<button class="reset" onclick="render()">Retake / New Random Order</button></div>';
+  }
+}
+
+render();
+</script>
+</body>
+</html>

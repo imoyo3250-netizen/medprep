@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anatomy Upper Limb 3 — Snell Clinical Anatomy — 100 Mark Test</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#eef2f6;color:#111;margin:0;padding:12px}
+.container{max-width:900px;margin:auto}
+header{background:#202a36;color:white;padding:18px;border-radius:14px;margin-bottom:12px}
+h1{font-size:25px;margin:0 0 8px}
+.subtitle{font-size:14px;opacity:.92;line-height:1.45}
+#bar{position:sticky;top:8px;z-index:10;background:white;padding:12px;border-radius:12px;box-shadow:0 2px 10px #cbd2d9;margin-bottom:12px}
+#score{font-weight:bold}
+.card{background:white;padding:16px;margin:13px 0;border-radius:13px;box-shadow:0 2px 8px #d4d9df}
+h2{font-size:18px;margin:0 0 12px}
+.statement{border-top:1px solid #e5e7eb;padding:12px 0}
+.statement p{margin:0 0 9px;line-height:1.5}
+button{padding:9px 13px;margin:3px;border-radius:8px;border:1px solid #555;background:white;font-size:15px}
+button:hover{background:#edf1f5}
+button:disabled{opacity:.5}
+.correct{color:#087a35;font-weight:bold}
+.wrong{color:#b00020;font-weight:bold}
+.explanation{margin-top:8px;padding:9px;border-radius:8px;background:#f2f4f6;font-size:14px;line-height:1.45;color:#111}
+#final .card{border:2px solid #222}
+.small{font-size:12px;color:#555}
+.reset{background:#202a36;color:white;border-color:#202a36}
+.warning{background:#fff7d6;border-left:4px solid #d89b00;padding:10px;border-radius:8px;margin-top:10px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Anatomy Upper Limb 3 — Snell Clinical Anatomy</h1>
+<div class="subtitle">100-mark TRUE/FALSE test • 20 sections × 5 statements • Snell Upper Limb pages 363–375 supplied • Indirect wording, close anatomical relationships, movement distinctions, nerve/artery traps and clinical details.</div>
+<div class="warning">Negative marking: correct = +1 • wrong = −1. The answer key is deliberately uneven (79 TRUE / 21 FALSE). Sections and statements are randomized each time, so question position cannot be used to predict the answer.</div>
+</header>
+
+<div id="bar">
+<b id="score">Score: 0 / 100</b> &nbsp;|&nbsp;
+<span id="answered">Answered: 0 / 100</span>
+<br>
+<span class="small">Read the whole statement. A single changed relationship, direction, attachment, nerve, movement, or clinical detail can make a statement false.</span>
+</div>
+
+<div id="test"></div>
+<div id="final"></div>
+</div>
+
+<script>
+const sourceSections = [["1. Sternoclavicular joint — structure and attachments", [["The articulation at the sternal end of the clavicle is formed with the manubrium and the first costal cartilage, rather than with the body of the sternum alone.", true], ["The sternoclavicular joint is classified as a synovial double-plane joint.", true], ["The articular disc converts the joint cavity into two compartments, while its circumference is attached to the interior of the capsule.", true], ["The articular disc is attached only to the clavicle and has no attachment to the first costal cartilage.", false], ["The costoclavicular ligament is described as an accessory ligament extending from the first costal cartilage toward the inferior surface of the medial clavicle.", true]]], ["2. Sternoclavicular joint — movements and relations", [["Forward and backward displacement of the clavicle is associated with movement in the medial compartment of the sternoclavicular joint.", true], ["Elevation and depression of the clavicle occur in the lateral compartment rather than the medial compartment.", true], ["Sternocleidomastoid and pectoralis major form the principal anterior relations of the sternoclavicular joint.", true], ["The brachiocephalic veins are anterior to the sternoclavicular joint, whereas the sternohyoid and sternothyroid muscles lie posteriorly.", false], ["The synovial membrane of the sternoclavicular joint lines the capsule and is attached around the margins of the cartilage-covered articular surfaces.", true]]], ["3. Sternoclavicular joint — clinical distinctions", [["A direct force applied along the long axis of the clavicle may fracture the first costal cartilage or, less commonly, disrupt the sternoclavicular articulation.", true], ["Anterior dislocation places the medial end of the clavicle posterior to the sternum and is therefore usually hidden from inspection.", false], ["A posterior sternoclavicular dislocation is potentially serious because the displaced clavicle may compress structures in the root of the neck.", true], ["Complete rupture of the costoclavicular ligament can permit the clavicle to remain displaced even after an attempted reduction.", true], ["The sternoclavicular joint is clinically unimportant because it cannot transmit movement between the axial skeleton and the upper limb.", false]]], ["4. Acromioclavicular joint — structure", [["The acromioclavicular articulation is between the acromion of the scapula and the lateral end of the clavicle.", true], ["The acromioclavicular joint is a synovial plane joint.", true], ["The superior and inferior acromioclavicular ligaments reinforce the capsule, while the coracoclavicular ligament provides stronger support.", true], ["The coracoclavicular ligament extends from the coracoid process to the undersurface of the medial third of the clavicle.", false], ["The articular surfaces of the acromioclavicular joint are covered by fibrocartilage rather than hyaline cartilage.", true]]], ["5. Acromioclavicular joint — relations and injury", [["The deltoid lies anterior to the acromioclavicular joint, while trapezius is related posteriorly.", true], ["The skin is described as a superior relation of the acromioclavicular joint.", true], ["The coracoclavicular ligament is important in resisting downward displacement of the lateral clavicle.", true], ["A severe blow to the point of the shoulder may tear the coracoclavicular ligament and allow the lateral clavicle to become displaced upward.", true], ["An acromioclavicular dislocation normally makes the lateral end of the clavicle less palpable because it becomes buried beneath the deltoid.", false]]], ["6. Shoulder joint — articular surfaces and capsule", [["The head of the humerus articulates with the shallow pear-shaped glenoid cavity of the scapula.", true], ["The glenoid cavity is deepened by a fibrocartilaginous rim known as the glenoid labrum.", true], ["The capsule is relatively thin and lax, permitting the wide range of movement characteristic of the shoulder joint.", true], ["The capsule is strengthened mainly by the glenohumeral ligaments and is therefore completely independent of the rotator cuff tendons.", false], ["The capsule attaches medially to the margin of the glenoid cavity and laterally to the anatomical neck of the humerus.", true]]], ["7. Shoulder joint — ligaments and bursae", [["The glenohumeral ligaments are three fibrous bands that reinforce the anterior aspect of the capsule.", true], ["The transverse humeral ligament strengthens the capsule and bridges the gap between the greater and lesser tubercles.", true], ["The coracohumeral ligament strengthens the superior aspect of the capsule and extends from the coracoid process toward the greater tuberosity.", true], ["The coracoacromial ligament lies within the joint cavity and directly replaces the superior part of the capsule.", false], ["The synovial membrane forms a tubular sheath around the tendon of the long head of biceps where the tendon passes through the joint.", true]]], ["8. Shoulder joint — movements and muscles", [["Normal flexion of the shoulder is given as about 90° in the supplied text and involves anterior deltoid, pectoralis major, biceps, and coracobrachialis.", true], ["Extension is described as reaching about 45° and involves posterior deltoid, latissimus dorsi, and teres major.", true], ["Pure glenohumeral abduction is possible to about 120°, after which further elevation requires rotation of the scapula.", true], ["The supraspinatus contributes to the beginning of abduction and helps keep the humeral head against the glenoid cavity.", true], ["Medial rotation of the shoulder is produced principally by infraspinatus, teres minor, and the posterior fibers of deltoid.", false]]], ["9. Shoulder joint — additional movements and relations", [["Adduction of the upper limb is described as approximately 45° and includes pectoralis major, latissimus dorsi, teres major, and teres minor.", true], ["Lateral rotation is described as approximately 45° and is associated with infraspinatus, teres minor, and the posterior fibers of deltoid.", true], ["Medial rotation is given as approximately 55° and includes subscapularis, latissimus dorsi, teres major, and anterior deltoid fibers.", true], ["The inferior part of the shoulder capsule is the strongest part because it is reinforced by a dense sheet of rotator-cuff tendons.", false], ["The long head of triceps, axillary vessels, and posterior circumflex humeral vessels are among the inferior relations described around the shoulder region.", true]]], ["10. Shoulder stability and dislocation", [["The shallow glenoid cavity and the relatively weak capsular support make the shoulder a mobile but comparatively unstable joint.", true], ["The subscapularis lies anterior to the joint, while supraspinatus, infraspinatus, and teres minor reinforce other major aspects of the capsule.", true], ["The weakest portion of the shoulder joint capsule is inferior, where it is not protected by rotator-cuff muscles.", true], ["Anterior inferior dislocation commonly occurs when an abducted upper limb is forced downward, allowing the humeral head to leave through the inferior weak part of the capsule.", true], ["Posterior dislocations are the commonest type of shoulder dislocation and usually result from minor indirect trauma.", false]]], ["11. Shoulder clinical anatomy — nerves and pain", [["The rounded appearance of the shoulder may be lost after dislocation because the greater tuberosity is no longer positioned laterally beneath the deltoid.", true], ["A displaced humeral head may stretch the axillary nerve, producing weakness of deltoid and sensory loss over the lower half of the deltoid region.", true], ["Downward displacement of the humeral head can also stretch the radial nerve in the region described by Snell.", true], ["Pain from the shoulder joint can be referred through the axillary and suprascapular nerves.", true], ["Irritation of the diaphragm can never produce pain perceived in the shoulder because the phrenic nerve does not share cervical segments with shoulder cutaneous nerves.", false]]], ["12. Scapular-humeral mechanism", [["For every 3° of abduction of the arm, approximately 2° occurs at the shoulder joint and 1° through rotation of the scapula.", true], ["After about 120° of abduction, further elevation depends on rotation of the scapula to permit the greater tuberosity to clear the acromion.", true], ["The scapula and upper limb are suspended from the clavicle by strong coracoclavicular and muscular attachments.", true], ["The trapezius, serratus anterior, and rhomboids are irrelevant to elevation of the upper limb above the head because movement above 120° is purely glenohumeral.", false], ["The described mechanism allows the glenoid cavity to rotate upward as the arm is progressively elevated.", true]]], ["13. Cutaneous innervation of the upper limb", [["The supraclavicular nerves supply skin over the shoulder region, whereas the upper lateral cutaneous nerve of the arm supplies skin over the lower half of the deltoid.", true], ["The upper lateral cutaneous nerve of the arm is derived from the axillary nerve.", true], ["The lower lateral cutaneous nerve of the arm is a branch of the radial nerve.", true], ["The medial cutaneous nerve of the arm supplies skin on the lateral surface of the arm below the deltoid.", false], ["The intercostobrachial nerve contributes cutaneous supply to the axilla and medial upper arm.", true]]], ["14. Superficial veins of the upper limb", [["The cephalic vein ascends in superficial fascia along the lateral side of the arm and eventually drains into the axillary vein.", true], ["The basilic vein ascends on the medial side of the upper limb and pierces deep fascia near the lower border of teres major.", true], ["The basilic vein becomes continuous with the axillary vein after joining the venae comitantes of the brachial artery.", true], ["The cephalic vein normally follows the medial side of the arm before entering the infraclavicular region.", false], ["The median cubital vein is clinically useful for venipuncture because it commonly crosses between the cephalic and basilic systems in the cubital region.", true]]], ["15. Venipuncture and lymphatic drainage", [["The bicipital aponeurosis lies deep to the median cubital vein and helps separate the vein from the brachial artery.", true], ["The median cubital vein is clinically important because the brachial artery lies immediately superficial to it without fascial protection.", false], ["Superficial lymphatic vessels from the lateral side of the arm tend to accompany the cephalic vein toward the infraclavicular group of axillary nodes.", true], ["Superficial lymphatic vessels from the medial side of the hand and arm tend to follow the basilic vein toward the lateral group of axillary nodes.", true], ["Deep lymphatic vessels accompanying the muscles and deeper tissues of the arm drain toward axillary lymph nodes.", true]]], ["16. Fascial compartments of the upper arm", [["The humerus together with the medial and lateral intermuscular septa divides the upper arm into anterior and posterior fascial compartments.", true], ["The anterior compartment contains biceps brachii, coracobrachialis, and brachialis.", true], ["The posterior compartment contains the triceps brachii muscle.", true], ["The radial nerve is restricted to the anterior compartment throughout the arm and therefore never relates to triceps.", false], ["The brachial artery is a principal vascular structure of the anterior compartment.", true]]], ["17. Muscles of the arm — attachments and actions", [["The long head of biceps brachii arises from the supraglenoid tubercle of the scapula.", true], ["The short head of biceps brachii arises from the coracoid process.", true], ["Biceps brachii inserts on the radial tuberosity and through its aponeurosis into deep fascia of the forearm.", true], ["Coracobrachialis arises from the acromion and inserts on the lateral epicondyle of the humerus.", false], ["Brachialis is a powerful flexor of the elbow and attaches distally to the coronoid process of the ulna.", true]]], ["18. Triceps and the posterior compartment", [["The long head of triceps arises from the infraglenoid tubercle of the scapula.", true], ["The lateral head of triceps arises from the upper half of the posterior surface of the humeral shaft.", true], ["The medial head of triceps arises from the lower half of the posterior surface of the humeral shaft.", true], ["All three heads of triceps are supplied by the musculocutaneous nerve.", false], ["The triceps inserts into the olecranon process of the ulna and acts primarily as an extensor of the elbow.", true]]], ["19. Brachial artery — course and relations", [["The brachial artery begins at the lower border of teres major as a continuation of the axillary artery.", true], ["It terminates opposite the neck of the radius by dividing into radial and ulnar arteries.", true], ["In the upper part of the arm the ulnar nerve lies medial to the brachial artery, whereas lower in the arm the median nerve is medial to it.", true], ["The brachial artery is posterior to the triceps throughout the arm and therefore cannot be palpated near the elbow.", false], ["The bicipital aponeurosis crosses anterior to the brachial artery near the elbow region.", true]]], ["20. Brachial artery branches and major nerves", [["The profunda artery accompanies the radial nerve toward the radial groove of the humerus.", true], ["The superior ulnar collateral artery follows the ulnar nerve toward the region of the elbow.", true], ["The inferior ulnar collateral artery arises near the termination of the brachial artery and contributes to the elbow anastomosis.", true], ["The musculocutaneous nerve remains medial to the brachial artery until the wrist, where it enters the forearm as the medial cutaneous nerve.", false], ["The median nerve gives no branches in the upper arm in the supplied text, whereas the musculocutaneous nerve supplies the main muscles of the anterior compartment.", true]]]];
+let sections = JSON.parse(JSON.stringify(sourceSections));
+let score=0, answered=0, total=100, locked=new Set();
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function render(){
+  score=0; answered=0; locked=new Set();
+  document.getElementById('score').textContent='Score: 0 / 100';
+  document.getElementById('answered').textContent='Answered: 0 / 100';
+  document.getElementById('final').innerHTML='';
+  sections=shuffle(JSON.parse(JSON.stringify(sourceSections)));
+  sections.forEach(s=>shuffle(s[1]));
+  const test=document.getElementById('test');
+  test.innerHTML='';
+  let n=0;
+
+  sections.forEach((section,si)=>{
+    const card=document.createElement('div');
+    card.className='card';
+    const h=document.createElement('h2');
+    h.textContent=(si+1)+'. '+section[0];
+    card.appendChild(h);
+
+    section[1].forEach(item=>{
+      const id=n++;
+      const [statement,answer,explanation]=item;
+      const wrap=document.createElement('div');
+      wrap.className='statement';
+      wrap.innerHTML=`<p><b>${id+1}.</b> ${statement}</p>
+        <button data-id="${id}" data-answer="true">TRUE</button>
+        <button data-id="${id}" data-answer="false">FALSE</button>
+        <div id="exp-${id}"></div>`;
+      card.appendChild(wrap);
+    });
+    test.appendChild(card);
+  });
+
+  document.querySelectorAll('button[data-id]').forEach(btn=>{
+    btn.addEventListener('click',()=>answerQuestion(btn));
+  });
+}
+
+function answerQuestion(btn){
+  const id=Number(btn.dataset.id);
+  if(locked.has(id)) return;
+  locked.add(id);
+
+  const all=document.querySelectorAll(`button[data-id="${id}"]`);
+  const selected=btn.dataset.answer==='true';
+
+  let item=null;
+  for(const s of sections){
+    for(const x of s[1]){
+      const statement=x[0];
+      if(document.querySelector(`button[data-id="${id}"]`)?.parentElement?.querySelector('p')?.textContent.includes(statement)){
+        item=x; break;
+      }
+    }
+    if(item) break;
+  }
+
+  // Safer mapping: the rendered order is the same as the shuffled order.
+  let flat=[];
+  sections.forEach(s=>s[1].forEach(x=>flat.push(x)));
+  item=flat[id];
+  const correct=item[1];
+  const exp=item[2];
+
+  all.forEach(b=>b.disabled=true);
+  if(selected===correct){
+    score++;
+    btn.classList.add('correct');
+    document.getElementById(`exp-${id}`).innerHTML=`<div class="explanation"><span class="correct">Correct.</span> ${exp}</div>`;
+  }else{
+    score--;
+    btn.classList.add('wrong');
+    document.getElementById(`exp-${id}`).innerHTML=`<div class="explanation"><span class="wrong">Incorrect.</span> The correct answer is <b>${correct?'TRUE':'FALSE'}</b>. ${exp}</div>`;
+  }
+  answered++;
+  document.getElementById('score').textContent=`Score: ${score} / 100`;
+  document.getElementById('answered').textContent=`Answered: ${answered} / 100`;
+
+  if(answered===total){
+    const final=document.getElementById('final');
+    const pct=Math.max(0,score);
+    final.innerHTML=`<div class="card"><h2>Test complete</h2>
+      <p><b>Final score: ${score} / 100</b></p>
+      <p>Answered: 100 / 100</p>
+      <p class="small">Because wrong answers carry negative marking, a low score can result even when many statements were attempted. Review every incorrect item rather than looking only at the total.</p>
+      <button class="reset" onclick="render()">Restart test</button></div>`;
+    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+  }
+}
+
+render();
+</script>
+</body>
+</html>
