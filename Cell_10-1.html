@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MedStudy Hub — 10 Question Test</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f6f8;margin:0;color:#18202a}
+header{background:#17324d;color:white;padding:18px;text-align:center;position:sticky;top:0;z-index:5}
+#score{font-weight:bold;margin-top:6px}
+.container{max-width:900px;margin:20px auto;padding:0 14px}
+.card{background:white;border-radius:12px;padding:18px;margin:16px 0;box-shadow:0 2px 8px #0001;position:relative}
+.qrow{display:flex;gap:10px;align-items:flex-start}
+h2{font-size:18px;line-height:1.45;margin:0;flex:1}
+.menu-wrap{position:relative}
+.more{border:0;background:transparent;font-size:24px;line-height:24px;cursor:pointer;padding:0 5px}
+.menu{display:none;position:absolute;right:0;top:28px;background:white;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 12px #0002;z-index:4;min-width:190px}
+.menu button{width:100%;border:0;background:white;text-align:left;padding:11px 13px;cursor:pointer}
+.menu button:hover{background:#f0f3f6}
+.options{display:flex;gap:10px;margin-top:14px}
+.options button{padding:10px 18px;border:1px solid #aaa;border-radius:8px;background:#fff;cursor:pointer;font-weight:bold}
+.options button:disabled{cursor:default}
+.result{margin-top:12px;padding:12px;border-radius:8px;display:none}
+.result.correct{background:#e7f7ec}
+.result.wrong{background:#fdeaea}
+.result.neutral{background:#eef2f6}
+.simple{margin-top:8px}
+.tenword{display:none;margin-top:10px;padding:10px;border-left:4px solid #17324d;background:#f0f4f8}
+.finish{width:100%;padding:14px;border:0;border-radius:9px;background:#17324d;color:white;font-weight:bold;font-size:16px;cursor:pointer;margin:20px 0}
+</style>
+</head>
+<body>
+<header>
+  <div>MedStudy Hub — 10 Question Test</div>
+  <div id="score">Score: 0</div>
+</header>
+
+<div class="container" id="test"></div>
+<div class="container"><button class="finish" id="finish">Finish Test</button></div>
+
+<script>
+const questions=[
+{q:"The sinoatrial node normally acts as the primary pacemaker of the heart.",a:"TRUE",e:"The sinoatrial node normally initiates the cardiac impulse.",w:"The SA node is the heart's normal pacemaker.\nIt is located in the right atrium.\nIts cells can generate electrical impulses automatically.\nThese impulses begin each normal heartbeat.\nThe impulse spreads through the atria.\nThe atria then contract and push blood into the ventricles.\nThe electrical signal reaches the atrioventricular node afterward.\nIt then travels through the cardiac conduction system.\nThis coordinated pathway produces an organized heartbeat.\nTherefore, the SA node normally controls heart rate."},
+{q:"The resting membrane potential of a typical neuron is maintained mainly by sodium ions inside the cell.",a:"FALSE",e:"The resting membrane potential depends strongly on potassium permeability and ion gradients.",w:"A neuron's resting membrane potential is mainly influenced by potassium.\nPotassium concentration is higher inside the neuron.\nThe membrane is relatively permeable to potassium at rest.\nPotassium therefore tends to move out of the cell.\nThis movement contributes to the negative internal membrane potential.\nSodium also contributes, but its resting permeability is much lower.\nThe sodium-potassium pump maintains important ion concentration gradients.\nThe pump moves sodium outward and potassium inward.\nTogether, these mechanisms help establish the resting potential.\nTherefore, sodium inside the cell is not the main explanation."},
+{q:"Mitochondria contain their own DNA and can synthesize some of their proteins.",a:"TRUE",e:"Mitochondria retain DNA and ribosomes, allowing limited independent protein synthesis.",w:"Mitochondria are important organelles responsible for cellular energy production.\nThey contain their own small circular DNA molecules.\nThey also contain their own ribosomes.\nThese ribosomes can produce some mitochondrial proteins.\nMost mitochondrial proteins, however, are produced from nuclear genes.\nThose proteins are made by cytoplasmic ribosomes and imported.\nMitochondrial DNA is inherited differently from most nuclear DNA.\nMitochondria also contain enzymes needed for oxidative phosphorylation.\nThis gives mitochondria a limited degree of genetic independence.\nTherefore, mitochondria can synthesize some of their own proteins."},
+{q:"Ribosomes are surrounded by a phospholipid bilayer membrane.",a:"FALSE",e:"Ribosomes are non-membranous structures composed mainly of ribosomal RNA and proteins.",w:"Ribosomes are cellular structures that make proteins.\nThey are composed mainly of ribosomal RNA and proteins.\nThey do not have a surrounding phospholipid membrane.\nRibosomes can be found freely in the cytoplasm.\nThey can also attach to the rough endoplasmic reticulum.\nFree ribosomes commonly make proteins used within the cell.\nBound ribosomes commonly make proteins entering secretory pathways.\nTheir main function is translating messenger RNA into protein.\nThey use transfer RNA to bring amino acids.\nTherefore, ribosomes are non-membranous protein-producing structures."},
+{q:"The Golgi apparatus modifies, sorts, and packages many proteins.",a:"TRUE",e:"Proteins passing through the Golgi can be modified, sorted, and directed to their destinations.",w:"The Golgi apparatus is involved in processing cellular proteins.\nProteins can arrive at the Golgi from the endoplasmic reticulum.\nGolgi enzymes can modify these proteins chemically.\nThe Golgi also sorts proteins according to their destinations.\nIt packages selected proteins into transport vesicles.\nThese vesicles can deliver proteins to different cellular locations.\nSome proteins are directed toward lysosomes.\nOthers are transported to the cell membrane.\nSome proteins are secreted outside the cell.\nTherefore, the Golgi acts as a cellular processing and sorting center."},
+{q:"Skeletal muscle contraction requires calcium binding to troponin C.",a:"TRUE",e:"Calcium binds troponin C, shifting tropomyosin and permitting actin-myosin interaction.",w:"Skeletal muscle contraction depends on calcium ions.\nCalcium is released from the sarcoplasmic reticulum.\nThe calcium concentration near the contractile apparatus then increases.\nCalcium binds to troponin C on the thin filament.\nThis binding changes the troponin complex.\nTropomyosin moves away from myosin-binding sites on actin.\nMyosin can then interact with exposed actin sites.\nCross-bridge cycling produces force and muscle shortening.\nWhen calcium levels fall, the muscle relaxes.\nTherefore, calcium binding to troponin C is essential for contraction."},
+{q:"Lysosomes are primarily responsible for producing ATP during aerobic respiration.",a:"FALSE",e:"Mitochondria are the principal organelles responsible for aerobic ATP production.",w:"Lysosomes are specialized organelles responsible mainly for intracellular digestion.\nThey contain enzymes that break down cellular materials.\nThese enzymes work best in the acidic lysosomal environment.\nLysosomes can digest damaged organelles and cellular debris.\nThey can also break down material taken into cells.\nATP production is not their primary function.\nAerobic ATP production mainly occurs in mitochondria.\nMitochondria use oxidative phosphorylation to generate much cellular ATP.\nLysosomes instead help maintain cellular recycling and waste processing.\nTherefore, lysosomes are not the main source of aerobic ATP."},
+{q:"The cell membrane is freely permeable to most charged ions.",a:"FALSE",e:"The lipid bilayer restricts charged ions; channels and transporters control their movement.",w:"The cell membrane contains a lipid bilayer.\nThe lipid bilayer restricts movement of many charged substances.\nCharged ions cannot freely cross its hydrophobic interior.\nSpecial membrane proteins allow ions to cross selectively.\nThese proteins include ion channels and transporters.\nDifferent channels can be selective for particular ions.\nSome channels open only in response to specific signals.\nTransporters can move substances through facilitated or active processes.\nThis selective permeability helps maintain cellular ion gradients.\nTherefore, the membrane is not freely permeable to most ions."},
+{q:"DNA replication normally occurs before mitosis during the cell cycle.",a:"TRUE",e:"DNA is replicated during S phase before the cell enters mitosis.",w:"DNA replication occurs during the S phase of the cell cycle.\nThe cell copies its DNA during this stage.\nEach chromosome is therefore duplicated before mitosis begins.\nThe duplicated chromosomes contain two sister chromatids.\nDuring mitosis, sister chromatids are separated into daughter cells.\nThis helps each daughter cell receive genetic material.\nDNA replication must occur before chromosome separation.\nThe cell also checks DNA and prepares for division.\nMitosis itself mainly separates the duplicated chromosomes.\nTherefore, DNA replication normally precedes mitosis in the cell cycle."},
+{q:"Apoptosis is generally an uncontrolled form of cell death associated with extensive inflammation.",a:"FALSE",e:"Apoptosis is regulated programmed cell death and usually causes little surrounding inflammation.",w:"Apoptosis is a regulated form of programmed cell death.\nIt removes cells that are damaged or no longer needed.\nThe process involves activation of specific intracellular enzymes.\nCellular components are broken down in an organized manner.\nThe dying cell usually shrinks rather than bursting.\nCell fragments can form membrane-bound apoptotic bodies.\nThese fragments are commonly removed by neighboring cells or phagocytes.\nBecause cellular contents are contained, inflammation is usually limited.\nThis differs from uncontrolled cell injury such as necrosis.\nTherefore, apoptosis is generally controlled and relatively non-inflammatory."},
+];
+
+let score=0, answered=0;
+const test=document.getElementById("test");
+
+function render(){
+  const shuffled=[...questions].sort(()=>Math.random()-0.5);
+  test.innerHTML="";
+  shuffled.forEach((item,i)=>{
+    const card=document.createElement("section");
+    card.className="card";
+    card.dataset.answer=item.a;
+    card.dataset.done="false";
+    card.innerHTML=`
+      <div class="qrow">
+        <h2>${i+1}. ${item.q}</h2>
+        <div class="menu-wrap">
+          <button class="more" aria-label="More options">⋮</button>
+          <div class="menu">
+            <button class="tenword-btn">10-sentence explanation</button>
+          </div>
+        </div>
+      </div>
+      <div class="options">
+        <button data-value="TRUE">TRUE</button>
+        <button data-value="FALSE">FALSE</button>
+      </div>
+      <div class="result">
+        <strong class="verdict"></strong>
+        <div class="simple">${item.e}</div>
+      </div>
+      <div class="tenword">${item.w}</div>`;
+    test.appendChild(card);
+  });
+}
+function updateScore(){document.getElementById("score").textContent="Score: "+score;}
+function answer(card,value){
+  if(card.dataset.done==="true")return;
+  card.dataset.done="true"; answered++;
+  const result=card.querySelector(".result"), verdict=card.querySelector(".verdict");
+  card.querySelectorAll(".options button").forEach(b=>b.disabled=true);
+  if(value===card.dataset.answer){
+    score++; result.className="result correct"; verdict.textContent="Correct ✓ +1";
+  }else{
+    score--; result.className="result wrong"; verdict.textContent="Incorrect ✗ −1";
+  }
+  result.style.display="block"; updateScore();
+}
+test.addEventListener("click",e=>{
+  const card=e.target.closest(".card");
+  if(!card)return;
+  if(e.target.classList.contains("more")){
+    document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
+    card.querySelector(".menu").style.display="block";
+    return;
+  }
+  if(e.target.classList.contains("tenword-btn")){
+    card.querySelector(".tenword").style.display="block";
+    card.querySelector(".menu").style.display="none";
+    return;
+  }
+  if(e.target.dataset.value) answer(card,e.target.dataset.value);
+});
+document.addEventListener("click",e=>{
+  if(!e.target.closest(".menu-wrap")) document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
+});
+document.getElementById("finish").addEventListener("click",()=>{
+  alert("Test finished. Score: "+score+" / 10\nAnswered: "+answered+" / 10");
+});
+render(); updateScore();
+</script>
+</body>
+</html>
