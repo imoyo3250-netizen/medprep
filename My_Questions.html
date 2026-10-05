@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Questions | MedStudy Hub</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #06152f, #083b70, #06152f);
+    color: white;
+}
+
+header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+header h1 {
+    margin: 5px 0;
+    color: #20d9e8;
+    text-shadow: 0 0 15px rgba(32,217,232,0.6);
+}
+
+header p {
+    color: #ddd;
+}
+
+.home-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 22px;
+    border-radius: 10px;
+    background: #20d9e8;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 0 12px rgba(32,217,232,0.5);
+}
+
+.container {
+    max-width: 1000px;
+    margin: 25px auto;
+    padding: 15px;
+}
+
+.empty {
+    text-align: center;
+    padding: 50px 20px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 18px;
+}
+
+.question-card {
+    background: rgba(20,105,170,0.45);
+    border: 1px solid rgba(80,220,255,0.5);
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 15px rgba(0,200,255,0.15);
+}
+
+.question-number {
+    color: #20d9e8;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.question {
+    font-size: 19px;
+    line-height: 1.5;
+    margin: 10px 0 18px;
+}
+
+.answer {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.short-explanation {
+    background: rgba(0,0,0,0.25);
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 12px;
+}
+
+.teaching {
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(0,0,0,0.22);
+    border-radius: 12px;
+    line-height: 1.6;
+}
+
+.source {
+    margin-top: 15px;
+    padding: 12px;
+    border-left: 4px solid #20d9e8;
+    background: rgba(0,0,0,0.2);
+}
+
+.remove-btn {
+    margin-top: 15px;
+    background: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.remove-btn:hover {
+    opacity: 0.85;
+}
+
+.count {
+    text-align: center;
+    color: #20d9e8;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <h1>⭐ My Questions</h1>
+
+    <p>
+        Questions you have saved for revision
+    </p>
+
+    <a href="index.html" class="home-btn">
+        ← Home
+    </a>
+
+</header>
+
+<div class="container">
+
+    <div id="count" class="count"></div>
+
+    <div id="questions"></div>
+
+</div>
+
+<script>
+
+function loadQuestions() {
+
+    const saved =
+        JSON.parse(localStorage.getItem("medstudy_my_questions") || "[]");
+
+    const container = document.getElementById("questions");
+    const count = document.getElementById("count");
+
+    container.innerHTML = "";
+
+    count.textContent =
+        saved.length + (saved.length === 1 ? " Saved Question" : " Saved Questions");
+
+    if (saved.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty">
+                <h2>⭐ No Saved Questions Yet</h2>
+
+                <p>
+                    When you star a question during a test,
+                    it will appear here for revision.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+    saved.forEach((q, index) => {
+
+        const card = document.createElement("div");
+
+        card.className = "question-card";
+
+        card.innerHTML = `
+
+            <div class="question-number">
+                SAVED QUESTION ${index + 1}
+            </div>
+
+            <div class="question">
+                ${q.question || ""}
+            </div>
+
+            <div class="answer">
+                Correct Answer:
+                ${q.answer || "Not provided"}
+            </div>
+
+            <div class="short-explanation">
+                <strong>Why?</strong><br>
+                ${q.shortExplanation || "No short explanation provided."}
+            </div>
+
+            <div class="teaching">
+
+                <h3>🧠 Learn It Simply</h3>
+
+                ${
+                    q.longExplanation ||
+                    "A detailed teaching explanation will appear here when this question is saved from a compatible test."
+                }
+
+            </div>
+
+            <div class="source">
+
+                <strong>📚 Source</strong><br><br>
+
+                ${q.source || "Source not provided."}
+
+            </div>
+
+            ${
+                q.scholar
+                ?
+                `<p style="margin-top:12px;">
+                    🔎
+                    <a href="${q.scholar}"
+                       target="_blank"
+                       style="color:#20d9e8;">
+                       Google Scholar / Research
+                    </a>
+                </p>`
+                :
+                ""
+            }
+
+            <button
+                class="remove-btn"
+                onclick="removeQuestion(${index})">
+                Remove ⭐
+            </button>
+
+        `;
+
+        container.appendChild(card);
+
+    });
+}
+
+
+function removeQuestion(index) {
+
+    const saved =
+        JSON.parse(localStorage.getItem("medstudy_my_questions") || "[]");
+
+    saved.splice(index, 1);
+
+    localStorage.setItem(
+        "medstudy_my_questions",
+        JSON.stringify(saved)
+    );
+
+    loadQuestions();
+}
+
+
+loadQuestions();
+
+</script>
+
+</body>
+</html>
