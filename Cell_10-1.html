@@ -2751,22 +2751,86 @@ function cleanText(el){return (el?.textContent||'').replace(/^\s*\d+\.\s*/,'').t
 function renumber(){cards.forEach((c,i)=>{const h=c.querySelector('h2');h.textContent=(i+1)+'. '+cleanText(h)})}
 function shuffle(){for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]]}cards.forEach(c=>test.appendChild(c));renumber()}
 window.toggleStar=function(id){
- const card=[...document.querySelectorAll('.card')].find(c=>c.dataset.index===String(id)); if(!card)return;
- let a=saved(); const pos=a.findIndex(x=>x.id===String(id)&&x.testUrl===TEST_URL);
- const q=cleanText(card.querySelector('h2')); const correct=answerFor(card);
- const quick=card.querySelector('.quick-explanation')?.innerHTML||'';
- const template=card.querySelector('.study-panel');
- const studyHtml=template?template.innerHTML:'';
- if(pos>=0){a.splice(pos,1)}else{
-   a.unshift({id:String(id),testUrl:TEST_URL,question:q,answer:correct,quick:quick,studyHtml:studyHtml,savedAt:new Date().toISOString()});
- }
- save(a);
- const b=card.querySelector('.starbtn');
- if(pos>=0){b.textContent='☆';b.classList.remove('starred')}else{b.textContent='★';b.classList.add('starred')}
+
+  const card=document.querySelector(
+    '.card[data-index="' + String(id) + '"]'
+  );
+
+  if(!card) return;
+
+  let questions=saved();
+
+  const existingIndex=questions.findIndex(function(item){
+    return String(item.id)===String(id) &&
+           item.testUrl===TEST_URL;
+  });
+
+  const questionElement=card.querySelector('h2');
+
+  const question=questionElement
+    ? cleanText(questionElement)
+    : '';
+
+  const correct=answerFor(card);
+
+  const quickElement=card.querySelector('.quick-explanation');
+
+  const quick=quickElement
+    ? quickElement.innerHTML
+    : '';
+
+  const studyElement=card.querySelector('.study-panel');
+
+  const studyHtml=studyElement
+    ? studyElement.innerHTML
+    : '';
+
+  /* REMOVE STAR */
+  if(existingIndex!==-1){
+
+    questions.splice(existingIndex,1);
+
+    save(questions);
+
+    const star=card.querySelector('.starbtn');
+
+    if(star){
+      star.textContent='☆';
+      star.classList.remove('starred');
+    }
+
+    return;
+  }
+
+  /* SAVE STAR */
+  questions.unshift({
+
+    id:String(id),
+
+    testUrl:TEST_URL,
+
+    question:question,
+
+    answer:correct,
+
+    quick:quick,
+
+    studyHtml:studyHtml,
+
+    savedAt:new Date().toISOString()
+
+  });
+
+  save(questions);
+
+  const star=card.querySelector('.starbtn');
+
+  if(star){
+    star.textContent='★';
+    star.classList.add('starred');
+  }
+
 };
-shuffle();
-cards.forEach(card=>{
- const correct=answerFor(card), buttons=[...card.querySelectorAll('.tf')], result=card.querySelector('.result'), exp=card.querySelector('.explanation'), id=card.dataset.index;
  if(saved().some(x=>x.id===String(id)&&x.testUrl===TEST_URL)){const b=card.querySelector('.starbtn');b.textContent='★';b.classList.add('starred')}
  buttons.forEach(btn=>btn.onclick=()=>{
    if(buttons[0].disabled)return; buttons.forEach(b=>b.disabled=true); answered++;
