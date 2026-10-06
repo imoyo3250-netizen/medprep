@@ -1522,6 +1522,857 @@ function toggleInstructions() {
     }
 }
 </script>
+    <!-- =========================================================
+     MEDSTUDY HUB — CLINICAL PEARL POPUP
+     SAFE HOMEPAGE INTEGRATION
+     ========================================================= -->
+
+<style>
+#medstudy-pearl-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+#medstudy-pearl-box {
+    width: min(720px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #08131f;
+    border: 1px solid rgba(32, 217, 232, 0.45);
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.65),
+        0 0 35px rgba(32, 217, 232, 0.12);
+    color: white;
+    position: relative;
+    animation: medstudyPearlIn 0.28s ease-out;
+}
+
+@keyframes medstudyPearlIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+#medstudy-pearl-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    color: white;
+    font-size: 25px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+#medstudy-pearl-close:hover {
+    background: rgba(255,255,255,0.16);
+}
+
+.medstudy-pearl-label {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: rgba(32, 217, 232, 0.12);
+    border: 1px solid rgba(32, 217, 232, 0.28);
+    color: #20d9e8;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+}
+
+#medstudy-pearl-title {
+    margin: 0 45px 14px 0;
+    font-size: clamp(20px, 4vw, 29px);
+    line-height: 1.25;
+}
+
+#medstudy-pearl-text {
+    font-size: clamp(16px, 3vw, 19px);
+    line-height: 1.7;
+    color: #e9f7fa;
+    margin-bottom: 18px;
+}
+
+#medstudy-pearl-visual {
+    margin: 18px 0;
+    text-align: center;
+}
+
+#medstudy-pearl-visual svg {
+    max-width: 100%;
+    height: auto;
+    border-radius: 14px;
+}
+
+#medstudy-pearl-source {
+    margin-top: 15px;
+    padding: 12px 14px;
+    border-left: 3px solid #20d9e8;
+    background: rgba(255,255,255,0.045);
+    border-radius: 8px;
+    color: #b9d6dc;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+#medstudy-pearl-next {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 13px 18px;
+    border: none;
+    border-radius: 12px;
+    background: #20d9e8;
+    color: #041014;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+#medstudy-pearl-next:hover {
+    filter: brightness(1.08);
+}
+
+@media (max-width: 600px) {
+    #medstudy-pearl-overlay {
+        padding: 12px;
+    }
+
+    #medstudy-pearl-box {
+        padding: 20px 17px;
+        border-radius: 18px;
+    }
+
+    #medstudy-pearl-text {
+        line-height: 1.6;
+    }
+}
+</style>
+
+<div id="medstudy-pearl-overlay">
+    <div id="medstudy-pearl-box">
+
+        <button
+            id="medstudy-pearl-close"
+            type="button"
+            aria-label="Close clinical pearl">
+            ×
+        </button>
+
+        <div class="medstudy-pearl-label">
+            🧠 MedStudy Pearl
+        </div>
+
+        <h2 id="medstudy-pearl-title">
+            Clinical Pearl
+        </h2>
+
+        <div id="medstudy-pearl-text"></div>
+
+        <div id="medstudy-pearl-visual"></div>
+
+        <div id="medstudy-pearl-source"></div>
+
+        <button
+            id="medstudy-pearl-next"
+            type="button">
+            Another Pearl
+        </button>
+
+    </div>
+</div>
+
+<script>
+(function () {
+
+    "use strict";
+
+    /* =====================================================
+       SETTINGS
+       ===================================================== */
+
+    const PEARL_FILES = [
+        "MedStudyHub_Clinical_Pearls_Popup_VERIFIED.html",
+        "MedStudyHub_Focused_Pearls_450_VERIFIED.html"
+    ];
+
+    const FIRST_POPUP_DELAY = 30000;       // 30 seconds
+    const RETURN_DELAY = 500;              // small delay after homepage loads
+    const MIN_POPUP_GAP = 3 * 60 * 1000;   //
+// 3 minutes
+
+const LAST_POPUP_KEY =
+    "medstudyhub_pearl_last_popup_time";
+
+const LAST_PEARL_KEY =
+    "medstudyhub_last_pearl_index";
+
+const RETURN_KEY =
+    "medstudyhub_return_from_learning";
+
+
+/* =====================================================
+   GET POPUP ELEMENTS
+===================================================== */
+
+const overlay =
+    document.getElementById("medstudy-pearl-overlay");
+
+const title =
+    document.getElementById("medstudy-pearl-title");
+
+const text =
+    document.getElementById("medstudy-pearl-text");
+
+const visual =
+    document.getElementById("medstudy-pearl-visual");
+
+const source =
+    document.getElementById("medstudy-pearl-source");
+
+const closeButton =
+    document.getElementById("medstudy-pearl-close");
+
+const nextButton =
+    document.getElementById("medstudy-pearl-next");
+
+
+if (
+    !overlay ||
+    !title ||
+    !text ||
+    !visual ||
+    !source ||
+    !closeButton ||
+    !nextButton
+) {
+    return;
+}
+
+
+/* =====================================================
+   PEARL DATABASE
+===================================================== */
+
+let allPearls = [];
+let pearlsLoaded = false;
+
+
+/* =====================================================
+   EXTRACT const PEARLS=[...] FROM PEARL HTML FILE
+===================================================== */
+
+function extractPearlArray(html) {
+
+    const marker = "const PEARLS=";
+
+    const markerPosition =
+        html.indexOf(marker);
+
+    if (markerPosition === -1) {
+        return null;
+    }
+
+    const arrayStart =
+        html.indexOf("[", markerPosition);
+
+    if (arrayStart === -1) {
+        return null;
+    }
+
+    let depth = 0;
+    let quote = null;
+    let escaped = false;
+
+    for (
+        let i = arrayStart;
+        i < html.length;
+        i++
+    ) {
+
+        const character = html[i];
+
+        if (quote !== null) {
+
+            if (escaped) {
+                escaped = false;
+                continue;
+            }
+
+            if (character === "\\") {
+                escaped = true;
+                continue;
+            }
+
+            if (character === quote) {
+                quote = null;
+            }
+
+            continue;
+        }
+
+        if (
+            character === '"' ||
+            character === "'" ||
+            character === "`"
+        ) {
+            quote = character;
+            continue;
+        }
+
+        if (character === "[") {
+            depth++;
+        }
+
+        if (character === "]") {
+
+            depth--;
+
+            if (depth === 0) {
+
+                return html.substring(
+                    arrayStart,
+                    i + 1
+                );
+            }
+        }
+    }
+
+    return null;
+}
+
+
+/* =====================================================
+   LOAD PEARLS
+===================================================== */
+
+async function loadPearls() {
+
+    if (pearlsLoaded) {
+        return allPearls;
+    }
+
+    let combined = [];
+
+    for (const filename of PEARL_FILES) {
+
+        try {
+
+            const response =
+                await fetch(
+                    filename,
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+            if (!response.ok) {
+
+                console.warn(
+                    "Pearl file not found:",
+                    filename
+                );
+
+                continue;
+            }
+
+            const html =
+                await response.text();
+
+            const arrayText =
+                extractPearlArray(html);
+
+            if (!arrayText) {
+
+                console.warn(
+                    "No PEARLS array found in:",
+                    filename
+                );
+
+                continue;
+            }
+
+            try {
+
+                const pearls =
+                    JSON.parse(arrayText);
+
+                if (Array.isArray(pearls)) {
+                    combined.push(...pearls);
+                }
+
+            } catch (error) {
+
+                console.warn(
+                    "Could not parse pearls from:",
+                    filename,
+                    error
+                );
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "Could not load pearl file:",
+                filename,
+                error
+            );
+        }
+    }
+
+
+    /* =================================================
+       REMOVE DUPLICATES
+    ================================================= */
+
+    const uniquePearls = [];
+    const seen = new Set();
+
+    combined.forEach(function (pearl) {
+
+        if (!pearl) {
+            return;
+        }
+
+        const key =
+            JSON.stringify(pearl);
+
+        if (!seen.has(key)) {
+
+            seen.add(key);
+            uniquePearls.push(pearl);
+        }
+    });
+
+    allPearls = uniquePearls;
+    pearlsLoaded = true;
+
+    return allPearls;
+}
+
+
+/* =====================================================
+   CHECK 3-MINUTE RULE
+===================================================== */
+
+function canShowPopup() {
+
+    const lastPopup =
+        Number(
+            localStorage.getItem(
+                LAST_POPUP_KEY
+            )
+        ) || 0;
+
+    if (lastPopup === 0) {
+        return true;
+    }
+
+    return (
+        Date.now() - lastPopup >=
+        MIN_POPUP_GAP
+    );
+}
+
+
+/* =====================================================
+   SELECT RANDOM PEARL
+===================================================== */
+
+function getRandomPearl() {
+
+    if (!allPearls.length) {
+        return null;
+    }
+
+    const previousIndex =
+        Number(
+            localStorage.getItem(
+                LAST_PEARL_KEY
+            )
+        );
+
+    let index;
+
+    if (allPearls.length === 1) {
+
+        index = 0;
+
+    } else {
+
+        do {
+
+            index =
+                Math.floor(
+                    Math.random() *
+                    allPearls.length
+                );
+
+        } while (
+            index === previousIndex
+        );
+    }
+
+    localStorage.setItem(
+        LAST_PEARL_KEY,
+        String(index)
+    );
+
+    return allPearls[index];
+}
+
+
+/* =====================================================
+   DISPLAY PEARL
+===================================================== */
+
+async function showPearl() {
+
+    /*
+     * Never show another automatic popup
+     * before 3 minutes have passed.
+     */
+
+    if (!canShowPopup()) {
+        return;
+    }
+
+    await loadPearls();
+
+    if (!allPearls.length) {
+
+        console.warn(
+            "No MedStudy Hub pearls were loaded."
+        );
+
+        return;
+    }
+
+    const pearl =
+        getRandomPearl();
+
+    if (!pearl) {
+        return;
+    }
+
+
+    /* TITLE */
+
+    title.textContent =
+        pearl.title ||
+        "Clinical Pearl";
+
+
+    /* PEARL TEXT */
+
+    text.textContent =
+        pearl.text ||
+        pearl.fact ||
+        pearl.question ||
+        "";
+
+
+    /* VISUAL / HISTOLOGY IMAGE */
+
+    visual.innerHTML = "";
+
+    if (pearl.visual) {
+
+        const visualContainer =
+            document.createElement("div");
+
+        visualContainer.innerHTML =
+            pearl.visual;
+
+        visual.appendChild(
+            visualContainer
+        );
+    }
+
+
+    /* SOURCE */
+
+    const sourceText =
+        pearl.source ||
+        pearl.sources ||
+        pearl.reference ||
+        "";
+
+    if (sourceText) {
+
+        source.textContent =
+            "Source: " + sourceText;
+
+        source.style.display =
+            "block";
+
+    } else {
+
+        source.textContent = "";
+
+        source.style.display =
+            "none";
+    }
+
+
+    /* SHOW POPUP */
+
+    overlay.style.display =
+        "flex";
+
+
+    /* SAVE POPUP TIME */
+
+    localStorage.setItem(
+        LAST_POPUP_KEY,
+        String(Date.now())
+    );
+}
+
+
+/* =====================================================
+   CLOSE POPUP
+===================================================== */
+
+function closePearl() {
+
+    overlay.style.display =
+        "none";
+}
+
+
+closeButton.addEventListener(
+    "click",
+    closePearl
+);
+
+
+/* =====================================================
+   CLOSE BY CLICKING OUTSIDE
+===================================================== */
+
+overlay.addEventListener(
+    "click",
+    function (event) {
+
+        if (event.target === overlay) {
+            closePearl();
+        }
+    }
+);
+
+
+/* =====================================================
+   ESCAPE KEY
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            event.key === "Escape" &&
+            overlay.style.display === "flex"
+        ) {
+            closePearl();
+        }
+    }
+);
+
+
+/* =====================================================
+   ANOTHER PEARL
+===================================================== */
+
+nextButton.addEventListener(
+    "click",
+    async function () {
+
+        await loadPearls();
+
+        if (!allPearls.length) {
+            return;
+        }
+
+        const pearl =
+            getRandomPearl();
+
+        if (!pearl) {
+            return;
+        }
+
+
+        title.textContent =
+            pearl.title ||
+            "Clinical Pearl";
+
+
+        text.textContent =
+            pearl.text ||
+            pearl.fact ||
+            pearl.question ||
+            "";
+
+
+        visual.innerHTML = "";
+
+        if (pearl.visual) {
+
+            const visualContainer =
+                document.createElement("div");
+
+            visualContainer.innerHTML =
+                pearl.visual;
+
+            visual.appendChild(
+                visualContainer
+            );
+        }
+
+
+        const sourceText =
+            pearl.source ||
+            pearl.sources ||
+            pearl.reference ||
+            "";
+
+        if (sourceText) {
+
+            source.textContent =
+                "Source: " + sourceText;
+
+            source.style.display =
+                "block";
+
+        } else {
+
+            source.textContent = "";
+
+            source.style.display =
+                "none";
+        }
+    }
+);
+
+
+/* =====================================================
+   MARK EXIT FROM TEST / CLINICAL CORRELATION
+===================================================== */
+
+window.markMedStudyLearningExit =
+    function () {
+
+        sessionStorage.setItem(
+            RETURN_KEY,
+            "1"
+        );
+    };
+
+
+/* =====================================================
+   HOMEPAGE STARTUP
+===================================================== */
+
+function startPearlSystem() {
+
+    const returning =
+        sessionStorage.getItem(
+            RETURN_KEY
+        ) === "1";
+
+
+    /* ================================================
+       RETURNING FROM TEST / CLINICAL CORRELATION
+    ================================================ */
+
+    if (returning) {
+
+        sessionStorage.removeItem(
+            RETURN_KEY
+        );
+
+        setTimeout(
+            function () {
+
+                /*
+                 * The 3-minute protection still
+                 * applies here.
+                 */
+
+                showPearl();
+
+            },
+            RETURN_DELAY
+        );
+
+        return;
+    }
+
+
+    /* ================================================
+       FIRST HOMEPAGE ENTRY
+    ================================================ */
+
+    setTimeout(
+        function () {
+
+            /*
+             * First automatic popup:
+             * 30 seconds after homepage entry.
+             */
+
+            showPearl();
+
+        },
+        FIRST_POPUP_DELAY
+    );
+}
+
+
+/* =====================================================
+   START SYSTEM
+===================================================== */
+
+if (
+    document.readyState === "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        startPearlSystem,
+        {
+            once: true
+        }
+    );
+
+} else {
+
+    startPearlSystem();
+}
+
+})();
+</script>
 
 </body>
 </html>
