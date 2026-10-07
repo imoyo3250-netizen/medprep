@@ -762,7 +762,8 @@
     </a>
 
 </div>
-        <!-- 🎥 STUDY DISCUSSION -->
+        <!-- 🎥 STUDY DISCUSSION — 6 ROOMS -->
+
 <div class="subject-card">
 
     <div>
@@ -771,34 +772,76 @@
         <h2>Study Discussion</h2>
 
         <p>
-            Join the MedStudy Hub 24/7 online study room.
-            Discuss with other students using video,
-            microphone, chat and screen sharing.
+            Join the MedStudy Hub 24/7 online study rooms.
+            Choose a room and discuss with other students
+            using video, microphone, chat and screen sharing.
         </p>
     </div>
 
-    <a
-        class="view-btn"
-        href="#"
-        onclick="joinMedStudyDiscussion(); return false;">
-        Join Discussion →
-    </a>
+    <div style="margin-top:20px;">
+
+        <button
+            class="view-btn"
+            onclick="joinMedStudyRoom('MedStudyHubRoom1')"
+            style="width:100%; margin-top:8px;">
+            🟢 Join Room 1 →
+        </button>
+
+        <button
+            class="view-btn"
+            onclick="joinMedStudyRoom('MedStudyHubRoom2')"
+            style="width:100%; margin-top:8px;">
+            🔵 Join Room 2 →
+        </button>
+
+        <button
+            class="view-btn"
+            onclick="joinMedStudyRoom('MedStudyHubRoom3')"
+            style="width:100%; margin-top:8px;">
+            🟣 Join Room 3 →
+        </button>
+
+        <button
+            class="view-btn"
+            onclick="joinMedStudyRoom('MedStudyHubRoom4')"
+            style="width:100%; margin-top:8px;">
+            🟠 Join Room 4 →
+        </button>
+
+        <button
+            class="view-btn"
+            onclick="joinMedStudyRoom('MedStudyHubRoom5')"
+            style="width:100%; margin-top:8px;">
+            🔴 Join Room 5 →
+        </button>
+
+        <button
+            class="view-btn"
+            onclick="joinMedStudyRoom('MedStudyHubRoom6')"
+            style="width:100%; margin-top:8px;">
+            🟡 Join Room 6 →
+        </button>
+
+    </div>
 
 </div>
 
-<script>
-function joinMedStudyDiscussion() {
 
-    /* Give every participant a different username */
-    var randomNumber =
-        Math.floor(1000 + Math.random() * 9000);
+<script>
+function joinMedStudyRoom(roomName) {
+
+    /* Unique username for every student */
+    var uniqueNumber =
+        Date.now().toString().slice(-6) +
+        Math.floor(100 + Math.random() * 900);
 
     var studentName =
-        "MedStudy Student " + randomNumber;
+        "MedStudy Student " + uniqueNumber;
 
+    /* MiroTalk room */
     var roomURL =
         "https://p2p.mirotalk.com/join" +
-        "?room=MedStudyHubStudyRoom" +
+        "?room=" + encodeURIComponent(roomName) +
         "&name=" + encodeURIComponent(studentName) +
         "&avatar=0" +
         "&audio=1" +
@@ -809,15 +852,9 @@ function joinMedStudyDiscussion() {
         "&notify=1" +
         "&duration=unlimited";
 
-    window.open(
-        roomURL,
-        "_blank",
-        "noopener,noreferrer"
-    );
+    window.open(roomURL, "_blank");
 }
 </script>
-
-</div>
 
 </div>
 
