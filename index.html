@@ -779,15 +779,47 @@
 
     <a
         class="view-btn"
-        href="https://p2p.mirotalk.com/join?room=MedStudyHubStudyRoom&name=MedStudy+Hub+Student&avatar=0&audio=1&video=1&screen=1&chat=1&hide=0&notify=1&duration=unlimited"
-        target="_blank"
-        rel="noopener noreferrer">
+        href="#"
+        onclick="joinMedStudyDiscussion(); return false;">
         Join Discussion →
     </a>
 
 </div>
 
-    </div>
+<script>
+function joinMedStudyDiscussion() {
+
+    /* Give every participant a different username */
+    var randomNumber =
+        Math.floor(1000 + Math.random() * 9000);
+
+    var studentName =
+        "MedStudy Student " + randomNumber;
+
+    var roomURL =
+        "https://p2p.mirotalk.com/join" +
+        "?room=MedStudyHubStudyRoom" +
+        "&name=" + encodeURIComponent(studentName) +
+        "&avatar=0" +
+        "&audio=1" +
+        "&video=1" +
+        "&screen=1" +
+        "&chat=1" +
+        "&hide=0" +
+        "&notify=1" +
+        "&duration=unlimited";
+
+    window.open(
+        roomURL,
+        "_blank",
+        "noopener,noreferrer"
+    );
+}
+</script>
+
+</div>
+
+</div>
 
 </section>
 
