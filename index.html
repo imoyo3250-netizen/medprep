@@ -762,7 +762,7 @@
     </a>
 
 </div>
-        <!-- 🎥 STUDY DISCUSSION — 6 ROOMS -->
+        <!-- 🎥 STUDY DISCUSSION -->
 
 <div class="subject-card">
 
@@ -772,52 +772,147 @@
         <h2>Study Discussion</h2>
 
         <p>
-            Join the MedStudy Hub 24/7 online study rooms.
-            Choose a room and discuss with other students
-            using video, microphone, chat and screen sharing.
+            Join the MedStudy Hub 24/7 online study room.
+            Discuss with other students using video,
+            microphone, chat and screen sharing.
         </p>
     </div>
 
-    <div style="margin-top:20px;">
+    <button
+        class="view-btn"
+        onclick="openStudyRooms()"
+        style="width:100%;">
+        Join Discussion →
+    </button>
+
+</div>
+
+
+<!-- ================================
+     STUDY ROOM SELECTION POPUP
+================================ -->
+
+<div id="studyRoomPopup"
+     style="
+     display:none;
+     position:fixed;
+     inset:0;
+     z-index:999999;
+     background:rgba(0,0,0,0.75);
+     align-items:center;
+     justify-content:center;
+     padding:20px;
+     ">
+
+    <div style="
+        width:min(500px,100%);
+        background:#0b1d2d;
+        border:1px solid #20bfe8;
+        border-radius:18px;
+        padding:25px;
+        box-shadow:0 20px 60px rgba(0,0,0,0.6);
+        position:relative;
+        ">
 
         <button
-            class="view-btn"
+            onclick="closeStudyRooms()"
+            style="
+            position:absolute;
+            top:10px;
+            right:12px;
+            width:38px;
+            height:38px;
+            border:none;
+            border-radius:50%;
+            background:#10283a;
+            color:white;
+            font-size:24px;
+            cursor:pointer;
+            ">
+            ×
+        </button>
+
+        <div style="text-align:center;">
+
+            <div style="
+                font-size:42px;
+                margin-bottom:10px;
+                ">
+                🎥
+            </div>
+
+            <h2 style="
+                color:white;
+                margin-bottom:8px;
+                ">
+                Choose a Study Room
+            </h2>
+
+            <p style="
+                color:#9fb1bf;
+                margin-bottom:20px;
+                ">
+                Select a room to join the discussion.
+            </p>
+
+        </div>
+
+
+        <!-- ROOM 1 -->
+
+        <button
             onclick="joinMedStudyRoom('MedStudyHubRoom1')"
+            class="view-btn"
             style="width:100%; margin-top:8px;">
             🟢 Join Room 1 →
         </button>
 
+
+        <!-- ROOM 2 -->
+
         <button
-            class="view-btn"
             onclick="joinMedStudyRoom('MedStudyHubRoom2')"
+            class="view-btn"
             style="width:100%; margin-top:8px;">
             🔵 Join Room 2 →
         </button>
 
+
+        <!-- ROOM 3 -->
+
         <button
-            class="view-btn"
             onclick="joinMedStudyRoom('MedStudyHubRoom3')"
+            class="view-btn"
             style="width:100%; margin-top:8px;">
             🟣 Join Room 3 →
         </button>
 
+
+        <!-- ROOM 4 -->
+
         <button
-            class="view-btn"
             onclick="joinMedStudyRoom('MedStudyHubRoom4')"
+            class="view-btn"
             style="width:100%; margin-top:8px;">
             🟠 Join Room 4 →
         </button>
 
+
+        <!-- ROOM 5 -->
+
         <button
-            class="view-btn"
             onclick="joinMedStudyRoom('MedStudyHubRoom5')"
+            class="view-btn"
             style="width:100%; margin-top:8px;">
             🔴 Join Room 5 →
         </button>
 
+
+        <!-- ROOM 6 -->
+
         <button
-            class="view-btn"
             onclick="joinMedStudyRoom('MedStudyHubRoom6')"
+            class="view-btn"
             style="width:100%; margin-top:8px;">
             🟡 Join Room 6 →
         </button>
@@ -828,9 +923,28 @@
 
 
 <script>
+
+function openStudyRooms() {
+
+    document.getElementById(
+        "studyRoomPopup"
+    ).style.display = "flex";
+
+}
+
+
+function closeStudyRooms() {
+
+    document.getElementById(
+        "studyRoomPopup"
+    ).style.display = "none";
+
+}
+
+
 function joinMedStudyRoom(roomName) {
 
-    /* Unique username for every student */
+    /* Create a unique username */
     var uniqueNumber =
         Date.now().toString().slice(-6) +
         Math.floor(100 + Math.random() * 900);
@@ -838,7 +952,9 @@ function joinMedStudyRoom(roomName) {
     var studentName =
         "MedStudy Student " + uniqueNumber;
 
-    /* MiroTalk room */
+
+    /* Create MiroTalk room URL */
+
     var roomURL =
         "https://p2p.mirotalk.com/join" +
         "?room=" + encodeURIComponent(roomName) +
@@ -852,8 +968,37 @@ function joinMedStudyRoom(roomName) {
         "&notify=1" +
         "&duration=unlimited";
 
-    window.open(roomURL, "_blank");
+
+    /* Open selected room */
+
+    window.open(
+        roomURL,
+        "_blank"
+    );
+
 }
+
+
+/* Close popup when clicking outside */
+
+document.getElementById(
+    "studyRoomPopup"
+).addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            event.target ===
+            document.getElementById("studyRoomPopup")
+        ) {
+
+            closeStudyRooms();
+
+        }
+
+    }
+);
+
 </script>
 
 </div>
