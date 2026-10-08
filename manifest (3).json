@@ -1,0 +1,13 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Studyhub Zim",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Studyhub Zim",
+  "start_url": "/",
+  "theme_color": "#4f47e6",
+  "id": "studyhub-zimbabwe",
+  "description": "study and exam platform for O-Level, A-Level, university and medical education, including quizzes, revision materials and past papers"
+}
