@@ -2612,6 +2612,78 @@ if (
 
 })();
 </script>
+<script>
+(async function () {
+  try {
+    const response = await fetch("papers.json");
+    if (!response.ok) return;
 
+    const papers = await response.json();
+
+    const subjects = {
+      physiology: document.querySelector("#physiology .test-grid"),
+      anatomy: document.querySelector("#anatomy .test-grid"),
+      embryology: document.querySelector("#embryology .test-grid"),
+      histology: document.querySelector("#histology .test-grid")
+    };
+
+    function getSubject(paper) {
+      const text = (paper.file + " " + paper.title).toLowerCase();
+
+      if (/anatomy/.test(text)) return "anatomy";
+      if (/embryology|langman/.test(text)) return "embryology";
+      if (/histology|golgi|junqueira/.test(text)) return "histology";
+      if (/physiology|ganong|^cell[_ -]/.test(text)) return "physiology";
+
+      return null;
+    }
+
+    function normalise(path) {
+      return path.replace(/^\.\/+/, "").split(/[?#]/)[0].toLowerCase();
+    }
+
+    const existingLinks = new Set(
+      [...document.querySelectorAll(".test-grid a[href]")]
+        .map(a => normalise(a.getAttribute("href")))
+    );
+
+    papers.forEach(paper => {
+      const subject = getSubject(paper);
+      const grid = subjects[subject];
+
+      if (!grid || existingLinks.has(normalise(paper.file))) return;
+
+      const card = document.createElement("div");
+      card.className = "test-card";
+
+      const details = document.createElement("div");
+      const label = document.createElement("span");
+      label.className = "test-label";
+      label.textContent = subject.toUpperCase();
+
+      const heading = document.createElement("h3");
+      heading.textContent = paper.title;
+
+      const description = document.createElement("p");
+      description.textContent =
+        paper.type === ".pdf" ? "PDF study paper" : "HTML test";
+
+      const link = document.createElement("a");
+      link.className = "start-btn";
+      link.href = paper.file;
+      link.textContent =
+        paper.type === ".pdf" ? "Open Paper →" : "Start Test →";
+
+      details.append(label, heading, description);
+      card.append(details, link);
+      grid.appendChild(card);
+
+      existingLinks.add(normalise(paper.file));
+    });
+  } catch (error) {
+    console.error("Paper catalogue could not load:", error);
+  }
+})();
+</script>
 </body>
 </html>
