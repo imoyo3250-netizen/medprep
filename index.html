@@ -2612,54 +2612,95 @@ if (
 
 })();
 </script>
+
 <script>
 (async function () {
   try {
-    const response = await fetch("papers.json");
-    if (!response.ok) return;
+    const response = await fetch("papers.json", {
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error("Could not load papers.json");
+    }
 
     const papers = await response.json();
 
     const subjects = {
       physiology: document.querySelector("#physiology .test-grid"),
       anatomy: document.querySelector("#anatomy .test-grid"),
+      histology: document.querySelector("#histology .test-grid"),
       embryology: document.querySelector("#embryology .test-grid"),
-      histology: document.querySelector("#histology .test-grid")
+      clinical: null
     };
 
-    function getSubject(paper) {
-      const text = (paper.file + " " + paper.title).toLowerCase();
+    // Find the existing Clinical Correlations homepage card.
+    const clinicalHeading = [...document.querySelectorAll(".subject-card h2")]
+      .find(h => h.textContent.trim().toLowerCase() === "clinical correlations");
 
-      if (/anatomy/.test(text)) return "anatomy";
-      if (/embryology|langman/.test(text)) return "embryology";
-      if (/histology|golgi|junqueira/.test(text)) return "histology";
-      if (/physiology|ganong|^cell[_ -]/.test(text)) return "physiology";
+    if (clinicalHeading) {
+      const clinicalCard = clinicalHeading.closest(".subject-card");
+
+      let clinicalGrid = clinicalCard.querySelector(".test-grid");
+
+      if (!clinicalGrid) {
+        clinicalGrid = document.createElement("div");
+        clinicalGrid.className = "test-grid";
+        clinicalGrid.style.marginTop = "16px";
+        clinicalCard.appendChild(clinicalGrid);
+      }
+
+      subjects.clinical = clinicalGrid;
+    }
+
+    // Clinical takes priority if a name contains multiple subjects.
+    function getSubject(paper) {
+      const file = (paper.file || "").toLowerCase();
+      const title = (paper.title || "").toLowerCase();
+      const name = file + " " + title;
+
+      if (name.includes("clinical")) return "clinical";
+      if (name.includes("physiology")) return "physiology";
+      if (name.includes("anatomy")) return "anatomy";
+      if (name.includes("histology")) return "histology";
+      if (name.includes("embryology")) return "embryology";
 
       return null;
     }
 
     function normalise(path) {
-      return path.replace(/^\.\/+/, "").split(/[?#]/)[0].toLowerCase();
+      return path.replace(/^\.\/+/, "")
+        .split(/[?#]/)[0]
+        .toLowerCase();
     }
 
+    // Prevent duplicate cards for links already on the homepage.
     const existingLinks = new Set(
       [...document.querySelectorAll(".test-grid a[href]")]
         .map(a => normalise(a.getAttribute("href")))
     );
 
     papers.forEach(paper => {
+      if (!paper.file || !paper.title) return;
+
       const subject = getSubject(paper);
       const grid = subjects[subject];
 
-      if (!grid || existingLinks.has(normalise(paper.file))) return;
+      if (!grid || existingLinks.has(normalise(paper.file))) {
+        return;
+      }
 
       const card = document.createElement("div");
       card.className = "test-card";
 
       const details = document.createElement("div");
+
       const label = document.createElement("span");
       label.className = "test-label";
-      label.textContent = subject.toUpperCase();
+      label.textContent =
+        subject === "clinical"
+          ? "CLINICAL CORRELATIONS"
+          : subject.toUpperCase();
 
       const heading = document.createElement("h3");
       heading.textContent = paper.title;
@@ -2681,9 +2722,10 @@ if (
       existingLinks.add(normalise(paper.file));
     });
   } catch (error) {
-    console.error("Paper catalogue could not load:", error);
+    console.error("Automatic catalogue error:", error);
   }
 })();
 </script>
+
 </body>
 </html>
