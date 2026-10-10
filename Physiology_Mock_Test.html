@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Physiology Mock Test</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      line-height: 1.5;
+      background: #f4f7fb;
+      color: #172033;
+    }
+    main {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 22px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.08);
+    }
+    h1 { margin-top: 0; color: #174a8b; }
+    .question {
+      padding: 14px;
+      margin: 16px 0;
+      border: 1px solid #d9e2ef;
+      border-radius: 10px;
+    }
+    label { display: block; margin: 8px 0; }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 18px;
+      background: #174a8b;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #result { margin-top: 16px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Physiology Mock Test</h1>
+    <p>This is a temporary demonstration test used to check whether new HTML tests appear automatically on the MedStudy Hub homepage.</p>
+
+    <form id="mock-form">
+      <section class="question">
+        <p><strong>1.</strong> Which of these is a web browser?</p>
+        <label><input type="radio" name="q1" value="a" required> A. Google Chrome</label>
+        <label><input type="radio" name="q1" value="b"> B. Microsoft Excel</label>
+        <label><input type="radio" name="q1" value="c"> C. Windows Calculator</label>
+      </section>
+
+      <section class="question">
+        <p><strong>2.</strong> HTML is used to structure content on web pages.</p>
+        <label><input type="radio" name="q2" value="true" required> True</label>
+        <label><input type="radio" name="q2" value="false"> False</label>
+      </section>
+
+      <section class="question">
+        <p><strong>3.</strong> Which file extension is used for an HTML page?</p>
+        <label><input type="radio" name="q3" value="a" required> A. .html</label>
+        <label><input type="radio" name="q3" value="b"> B. .mp3</label>
+        <label><input type="radio" name="q3" value="c"> C. .xlsx</label>
+      </section>
+
+      <button type="submit">Check Answers</button>
+      <p id="result" aria-live="polite"></p>
+    </form>
+  </main>
+
+  <script>
+    document.getElementById('mock-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const answers = { q1: 'a', q2: 'true', q3: 'a' };
+      let score = 0;
+      for (const question in answers) {
+        const selected = this.querySelector('input[name="' + question + '"]:checked');
+        if (selected && selected.value === answers[question]) score++;
+      }
+      document.getElementById('result').textContent =
+        'You scored ' + score + ' out of 3. This is only a mock test.';
+    });
+  </script>
+</body>
+</html>
