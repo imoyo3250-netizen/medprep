@@ -80,7 +80,7 @@
         (paper.file + " " + paper.title).toLowerCase();
 
       // Only detect clinical cases.
-      if (!name.includes("clinical")) return;
+      if (!paper.file.toLowerCase().startsWith("clinical_")) return;
 
       // Do not list this catalogue page itself.
       if (
