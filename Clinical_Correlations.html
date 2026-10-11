@@ -45,3 +45,83 @@
     </a>
 
 </div>
+
+<script>
+(async function () {
+  const container = document.body;
+
+  function normalise(path) {
+    return path.replace(/^\.\/+/, "")
+      .split(/[?#]/)[0]
+      .toLowerCase();
+  }
+
+  // Record clinical cases already displayed.
+  const existing = new Set(
+    [...document.querySelectorAll(".case-card a[href]")]
+      .map(a => normalise(a.getAttribute("href")))
+  );
+
+  try {
+    const response = await fetch("papers.json", {
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error("Could not load papers.json");
+    }
+
+    const papers = await response.json();
+
+    papers.forEach(paper => {
+      if (!paper.file || !paper.title) return;
+
+      const name =
+        (paper.file + " " + paper.title).toLowerCase();
+
+      // Only detect clinical cases.
+      if (!name.includes("clinical")) return;
+
+      // Do not list this catalogue page itself.
+      if (
+        normalise(paper.file) ===
+        "clinical_correlations.html"
+      ) return;
+
+      // Prevent duplicates.
+      if (existing.has(normalise(paper.file))) return;
+
+      const card = document.createElement("div");
+      card.className = "case-card";
+
+      const heading = document.createElement("h2");
+      heading.textContent = "Clinical Case — " + paper.title;
+
+      const link = document.createElement("a");
+      link.href = paper.file;
+      link.textContent = "Open " + paper.title;
+
+      link.style.display = "inline-block";
+      link.style.padding = "12px 18px";
+      link.style.background = "#20d9e8";
+      link.style.color = "white";
+      link.style.textDecoration = "none";
+      link.style.borderRadius = "8px";
+      link.style.fontWeight = "bold";
+      link.style.marginTop = "8px";
+
+      card.append(heading, link);
+      container.appendChild(card);
+
+      existing.add(normalise(paper.file));
+    });
+
+  } catch (error) {
+    console.error(
+      "Clinical case detection error:",
+      error
+    );
+  }
+})();
+</script>
+
