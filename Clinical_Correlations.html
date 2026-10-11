@@ -49,6 +49,8 @@
 <script>
 (async function () {
   const container = document.body;
+  const repoAPI =
+    "https://api.github.com/repos/imoyo3250-netizen/medprep/git/trees/main?recursive=1";
 
   function normalise(path) {
     return path.replace(/^\.\/+/, "")
@@ -56,71 +58,76 @@
       .toLowerCase();
   }
 
-  // Record clinical cases already displayed.
   const existing = new Set(
     [...document.querySelectorAll(".case-card a[href]")]
       .map(a => normalise(a.getAttribute("href")))
   );
 
   try {
-    const response = await fetch("papers.json", {
+    const response = await fetch(repoAPI, {
       cache: "no-store"
     });
 
     if (!response.ok) {
-      throw new Error("Could not load papers.json");
+      throw new Error("GitHub file listing could not be loaded");
     }
 
-    const papers = await response.json();
+    const data = await response.json();
 
-    papers.forEach(paper => {
-      if (!paper.file || !paper.title) return;
+    if (data.truncated) {
+      throw new Error("GitHub file listing was truncated");
+    }
 
-      const name =
-        (paper.file + " " + paper.title).toLowerCase();
+    data.tree
+      .filter(item =>
+        item.type === "blob" &&
+        item.path.toLowerCase().startsWith("clinical_") &&
+        item.path.toLowerCase().endsWith(".html") &&
+        !item.path.includes("/")
+      )
+      .sort((a, b) => a.path.localeCompare(b.path))
+      .forEach(item => {
+        const file = item.path;
 
-      // Only detect clinical cases.
-      if (!paper.file.toLowerCase().startsWith("clinical_")) return;
+        if (
+          normalise(file) === "clinical_correlations.html" ||
+          existing.has(normalise(file))
+        ) return;
 
-      // Do not list this catalogue page itself.
-      if (
-        normalise(paper.file) ===
-        "clinical_correlations.html"
-      ) return;
+        const title = file
+          .replace(/\.html$/i, "")
+          .replace(/^Clinical_/, "")
+          .replace(/[_-]+/g, " ")
+          .replace(/\b\w/g, c => c.toUpperCase());
 
-      // Prevent duplicates.
-      if (existing.has(normalise(paper.file))) return;
+        const card = document.createElement("div");
+        card.className = "case-card";
 
-      const card = document.createElement("div");
-      card.className = "case-card";
+        const heading = document.createElement("h2");
+        heading.textContent = "Clinical Case — " + title;
 
-      const heading = document.createElement("h2");
-      heading.textContent = "Clinical Case — " + paper.title;
+        const link = document.createElement("a");
+        link.href = file;
+        link.textContent = "Open " + title;
 
-      const link = document.createElement("a");
-      link.href = paper.file;
-      link.textContent = "Open " + paper.title;
+        Object.assign(link.style, {
+          display: "inline-block",
+          padding: "12px 18px",
+          background: "#20d9e8",
+          color: "white",
+          textDecoration: "none",
+          borderRadius: "8px",
+          fontWeight: "bold",
+          marginTop: "8px"
+        });
 
-      link.style.display = "inline-block";
-      link.style.padding = "12px 18px";
-      link.style.background = "#20d9e8";
-      link.style.color = "white";
-      link.style.textDecoration = "none";
-      link.style.borderRadius = "8px";
-      link.style.fontWeight = "bold";
-      link.style.marginTop = "8px";
-
-      card.append(heading, link);
-      container.appendChild(card);
-
-      existing.add(normalise(paper.file));
-    });
+        card.append(heading, link);
+        container.appendChild(card);
+        existing.add(normalise(file));
+      });
 
   } catch (error) {
-    console.error(
-      "Clinical case detection error:",
-      error
-    );
+    console.error("Clinical detection error:", error);
   }
 })();
 </script>
