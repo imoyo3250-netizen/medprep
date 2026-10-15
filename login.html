@@ -51,12 +51,34 @@
 </main>
 
 <script>
+
+const SUPABASE_URL =
+  "https://igxmvgcqpcngkzrppqms.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_EtS5E2K4bnibaqkZSoTQiQ_SQCUf6-b";
+
+try {
+  localStorage.removeItem(
+    "sb-igxmvgcqpcngkzrppqms-auth-token"
+  );
+} catch (error) {
+  console.warn("Could not clear old login storage.");
+}
+
 const sb = window.supabase.createClient(
-  "https://igxmvgcqpcngkzrppqms.supabase.co",
-  "sb_publishable_EtS5E2K4bnibaqkZSoTQiQ_SQCUf6-b"
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  {
+    auth: {
+      storage: window.sessionStorage,
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
 );
 
-const message = document.getElementById("message");
 const email = document.getElementById("email");
 const password = document.getElementById("password");
 
