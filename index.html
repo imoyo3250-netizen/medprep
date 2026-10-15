@@ -2707,24 +2707,37 @@ if (
   }
 })();
 </script>
-    
+  
 <!-- MEDSTUDY HUB: SUPABASE AUTH -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <div id="medstudy-auth" style="max-width:420px;margin:25px auto;padding:20px;background:#0b1d2d;border:1px solid #20bfe8;border-radius:14px;color:white;font-family:Arial,sans-serif">
-  <h2 style="margin-bottom:15px">MedStudy Hub Account</h2>
+  <h2>MedStudy Hub Account</h2>
 
-  <input id="ms-email" type="email" placeholder="Email address" autocomplete="email"
-    style="width:100%;padding:12px;margin:6px 0;border-radius:8px;box-sizing:border-box">
+  <input id="ms-email" type="email" placeholder="Email address"
+    autocomplete="email" required
+    style="box-sizing:border-box;width:100%;padding:14px;margin:8px 0;border-radius:8px">
 
-  <input id="ms-password" type="password" placeholder="Password" autocomplete="current-password"
-    style="width:100%;padding:12px;margin:6px 0;border-radius:8px;box-sizing:border-box">
+  <input id="ms-password" type="password" placeholder="Password (at least 6 characters)"
+    autocomplete="new-password" minlength="6" required
+    style="box-sizing:border-box;width:100%;padding:14px;margin:8px 0;border-radius:8px">
 
-  <button onclick="msRegister()" style="width:100%;padding:12px;margin-top:8px;background:#119bd0;color:white;border:0;border-radius:8px">Register</button>
-  <button onclick="msLogin()" style="width:100%;padding:12px;margin-top:8px;background:#1746d1;color:white;border:0;border-radius:8px">Log in</button>
-  <button onclick="msLogout()" style="width:100%;padding:12px;margin-top:8px;background:#34495e;color:white;border:0;border-radius:8px">Log out</button>
+  <button type="button" onclick="msRegister()"
+    style="width:100%;padding:14px;margin:8px 0;background:#159fce;color:white;border:0;border-radius:8px">
+    Register as a student
+  </button>
 
-  <p id="ms-message" style="margin-top:12px;line-height:1.5"></p>
+  <button type="button" onclick="msLogin()"
+    style="width:100%;padding:14px;margin:8px 0;background:#1949d1;color:white;border:0;border-radius:8px">
+    Log in
+  </button>
+
+  <button type="button" onclick="msLogout()"
+    style="width:100%;padding:14px;margin:8px 0;background:#354b60;color:white;border:0;border-radius:8px">
+    Log out
+  </button>
+
+  <p id="ms-message" role="status" aria-live="polite"></p>
 </div>
 
 <script>
@@ -2738,14 +2751,38 @@ async function msRegister() {
   const password = document.getElementById("ms-password").value;
   const message = document.getElementById("ms-message");
 
-  const { error } = await medstudySupabase.auth.signUp({
-    email,
-    password
-  });
+  if (!email || !password) {
+    message.textContent = "Enter your email and password.";
+    return;
+  }
 
-  message.textContent = error
-    ? error.message
-    : "Registration submitted. Check your email if confirmation is required, then log in.";
+  if (password.length < 6) {
+    message.textContent = "Use a password with at least 6 characters.";
+    return;
+  }
+
+  message.textContent = "Registering...";
+
+  try {
+    const { data, error } = await medstudySupabase.auth.signUp({
+      email,
+      password
+    });
+
+    if (error) {
+      message.textContent = "Registration failed: " + error.message;
+      return;
+    }
+
+    if (data.session) {
+      message.textContent = "Registration successful. You can now access your account.";
+    } else {
+      message.textContent =
+        "Registration submitted. Check your email to confirm your account, then log in.";
+    }
+  } catch (error) {
+    message.textContent = "Could not connect: " + error.message;
+  }
 }
 
 async function msLogin() {
@@ -2753,23 +2790,31 @@ async function msLogin() {
   const password = document.getElementById("ms-password").value;
   const message = document.getElementById("ms-message");
 
-  const { data, error } = await medstudySupabase.auth.signInWithPassword({
-    email,
-    password
-  });
+  message.textContent = "Logging in...";
 
-  message.textContent = error
-    ? error.message
-    : "Logged in successfully. Your student session is ready.";
+  try {
+    const { data, error } =
+      await medstudySupabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      message.textContent = "Login failed: " + error.message;
+      return;
+    }
+
+    message.textContent = "Login successful: " + data.user.email;
+  } catch (error) {
+    message.textContent = "Could not connect: " + error.message;
+  }
 }
 
 async function msLogout() {
   const { error } = await medstudySupabase.auth.signOut();
   document.getElementById("ms-message").textContent =
-    error ? error.message : "Logged out.";
+    error ? "Logout failed: " + error.message : "Logged out.";
 }
 </script>
 <!-- END MEDSTUDY HUB AUTH -->
+  
 
 
 </body>
