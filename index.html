@@ -20,8 +20,17 @@
 
     const client = window.supabase.createClient(
         "https://igxmvgcqpcngkzrppqms.supabase.co",
-        "sb_publishable_EtS5E2K4bnibaqkZSoTQiQ_SQCUf6-b"
+        "sb_publishable_EtS5E2K4bnibaqkZSoTQiQ_SQCUf6-b",
+        {
+            auth: {
+                storage: window.sessionStorage,
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true
+            }
+        }
     );
+
 
     try {
         const { data, error } = await client.auth.getSession();
