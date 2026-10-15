@@ -6,6 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>MedStudy Hub</title>
+    <!-- MEDSTUDY HUB LOGIN PROTECTION -->
+<style>
+    body {
+        visibility: hidden;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+(async function () {
+    const client = window.supabase.createClient(
+        "https://igxmvgcqpcngkzrppqms.supabase.co",
+        "sb_publishable_EtS5E2K4bnibaqkZSoTQiQ_SQCUf6-b"
+    );
+
+    try {
+        const { data, error } = await client.auth.getSession();
+
+        if (error || !data.session) {
+            window.location.replace("./login.html");
+            return;
+        }
+
+        function revealPage() {
+            document.body.style.visibility = "visible";
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener(
+                "DOMContentLoaded",
+                revealPage,
+                { once: true }
+            );
+        } else {
+            revealPage();
+        }
+    } catch (error) {
+        window.location.replace("./login.html");
+    }
+})();
+</script>
 
     <style>
         * {
