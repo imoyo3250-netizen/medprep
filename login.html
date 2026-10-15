@@ -87,9 +87,6 @@ function enterHub() {
 }
 
 // Clear any previous session so the login form is shown.
-(async function resetLoginSession() {
-  await sb.auth.signOut();
-})();
 
 document.getElementById("register").addEventListener("click", async () => {
   if (!email.value.trim() || password.value.length < 6) {
