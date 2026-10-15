@@ -31,8 +31,8 @@ button:disabled{opacity:.5}
 
 <div class="notice">
 <strong>Important:</strong> Sign in with your student account before starting.
-The secure database functions must be installed in Supabase. Browser monitoring
-cannot guarantee detection of every form of cheating.
+Secure exam functions must be installed in Supabase. Browser monitoring cannot
+guarantee detection of every form of cheating.
 </div>
 
 <section id="access">
@@ -72,7 +72,7 @@ I have read and agree to follow the examination rules.
 <section id="exam" class="hidden">
 <h2 id="examTitle">Examination</h2>
 <p><strong id="timer">Time: --:--</strong></p>
-<div class="notice">Keep the exam page open. Your answers are saved through Supabase when the backend is configured.</div>
+<div class="notice">Keep the exam page open. Answers are saved through Supabase.</div>
 <div id="questions"></div>
 <button id="submitBtn">Submit examination</button>
 <p id="examMsg" aria-live="polite"></p>
@@ -94,7 +94,13 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_EtS5E2K4bnibaqkZSoTQiQ_SQCUf6-b
 const db = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY,
-  {auth:{persistSession:true,autoRefreshToken:true,storage:window.sessionStorage}}
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      storage: window.sessionStorage
+    }
+  }
 );
 
 let exam = null;
@@ -110,14 +116,22 @@ const $ = id => document.getElementById(id);
 const show = id => $(id).classList.remove("hidden");
 const hide = id => $(id).classList.add("hidden");
 
-async function requestWakeLock(){
+async function rpc(name, args) {
+  const { data, error } = await db.rpc(name, args);
+  if (error) throw error;
+  return data;
+}
+
+async function requestWakeLock() {
   wakeReady = false;
   updateStart();
 
   if (!("wakeLock" in navigator)) {
-    $("wakeStatus").textContent = "Warning: this browser does not support screen-awake locking.";
+    $("wakeStatus").textContent =
+      "Warning: this browser does not support screen-awake locking.";
     $("wakeStatus").className = "bad";
-    $("wakeHelp").textContent = "Tell the invigilator before proceeding.";
+    $("wakeHelp").textContent =
+      "Tell the invigilator before proceeding.";
     return;
   }
 
@@ -126,35 +140,36 @@ async function requestWakeLock(){
     wakeReady = true;
     $("wakeStatus").textContent = "Screen-awake lock active.";
     $("wakeStatus").className = "good";
-    $("wakeHelp").textContent = "The device may still override this request.";
+    $("wakeHelp").textContent =
+      "The device operating system may still override this lock.";
 
     wakeLock.addEventListener("release", () => {
       wakeReady = false;
-      $("wakeStatus").textContent = "Warning: screen-awake lock was released.";
+      $("wakeStatus").textContent =
+        "Warning: screen-awake lock was released.";
       $("wakeStatus").className = "bad";
       updateStart();
     });
   } catch (error) {
-    $("wakeStatus").textContent = "Warning: could not keep the screen awake.";
+    $("wakeStatus").textContent =
+      "Warning: could not keep the screen awake.";
     $("wakeStatus").className = "bad";
-    $("wakeHelp").textContent = "Retry or tell the invigilator.";
+    $("wakeHelp").textContent =
+      "Retry or tell the invigilator.";
   }
+
   updateStart();
 }
 
-function updateStart(){
-  $("startBtn").disabled = !(exam && wakeReady && $("agree").checked);
+function updateStart() {
+  $("startBtn").disabled =
+    !(exam && verifiedAccessCode && wakeReady && $("agree").checked);
 }
 
-async function rpc(name,args){
-  const {data,error} = await db.rpc(name,args);
-  if(error) throw error;
-  return data;
-}
-
-async function verifyCode(){
+async function verifyCode() {
   const code = $("code").value.trim().toUpperCase();
-  if(!code){
+
+  if (!code) {
     $("accessMsg").textContent = "Enter an access code first.";
     return;
   }
@@ -163,54 +178,63 @@ async function verifyCode(){
   $("accessMsg").textContent = "Checking code…";
 
   try {
-    const {data,error} = await db.rpc("verify_exam_access_code",{
-      p_access_code:code
+    const data = await rpc("verify_exam_access_code", {
+      p_access_code: code
     });
-    if(error) throw error;
 
     const row = Array.isArray(data) ? data[0] : data;
-    if(!row) throw new Error("Code not found or exam is not published.");
+
+    if (!row) {
+      throw new Error("Code not found or exam is not published.");
+    }
 
     exam = row;
     verifiedAccessCode = code;
     $("examTitle").textContent = row.title || "Examination";
+
     $("accessMsg").textContent =
       "Verified: " + (row.title || "Examination") +
       (row.subject ? " — " + row.subject : "");
 
     show("rules");
     await requestWakeLock();
-  } catch(error) {
-    $("accessMsg").textContent = "Verification failed: " + error.message;
+  } catch (error) {
+    $("accessMsg").textContent =
+      "Verification failed: " + error.message;
   } finally {
     $("verifyBtn").disabled = false;
   }
 }
 
-async function startExam(){
-  if(!exam || !verifiedAccessCode || !wakeReady || !$("agree").checked) return;
+async function startExam() {
+  if (!exam || !verifiedAccessCode || !wakeReady ||
+      !$("agree").checked) return;
+
   $("startBtn").disabled = true;
   $("startMsg").textContent = "Starting examination…";
 
   try {
-    // Requires an authenticated student session.
-    const started = await rpc("start_exam_attempt",{
-      p_exam_id:exam.id,
-      p_access_code:verifiedAccessCode
+    // IMPORTANT: both parameters must match the Supabase SQL function.
+    const started = await rpc("start_exam_attempt", {
+      p_exam_id: exam.id,
+      p_access_code: verifiedAccessCode
     });
 
     const startRow = Array.isArray(started) ? started[0] : started;
-    if(!startRow || !startRow.attempt_id)
-      throw new Error("The database did not return an attempt ID.");
+
+    if (!startRow || !startRow.attempt_id) {
+      throw new Error("No attempt ID returned by Supabase.");
+    }
 
     attemptId = startRow.attempt_id;
 
-    const questions = await rpc("get_exam_questions",{
-      p_attempt_id:attemptId
+    const questions = await rpc("get_exam_questions", {
+      p_attempt_id: attemptId
     });
 
-    if(!Array.isArray(questions))
-      throw new Error("The server did not return a question array.");
+    if (!Array.isArray(questions)) {
+      throw new Error("Supabase did not return a question array.");
+    }
 
     renderQuestions(questions);
     hide("access");
@@ -221,53 +245,62 @@ async function startExam(){
     endAt = Date.now() + minutes * 60000;
     startTimer();
 
-    await logIntegrity("attempt_started",{at:new Date().toISOString()});
+    await logIntegrity("attempt_started", {
+      at: new Date().toISOString()
+    });
 
-    if(document.documentElement.requestFullscreen){
-      try { await document.documentElement.requestFullscreen(); }
-      catch(error) {}
+    if (document.documentElement.requestFullscreen) {
+      try {
+        await document.documentElement.requestFullscreen();
+      } catch (error) {}
     }
-  } catch(error) {
-    $("startMsg").textContent = "Could not start: " + error.message;
+  } catch (error) {
+    $("startMsg").textContent =
+      "Could not start: " + error.message;
     $("startBtn").disabled = false;
   }
 }
 
-function renderQuestions(list){
+function renderQuestions(list) {
   const root = $("questions");
   root.replaceChildren();
 
-  list.forEach((q,index)=>{
+  list.forEach((q, index) => {
     const card = document.createElement("div");
     card.className = "question";
     card.dataset.qid = q.id;
 
     const title = document.createElement("div");
     title.className = "qtext";
-    title.textContent = (index+1) + ". " + q.question_text;
+    title.textContent = (index + 1) + ". " + q.question_text;
     card.appendChild(title);
 
     let options = q.options;
-    if(typeof options === "string"){
-      try { options = JSON.parse(options); } catch(error) {}
+
+    if (typeof options === "string") {
+      try {
+        options = JSON.parse(options);
+      } catch (error) {}
     }
 
-    if(q.question_type === "true_false"){
-      addOption(card,q.id,"true","True");
-      addOption(card,q.id,"false","False");
-    } else if(Array.isArray(options)){
-      options.forEach((option,index)=>{
+    if (q.question_type === "true_false") {
+      addOption(card, q.id, "true", "True");
+      addOption(card, q.id, "false", "False");
+    } else if (Array.isArray(options)) {
+      options.forEach((option, index) => {
         const value = typeof option === "object"
           ? String(option.value ?? option.id ?? option.text ?? index)
           : String(option);
+
         const label = typeof option === "object"
           ? String(option.label ?? option.text ?? value)
           : String(option);
-        addOption(card,q.id,value,label);
+
+        addOption(card, q.id, value, label);
       });
     } else {
       const note = document.createElement("p");
-      note.textContent = "No options were returned for this question.";
+      note.textContent = "No options were returned.";
       card.appendChild(note);
     }
 
@@ -275,119 +308,152 @@ function renderQuestions(list){
   });
 }
 
-function addOption(card,qid,value,label){
+function addOption(card, qid, value, label) {
   const lab = document.createElement("label");
   lab.className = "option";
+
   const input = document.createElement("input");
   input.type = "radio";
   input.name = "q_" + qid;
   input.value = value;
 
-  input.addEventListener("change",async()=>{
+  input.addEventListener("change", async () => {
     try {
-      await rpc("save_exam_answer",{
-        p_attempt_id:attemptId,
-        p_question_id:qid,
-        p_answer:JSON.stringify(value)
+      await rpc("save_exam_answer", {
+        p_attempt_id: attemptId,
+        p_question_id: qid,
+        p_answer: JSON.stringify(value)
       });
+
       $("examMsg").textContent = "Answer saved.";
-    } catch(error) {
-      $("examMsg").textContent = "Answer save failed: " + error.message;
+    } catch (error) {
+      $("examMsg").textContent =
+        "Answer save failed: " + error.message;
     }
   });
 
   lab.appendChild(input);
+
   const span = document.createElement("span");
   span.textContent = label;
   lab.appendChild(span);
   card.appendChild(lab);
 }
 
-async function logIntegrity(type,details={}){
-  if(!attemptId || submitted) return;
+async function logIntegrity(type, details = {}) {
+  if (!attemptId || submitted) return;
+
   try {
-    await rpc("log_integrity_event",{
-      p_attempt_id:attemptId,
-      p_event_type:type,
-      p_details:details
+    await rpc("log_integrity_event", {
+      p_attempt_id: attemptId,
+      p_event_type: type,
+      p_details: details
     });
-  } catch(error) {
-    $("examMsg").textContent = "Integrity event could not be confirmed: " + error.message;
+  } catch (error) {
+    $("examMsg").textContent =
+      "Integrity event could not be confirmed: " + error.message;
   }
 }
 
-document.addEventListener("visibilitychange",()=>{
-  if(document.visibilityState === "hidden")
-    logIntegrity("page_hidden",{at:new Date().toISOString()});
-});
-window.addEventListener("blur",()=>{
-  if(attemptId && !submitted)
-    logIntegrity("window_blur",{at:new Date().toISOString()});
-});
-document.addEventListener("fullscreenchange",()=>{
-  if(attemptId && !submitted && !document.fullscreenElement)
-    logIntegrity("fullscreen_exit",{at:new Date().toISOString()});
-});
-window.addEventListener("resize",()=>{
-  if(attemptId && !submitted)
-    logIntegrity("viewport_resize",{
-      width:innerWidth,height:innerHeight,at:new Date().toISOString()
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    logIntegrity("page_hidden", {
+      at: new Date().toISOString()
     });
+  }
 });
 
-function startTimer(){
+window.addEventListener("blur", () => {
+  if (attemptId && !submitted) {
+    logIntegrity("window_blur", {
+      at: new Date().toISOString()
+    });
+  }
+});
+
+document.addEventListener("fullscreenchange", () => {
+  if (attemptId && !submitted && !document.fullscreenElement) {
+    logIntegrity("fullscreen_exit", {
+      at: new Date().toISOString()
+    });
+  }
+});
+
+window.addEventListener("resize", () => {
+  if (attemptId && !submitted) {
+    logIntegrity("viewport_resize", {
+      width: innerWidth,
+      height: innerHeight,
+      at: new Date().toISOString()
+    });
+  }
+});
+
+function startTimer() {
   clearInterval(timerHandle);
-  function tick(){
-    const seconds = Math.max(0,Math.ceil((endAt-Date.now())/1000));
+
+  function tick() {
+    const seconds = Math.max(
+      0, Math.ceil((endAt - Date.now()) / 1000)
+    );
+
     $("timer").textContent = "Time: " +
-      String(Math.floor(seconds/60)).padStart(2,"0") + ":" +
-      String(seconds%60).padStart(2,"0");
-    if(seconds===0){
+      String(Math.floor(seconds / 60)).padStart(2, "0") + ":" +
+      String(seconds % 60).padStart(2, "0");
+
+    if (seconds === 0) {
       clearInterval(timerHandle);
       submitExam(true);
     }
   }
+
   tick();
-  timerHandle = setInterval(tick,1000);
+  timerHandle = setInterval(tick, 1000);
 }
 
-async function submitExam(autoSubmit=false){
-  if(!attemptId || submitted) return;
-  if(!autoSubmit && !confirm("Submit your examination now?")) return;
+async function submitExam(autoSubmit = false) {
+  if (!attemptId || submitted) return;
+
+  if (!autoSubmit && !confirm("Submit your examination now?")) {
+    return;
+  }
 
   $("submitBtn").disabled = true;
   $("examMsg").textContent = "Submitting answers…";
 
   try {
-    const result = await rpc("submit_exam_attempt",{
-      p_attempt_id:attemptId
+    const result = await rpc("submit_exam_attempt", {
+      p_attempt_id: attemptId
     });
+
     submitted = true;
     clearInterval(timerHandle);
 
     const row = Array.isArray(result) ? result[0] : result;
+
     hide("exam");
     show("result");
 
-    if(row && row.score !== undefined){
+    if (row && row.score !== undefined) {
       $("resultText").textContent =
         "Score: " + row.score + " / " + row.total_marks +
         " | Percentage: " + row.percentage + "%";
     } else {
       $("resultText").textContent =
-        "Submission received. Check with your lecturer for your result.";
+        "Submission received. Ask your lecturer about your result.";
     }
-  } catch(error) {
-    $("examMsg").textContent = "Submission failed: " + error.message;
+  } catch (error) {
+    $("examMsg").textContent =
+      "Submission failed: " + error.message;
     $("submitBtn").disabled = false;
   }
 }
 
-$("verifyBtn").addEventListener("click",verifyCode);
-$("retryWake").addEventListener("click",requestWakeLock);
-$("agree").addEventListener("change",updateStart);
-$("startBtn").addEventListener("click",startExam);
-$("submitBtn").addEventListener("click",()=>submitExam(false));
+$("verifyBtn").addEventListener("click", verifyCode);
+$("retryWake").addEventListener("click", requestWakeLock);
+$("agree").addEventListener("change", updateStart);
+$("startBtn").addEventListener("click", startExam);
+$("submitBtn").addEventListener("click", () => submitExam(false));
 
 requestWakeLock();
 </script>
