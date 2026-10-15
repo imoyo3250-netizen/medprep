@@ -255,6 +255,11 @@
     "type": ".html"
   },
   {
+    "title": "professor dashboard",
+    "file": "professor-dashboard.html",
+    "type": ".html"
+  },
+  {
     "title": "professor pdf import",
     "file": "professor-pdf-import.html",
     "type": ".html"
