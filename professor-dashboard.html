@@ -16,7 +16,76 @@ function say(t,type=""){ $("status").textContent=t;$("status").className="status
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 async function init(){const {data:{session},error}=await db.auth.getSession();if(error||!session){location.replace("./medstudy.html");return;}const p=await db.from("profiles").select("username,role").eq("id",session.user.id).maybeSingle();if(p.error||!p.data||!["admin","professor","administrator"].includes(String(p.data.role||"").toLowerCase())){say("Access denied: professor/admin account required.","error");return;}user=session.user;profile=p.data;$("identity").textContent=(profile.username||user.email)+" · "+profile.role;say("Professor access verified.","ok");await loadExams();}
 
-async function loadExams() {
+
+async function publishExam(id) {
+  if (!user) {
+    say("Please sign in again.", "error");
+    return;
+  }
+
+  const confirmed = confirm(
+    "Publish this exam and generate its student access code? " +
+    "Only continue after reviewing the exam."
+  );
+
+  if (!confirmed) return;
+
+  say("Publishing exam and generating access code…");
+
+  const { data, error } = await db.rpc(
+    "publish_exam_with_access_code",
+    { p_exam_id: id }
+  );
+
+  if (error) {
+    say("Publishing failed: " + error.message, "error");
+    return;
+  }
+
+  const result = Array.isArray(data) ? data[0] : data;
+
+  if (!result || !result.generated_code) {
+    say("Exam published, but no access code was returned. Contact support before sharing it.", "error");
+    await loadExams();
+    return;
+  }
+
+  const code = result.generated_code;
+
+  $("status").innerHTML = "";
+
+  const heading = document.createElement("strong");
+  heading.textContent = "Exam published successfully!";
+
+  const details = document.createElement("p");
+  details.textContent = "Exam: " + result.exam_title;
+
+  const codeLabel = document.createElement("p");
+  codeLabel.textContent = "Give this access code only to your intended students:";
+
+  const codeDisplay = document.createElement("h2");
+  codeDisplay.textContent = code;
+  codeDisplay.style.fontSize = "28px";
+  codeDisplay.style.letterSpacing = "3px";
+
+  const copyButton = document.createElement("button");
+  copyButton.className = "primary";
+  copyButton.textContent = "Copy access code";
+  copyButton.onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      say("Access code copied. Share it only with your students.", "ok");
+    } catch {
+      say("Access code: " + code);
+    }
+  };
+
+  $("status").append(heading, details, codeLabel, codeDisplay, copyButton);
+  $("status").className = "status ok";
+
+  await loadExams();
+}
+
   if (!user) return;
 
   say("Loading your exams…");
