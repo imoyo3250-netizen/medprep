@@ -355,39 +355,119 @@ async function logIntegrity(type, details = {}) {
   }
 }
 
+
+/* MEDSTUDY EXAMGUARD — ADDITIONAL ANTI-CHEATING
+   Keeps existing Supabase and exam functions intact. */
+
+const ExamGuard = {
+  violations: 0,
+  limit: 3,
+  baselineWidth: window.innerWidth,
+  baselineHeight: window.innerHeight,
+  lastResize: 0,
+  recent: new Map()
+};
+
+function examGuardFlag(type, details = {}) {
+  if (!attemptId || submitted) return;
+
+  const now = Date.now();
+
+  // Avoid duplicate events being counted repeatedly.
+  if (now - (ExamGuard.recent.get(type) || 0) < 2000) return;
+  ExamGuard.recent.set(type, now);
+
+  ExamGuard.violations++;
+
+  // Use the existing Supabase integrity logger.
+  logIntegrity(type, {
+    ...details,
+    occurred_at: new Date().toISOString(),
+    violation_number: ExamGuard.violations,
+    violation_limit: ExamGuard.limit
+  });
+
+  const remaining = Math.max(
+    0,
+    ExamGuard.limit - ExamGuard.violations
+  );
+
+  $("examMsg").textContent =
+    "EXAMGUARD WARNING: Suspicious event detected. " +
+    "Event " + ExamGuard.violations + " of " +
+    ExamGuard.limit + ". Remaining before auto-submit: " +
+    remaining + ".";
+
+  if (ExamGuard.violations >= ExamGuard.limit) {
+    $("examMsg").textContent =
+      "ExamGuard limit reached. Submitting your exam...";
+    submitExam(true);
+  }
+}
+
+// 1. Detect when the page becomes hidden.
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") {
-    logIntegrity("page_hidden", {
-      at: new Date().toISOString()
+    examGuardFlag("page_hidden", {
+      visibility_state: document.visibilityState
     });
   }
 });
 
+// 2. Detect loss of browser-window focus.
 window.addEventListener("blur", () => {
-  if (attemptId && !submitted) {
-    logIntegrity("window_blur", {
-      at: new Date().toISOString()
-    });
-  }
+  examGuardFlag("window_blur", {
+    visibility_state: document.visibilityState
+  });
 });
 
+// 3. Detect exiting fullscreen.
 document.addEventListener("fullscreenchange", () => {
-  if (attemptId && !submitted && !document.fullscreenElement) {
-    logIntegrity("fullscreen_exit", {
-      at: new Date().toISOString()
-    });
+  if (!document.fullscreenElement) {
+    examGuardFlag("fullscreen_exit");
   }
 });
 
+// 4. Detect significant window/viewport dimension changes.
 window.addEventListener("resize", () => {
-  if (attemptId && !submitted) {
-    logIntegrity("viewport_resize", {
-      width: innerWidth,
-      height: innerHeight,
-      at: new Date().toISOString()
-    });
+  if (!attemptId || submitted) return;
+
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  const widthChange =
+    Math.abs(width - ExamGuard.baselineWidth) /
+    Math.max(ExamGuard.baselineWidth, 1);
+
+  const heightChange =
+    Math.abs(height - ExamGuard.baselineHeight) /
+    Math.max(ExamGuard.baselineHeight, 1);
+
+  if (
+    widthChange >= 0.10 ||
+    heightChange >= 0.10
+  ) {
+    const now = Date.now();
+
+    if (now - ExamGuard.lastResize >= 2000) {
+      ExamGuard.lastResize = now;
+
+      examGuardFlag("significant_viewport_resize", {
+        previous_width: ExamGuard.baselineWidth,
+        previous_height: ExamGuard.baselineHeight,
+        current_width: width,
+        current_height: height,
+        width_change_percent: Math.round(widthChange * 100),
+        height_change_percent: Math.round(heightChange * 100)
+      });
+    }
   }
+
+  ExamGuard.baselineWidth = width;
+  ExamGuard.baselineHeight = height;
 });
+
+/* END ADDITIONAL EXAMGUARD CODE */
 
 function startTimer() {
   clearInterval(timerHandle);
