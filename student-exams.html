@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#123b70">
+<title>MedStudy Hub — Student Exams</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f7fc;color:#172b46;font-family:system-ui,Arial,sans-serif}
+main{max-width:850px;margin:auto;padding:20px}
+.panel,.exam{background:#fff;border:1px solid #dce6f2;border-radius:16px;padding:18px;margin:14px 0}
+h1{font-size:clamp(27px,5vw,38px);margin:0 0 8px}
+p{line-height:1.55}
+.muted{color:#617087}
+label{display:block;font-weight:700;margin:14px 0 6px}
+input{width:100%;padding:13px;border:1px solid #b9c8da;border-radius:10px;font:inherit}
+button,.btn{display:inline-block;border:0;border-radius:10px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none}
+.primary{background:#1675d1;color:#fff}
+.light{background:#eaf2fc;color:#123b70}
+.status{padding:12px;border-radius:10px;background:#edf3fa;margin-top:14px;overflow-wrap:anywhere}
+.error{background:#fff0ef;color:#b42318}
+.ok{background:#eaf8f0;color:#18794e}
+.exam h2{margin:0 0 6px;font-size:20px}
+.hidden{display:none}
+.small{font-size:13px}
+</style>
+</head>
+<body>
+<main>
+  <header class="panel">
+    <h1>📝 Student Exams</h1>
+    <p class="muted">Enter the exam access code supplied by your lecturer. Each published exam should have its own code.</p>
+    <a class="btn light" href="./index.html">← Back to MedStudy Hub</a>
+  </header>
+
+  <section class="panel">
+    <h2>Access an exam</h2>
+    <form id="codeForm">
+      <label for="accessCode">Exam access code</label>
+      <input id="accessCode" name="accessCode" autocomplete="off" autocapitalize="characters" maxlength="32" placeholder="Enter code from your lecturer" required>
+      <button class="primary" type="submit" style="margin-top:12px">Verify code</button>
+    </form>
+    <div id="status" class="status" role="status">Enter the code your lecturer gave you.</div>
+  </section>
+
+  <section id="examPanel" class="panel hidden">
+    <h2 id="examTitle">Exam verified</h2>
+    <p id="examDetails" class="muted"></p>
+    <p class="small">The code was accepted. The secure exam-taking page still needs to be connected before students can start answering questions here.</p>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://igxmvgcqpcngkzrppqms.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_EtS5E2K4bnibaqkZSoTQiQ_SQCUf6-b";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const $ = id => document.getElementById(id);
+
+function say(message, type="") {
+  $("status").textContent = message;
+  $("status").className = "status " + type;
+}
+
+$("codeForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  $("examPanel").classList.add("hidden");
+  const code = $("accessCode").value.trim().toUpperCase();
+  if (!code) {
+    say("Enter the access code from your lecturer.", "error");
+    return;
+  }
+
+  say("Checking code…");
+  $("accessCode").disabled = true;
+
+  try {
+    // This RPC must be created in Supabase before code verification can work.
+    // It must verify the code server-side and return only safe exam details.
+    const { data, error } = await db.rpc("verify_exam_access_code", {
+      p_access_code: code
+    });
+
+    if (error) {
+      say("Code verification is not connected yet. The Supabase verify_exam_access_code function must be installed first. Details: " + error.message, "error");
+      return;
+    }
+
+    const exam = Array.isArray(data) ? data[0] : data;
+    if (!exam || !exam.id) {
+      say("That code is invalid, expired, or the exam is not available. Check it with your lecturer.", "error");
+      return;
+    }
+
+    $("examTitle").textContent = exam.title || "Exam verified";
+    const details = [
+      exam.subject ? "Subject: " + exam.subject : "",
+      exam.topic ? "Topic: " + exam.topic : "",
+      Number.isFinite(Number(exam.duration_minutes)) ? "Duration: " + exam.duration_minutes + " minutes" : ""
+    ].filter(Boolean);
+    $("examDetails").textContent = details.join(" · ");
+    $("examPanel").classList.remove("hidden");
+    say("Access code accepted.", "ok");
+  } catch (err) {
+    say("Could not verify the code. Check your connection and try again.", "error");
+  } finally {
+    $("accessCode").disabled = false;
+  }
+});
+</script>
+</body>
+</html>
