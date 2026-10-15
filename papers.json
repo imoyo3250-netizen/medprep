@@ -220,6 +220,11 @@
     "type": ".html"
   },
   {
+    "title": "login",
+    "file": "login.html",
+    "type": ".html"
+  },
+  {
     "title": "MEDPREP Welcome",
     "file": "MEDPREP_Welcome.html",
     "type": ".html"
