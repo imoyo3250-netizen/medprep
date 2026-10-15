@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10243a">
+<title>MedStudy Hub — Secure Exam Portal</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#172033;background:#f3f6fa}
+*{box-sizing:border-box}body{margin:0;padding:14px}.app{max-width:900px;margin:auto;background:white;border:1px solid #dce3ed;border-radius:16px;overflow:hidden;box-shadow:0 8px 30px #10243a12}
+header{padding:20px;background:#10243a;color:white}h1{font-size:1.35rem;margin:0 0 5px}header p{margin:0;color:#dbe7f5}
+main{padding:18px}.panel{border:1px solid #dce3ed;border-radius:12px;padding:15px;margin:12px 0}.hidden{display:none!important}
+.notice{background:#fff4d6;border:1px solid #f0d38b;padding:12px;border-radius:10px;line-height:1.45}.success{background:#e8f7ee;border:1px solid #9bd5b2}.danger{background:#fff0f0;border:1px solid #efb5b5}
+label{display:block;font-weight:600;margin:10px 0 5px}input[type=text],input[type=password]{width:100%;padding:12px;border:1px solid #bdc8d8;border-radius:9px;font:inherit}
+button{padding:11px 15px;border:0;border-radius:9px;background:#175cd3;color:white;font:inherit;font-weight:700;cursor:pointer;margin:5px 5px 5px 0}button:disabled{opacity:.5;cursor:not-allowed}.secondary{background:#e8eef7;color:#172033}
+ol.rules{padding-left:22px}ol.rules li{margin:0 0 10px;line-height:1.45}.status{font-weight:700;margin-top:8px}.good{color:#147044}.bad{color:#a32121}
+.question{padding:14px;border:1px solid #dce3ed;border-radius:11px;margin:12px 0}.qtext{font-weight:650;margin-bottom:12px}.option{display:flex;gap:9px;align-items:flex-start;font-weight:400;margin:10px 0}.option input{margin-top:5px}
+.topline{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;font-weight:700}.muted{color:#596579;font-size:.92rem}footer{border-top:1px solid #e2e8f0;padding:14px 18px;color:#596579;font-size:.9rem}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#101827;color:#e7edf7;padding:12px;border-radius:8px;font-size:.83rem}.small{font-size:.88rem}
+</style>
+</head>
+<body>
+<div class="app">
+<header><h1>MedStudy Hub — Exam Portal</h1><p>Access code · Exam rules · Questions · Submission</p></header>
+<main>
+<div class="notice"><strong>Backend connection required:</strong> this page is a single-file student interface. For secure marking, −1 negative marking, attempt limits, lecturer results, and server-side integrity logs, install the matching Supabase database functions first. This file deliberately does not download answer keys or calculate trusted marks in the browser.</div>
+
+<section id="access" class="panel">
+<h2>1. Enter examination access code</h2>
+<label for="code">Access code</label><input id="code" type="text" autocomplete="off" maxlength="32" placeholder="Enter code supplied by lecturer">
+<button id="verifyBtn">Verify code</button><p id="accessMsg" aria-live="polite" class="muted"></p>
+</section>
+
+<section id="rules" class="panel hidden">
+<h2>2. Examination rules</h2>
+<ol class="rules">
+<li>Do not switch tabs, open another tab, minimize or close the examination page, or use screen sharing/another screen for unauthorized help.</li>
+<li>Close other browser tabs and unnecessary applications before starting. Do not use unauthorized notes, AI tools, messaging, websites, or assistance from another person.</li>
+<li>Ensure your device is charged. Do not lock, restart, shut down, or intentionally interrupt it during the exam.</li>
+<li>The browser may detect page hiding, fullscreen exits, and some window changes. These signals are imperfect; supported events can be logged for review.</li>
+<li>The page will request a screen-awake lock. If it cannot be enabled or is released, a warning will appear. Resolve this before starting where possible.</li>
+<li>Follow the invigilator's instructions. Suspected misconduct may be reviewed under the institution's examination rules.</li>
+<li>Intended marking rule: −1 mark for each wrong answer. Unanswered questions and total marks must follow the published exam settings.</li>
+</ol>
+<div class="panel">
+<strong>Screen-awake status</strong><div id="wakeStatus" class="status">Checking…</div><p id="wakeHelp" class="muted">The browser may not support this feature on every device.</p>
+<button id="retryWake" class="secondary">Retry screen-awake check</button>
+</div>
+<label class="option"><input type="checkbox" id="agree"><span>I have read and understood the rules and agree to follow them.</span></label>
+<button id="startBtn" disabled>Start examination</button>
+<p id="startMsg" class="muted" aria-live="polite"></p>
+</section>
+
+<section id="exam" class="hidden">
+<div class="topline"><span id="examTitle">Examination</span><span id="timer">Time: —</span></div>
+<div class="notice small">Keep this page open. Do not reload or leave the exam. If the browser reports a possible integrity event, it may be sent to the server when the configured backend is available.</div>
+<div id="questions"></div>
+<button id="submitBtn">Submit examination</button>
+<p id="examMsg" aria-live="polite"></p>
+</section>
+
+<section id="result" class="panel hidden">
+<h2>Submission status</h2><div id="resultText"></div>
+</section>
+
+<section class="panel">
+<h3>Connection status</h3><p id="connection" class="muted">Not connected.</p>
+<p class="muted small">Made by Israel J. Moyo © 2026</p>
+</section>
+</main>
+<footer>One student-facing HTML page. Supabase remains the trusted authority for answer keys, scoring, attempts, and results.</footer>
+</div>
+<script>
+const SUPABASE_URL = "https://igxmvgcqpcngkzrppqms.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_EtS5E2K4bnibaqkZSoTQiQ_SQCUf6-b";
+// Set to the URL of a locally hosted/approved Supabase JS v2 bundle if you want this
+// file to run without a CDN. The default below loads the library from jsDelivr.
+const SUPABASE_JS = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+let db=null, exam=null, attemptId=null, wakeLock=null, wakeReady=false, endAt=null, timerHandle=null, submitted=false;
+const $=id=>document.getElementById(id);
+function show(id){$(id).classList.remove('hidden')}
+function hide(id){$(id).classList.add('hidden')}
+function status(text,ok){$('connection').textContent=text;$('connection').className='muted '+(ok?'good':'bad')}
+function loadLibrary(){return new Promise((resolve,reject)=>{if(window.supabase){resolve();return}const s=document.createElement('script');s.src=SUPABASE_JS;s.onload=resolve;s.onerror=()=>reject(new Error('Could not load Supabase JS library. Check internet connection.'));document.head.appendChild(s)})}
+async function connect(){await loadLibrary();db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:window.sessionStorage}});status('Supabase client initialized. Exam actions still require the matching database RPC functions.',true)}
+connect().catch(e=>status(e.message,false));
+
+async function verifyCode(){
+ const code=$('code').value.trim().toUpperCase();if(!code){$('accessMsg').textContent='Enter the code first.';return}
+ $('verifyBtn').disabled=true;$('accessMsg').textContent='Checking code…';
+ try{
+  if(!db) await connect();
+  const {data,error}=await db.rpc('verify_exam_access_code',{p_access_code:code});
+  if(error) throw error;
+  const row=Array.isArray(data)?data[0]:data;
+  if(!row) throw new Error('Code not found or examination is not published.');
+  exam=row;$('examTitle').textContent=row.title||'Examination';
+  $('accessMsg').textContent='Verified: '+(row.title||'Examination')+(row.subject?' — '+row.subject:'');
+  show('rules');hide('exam');hide('result');await requestWakeLock();
+ }catch(e){$('accessMsg').textContent='Could not verify code: '+(e.message||String(e));}
+ finally{$('verifyBtn').disabled=false}
+}
+async function requestWakeLock(){
+ wakeReady=false;$('startBtn').disabled=true;
+ if(!('wakeLock' in navigator)){
+  $('wakeStatus').textContent='Warning: screen-awake locking is unsupported in this browser.';$('wakeStatus').className='status bad';$('wakeHelp').textContent='Try an updated browser. Tell the invigilator if this warning remains.';return
+ }
+ try{
+  wakeLock=await navigator.wakeLock.request('screen');wakeReady=true;
+  $('wakeStatus').textContent='Screen-awake lock active.';$('wakeStatus').className='status good';$('wakeHelp').textContent='The operating system can still override this lock.';
+  wakeLock.addEventListener('release',()=>{wakeReady=false;$('startBtn').disabled=true;$('wakeStatus').textContent='Warning: screen-awake lock released.';$('wakeStatus').className='status bad';$('wakeHelp').textContent='Retry the check and tell the invigilator if it keeps releasing.';});
+ }catch(e){$('wakeStatus').textContent='Warning: screen-awake lock could not be enabled.';$('wakeStatus').className='status bad';$('wakeHelp').textContent='Retry or tell the invigilator before proceeding.'}
+ updateStart()
+}
+function updateStart(){$('startBtn').disabled=!(wakeReady&&$('agree').checked&&exam)}
+async function rpc(name,args){if(!db)await connect();const {data,error}=await db.rpc(name,args);if(error)throw error;return data}
+async function logEvent(type,details={}){
+ if(!attemptId||submitted||!db)return;
+ try{await rpc('log_integrity_event',{p_attempt_id:attemptId,p_event_type:type,p_details:details})}
+ catch(e){$('examMsg').textContent='Integrity event could not be confirmed by server. Tell the invigilator. ('+e.message+')'}
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')logEvent('page_hidden',{visibility_state:'hidden',at:new Date().toISOString()})});
+window.addEventListener('blur',()=>{if(attemptId&&!submitted)logEvent('window_blur',{at:new Date().toISOString()})});
+document.addEventListener('fullscreenchange',()=>{if(attemptId&&!submitted&&!document.fullscreenElement)logEvent('fullscreen_exit',{at:new Date().toISOString()})});
+window.addEventListener('resize',()=>{if(attemptId&&!submitted)logEvent('viewport_resize',{width:innerWidth,height:innerHeight,at:new Date().toISOString()})});
+$('verifyBtn').addEventListener('click',verifyCode);$('retryWake').addEventListener('click',requestWakeLock);$('agree').addEventListener('change',updateStart);
+async function startExam(){
+ if(!exam||!wakeReady||!$('agree').checked)return;
+ $('startBtn').disabled=true;$('startMsg').textContent='Starting attempt securely…';
+ try{
+  // These RPC functions must be installed in Supabase. The server, not this page,
+  // must enforce attempt limits and return questions without correct answers.
+  const started=await rpc('start_exam_attempt',{p_exam_id:exam.id});
+  const s=Array.isArray(started)?started[0]:started;
+  if(!s||!s.attempt_id)throw new Error('start_exam_attempt returned no attempt_id. Install the secure exam backend SQL first.');
+  attemptId=s.attempt_id;
+  const fetched=await rpc('get_exam_questions',{p_attempt_id:attemptId});
+  const payload=Array.isArray(fetched)&&fetched.length===1&&fetched[0].questions?fetched[0].questions:fetched;
+  if(!Array.isArray(payload))throw new Error('get_exam_questions must return an array of questions.');
+  renderQuestions(payload);show('exam');hide('rules');hide('access');
+  const minutes=Number(exam.duration_minutes)||60;endAt=Date.now()+minutes*60000;startTimer();
+  await logEvent('attempt_started',{at:new Date().toISOString()});
+  if(document.documentElement.requestFullscreen){try{await document.documentElement.requestFullscreen()}catch(e){}}
+ }catch(e){$('startMsg').textContent='Could not start: '+(e.message||String(e))+' — the secure Supabase exam functions may not be installed yet.';$('startBtn').disabled=false}
+}
+function renderQuestions(questions){
+ const root=$('questions');root.innerHTML='';
+ questions.forEach((q,index)=>{
+  const card=document.createElement('div');card.className='question';card.dataset.qid=q.id;
+  const text=document.createElement('div');text.className='qtext';text.textContent=(index+1)+'. '+(q.question_text||q.text||'Question');card.appendChild(text);
+  const opts=q.options;
+  if(q.question_type==='true_false'||(Array.isArray(opts)&&opts.length===2&&String(opts[0]).toLowerCase()==='true')){
+   addOption(card,q.id,'true','True');addOption(card,q.id,'false','False');
+  }else if(Array.isArray(opts)){
+   opts.forEach((op,i)=>{const val=(typeof op==='object'&&op!==null)?(op.value??op.id??op.text??String(i)):op;const label=(typeof op==='object'&&op!==null)?(op.label??op.text??String(val)):String(op);addOption(card,q.id,String(val),label)});
+  }else{const note=document.createElement('p');note.className='muted';note.textContent='Question options were not returned by the server.';card.appendChild(note)}
+  root.appendChild(card)
+ })
+}
+function addOption(card,qid,value,label){
+ const lab=document.createElement('label');lab.className='option';const input=document.createElement('input');input.type='radio';input.name='q_'+qid;input.value=value;
+ input.addEventListener('change',async()=>{try{await rpc('save_exam_answer',{p_attempt_id:attemptId,p_question_id:qid,p_answer:JSON.stringify(value)}); }catch(e){$('examMsg').textContent='Answer save was not confirmed: '+e.message}});
+ lab.appendChild(input);const span=document.createElement('span');span.textContent=label;lab.appendChild(span);card.appendChild(lab)
+}
+function startTimer(){clearInterval(timerHandle);function tick(){const sec=Math.max(0,Math.ceil((endAt-Date.now())/1000));$('timer').textContent='Time: '+String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');if(sec===0){clearInterval(timerHandle);submitExam(true)}}tick();timerHandle=setInterval(tick,1000)}
+async function submitExam(auto=false){
+ if(!attemptId||submitted)return;
+ if(!auto&&!confirm('Submit your examination now?'))return;
+ $('submitBtn').disabled=true;$('examMsg').textContent=auto?'Time expired. Submitting…':'Submitting…';
+ try{
+  const result=await rpc('submit_exam_attempt',{p_attempt_id:attemptId});
+  submitted=true;clearInterval(timerHandle);const r=Array.isArray(result)?result[0]:result;
+  hide('exam');show('result');$('resultText').textContent='Submission received by the server. '+(r&&r.message?r.message:'Your marks will be calculated by the secure server and made available according to your lecturer’s settings.');
+ }catch(e){$('examMsg').textContent='Submission was not confirmed: '+e.message+'. Keep this page open and tell the invigilator immediately.';$('submitBtn').disabled=false}
+}
+$('startBtn').addEventListener('click',startExam);$('submitBtn').addEventListener('click',()=>submitExam(false));
+</script>
+</body>
+</html>
