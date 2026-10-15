@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MedStudy Hub — Login</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: grid;
+      place-items: center; padding: 20px;
+      font-family: Arial, sans-serif; color: white;
+      background: #071827;
+    }
+    main {
+      width: 100%; max-width: 430px; padding: 25px;
+      border: 2px solid #20bfe8; border-radius: 18px;
+      background: #0b1d2d;
+    }
+    h1 { font-size: 27px; }
+    input, button {
+      width: 100%; padding: 15px; margin: 8px 0;
+      border-radius: 9px; font-size: 16px;
+    }
+    input { border: 2px solid #ccc; }
+    button { border: 0; color: white; cursor: pointer; }
+    #register { background: #159fce; }
+    #login { background: #1949d1; }
+    #message { overflow-wrap: anywhere; line-height: 1.5; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>🧠 MedStudy Hub</h1>
+  <p>Register or log in to access quizzes, lectures and exams.</p>
+
+  <form id="authForm">
+    <input id="email" type="email" placeholder="Email address"
+      autocomplete="email" required>
+    <input id="password" type="password"
+      placeholder="Password (at least 6 characters)"
+      autocomplete="current-password" minlength="6" required>
+
+    <button id="register" type="button">Register as a student</button>
+    <button id="login" type="submit">Log in</button>
+  </form>
+
+  <p id="message" role="status" aria-live="polite"></p>
+</main>
+
+<script>
+const sb = window.supabase.createClient(
+  "https://igxmvgcqpcngkzrppqms.supabase.co",
+  "sb_publishable_EtS5E2K4bnibaqkZSoTQiQ_SQCUf6-b"
+);
+
+const message = document.getElementById("message");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+
+function enterHub() {
+  window.location.replace("./index.html");
+}
+
+// If already logged in, go straight to MedStudy Hub.
+(async function checkSession() {
+  const { data, error } = await sb.auth.getSession();
+  if (!error && data.session) enterHub();
+})();
+
+document.getElementById("register").addEventListener("click", async () => {
+  if (!email.value.trim() || password.value.length < 6) {
+    message.textContent =
+      "Enter a valid email and a password of at least 6 characters.";
+    return;
+  }
+
+  message.textContent = "Registering...";
+  const { data, error } = await sb.auth.signUp({
+    email: email.value.trim(),
+    password: password.value
+  });
+
+  if (error) {
+    message.textContent = "Registration failed: " + error.message;
+    return;
+  }
+
+  if (data.session) {
+    enterHub();
+  } else {
+    message.textContent =
+      "Registration received. Check your email to confirm your account, then log in.";
+  }
+});
+
+document.getElementById("authForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  message.textContent = "Logging in...";
+
+  const { data, error } = await sb.auth.signInWithPassword({
+    email: email.value.trim(),
+    password: password.value
+  });
+
+  if (error) {
+    message.textContent = "Login failed: " + error.message;
+    return;
+  }
+
+  if (data.session) enterHub();
+  else message.textContent = "No active session. Please try logging in again.";
+});
+</script>
+</body>
+</html>
