@@ -15,7 +15,71 @@ const $=id=>document.getElementById(id);let user=null,profile=null;
 function say(t,type=""){ $("status").textContent=t;$("status").className="status "+type; }
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 async function init(){const {data:{session},error}=await db.auth.getSession();if(error||!session){location.replace("./medstudy.html");return;}const p=await db.from("profiles").select("username,role").eq("id",session.user.id).maybeSingle();if(p.error||!p.data||!["admin","professor","administrator"].includes(String(p.data.role||"").toLowerCase())){say("Access denied: professor/admin account required.","error");return;}user=session.user;profile=p.data;$("identity").textContent=(profile.username||user.email)+" · "+profile.role;say("Professor access verified.","ok");await loadExams();}
-async function loadExams(){if(!user)return;say("Loading your exams…");const {data,error}=await db.from("exams").select("id,title,subject,topic,question_type,negative_marking,duration_minutes,max_attempts,is_published,created_at").eq("created_by",user.id).order("created_at",{ascending:false});if(error){say("Could not load exams: "+error.message,"error");return;}if(!data.length){$("exams").innerHTML='<p class="muted">No exams found yet. Import a PDF exam to begin.</p>';say("No exams found for this account.");return;}const qs=await Promise.all(data.map(async e=>{const q=await db.from("exam_questions").select("id",{count:"exact",head:true}).eq("exam_id",e.id);return {...e,questionCount:q.count,questionError:q.error?.message};}));$("exams").innerHTML=qs.map(e=>'<article class="exam"><div class="row"><span class="pill">'+(e.is_published?'Published':'Draft')+'</span><span class="pill">'+esc(e.question_type)+'</span></div><h2>'+esc(e.title)+'</h2><div class="meta">Subject: '+esc(e.subject||"—")+' · Topic: '+esc(e.topic||"—")+'<br>Questions: '+(e.questionCount??"unknown")+' · Duration: '+esc(e.duration_minutes)+' min · Attempts allowed: '+esc(e.max_attempts)+'<br>Negative marking: '+(e.negative_marking?'On':'Off')+'<br>Created: '+esc(new Date(e.created_at).toLocaleString())+'<br>Exam ID: '+esc(e.id)+'</div><div class="row">'+(!e.is_published?'<button class="primary" onclick="publishExam(\\''+e.id+'\\')">Publish exam</button>':'<button class="secondary" onclick="unpublishExam(\\''+e.id+'\\')">Return to draft</button>')+'<button class="light" onclick="copyId(\\''+e.id+'\\')">Copy exam ID</button></div></article>').join("");say(qs.length+" exam(s) loaded.","ok");}
+
+async function loadExams() {
+  if (!user) return;
+
+  say("Loading your exams…");
+
+  const { data, error } = await db
+    .from("exams")
+    .select("id,title,subject,topic,question_type,negative_marking,duration_minutes,max_attempts,is_published,created_at")
+    .eq("created_by", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    say("Could not load exams: " + error.message, "error");
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    $("exams").innerHTML =
+      '<p class="muted">No exams found yet. Import a PDF exam to begin.</p>';
+    say("No exams found for this account.");
+    return;
+  }
+
+  const qs = await Promise.all(data.map(async e => {
+    const q = await db
+      .from("exam_questions")
+      .select("id", { count: "exact", head: true })
+      .eq("exam_id", e.id);
+
+    return {
+      ...e,
+      questionCount: q.count,
+      questionError: q.error?.message
+    };
+  }));
+
+  $("exams").innerHTML = qs.map(e => `
+    <article class="exam">
+      <div class="row">
+        <span class="pill">${e.is_published ? "Published" : "Draft"}</span>
+        <span class="pill">${esc(e.question_type)}</span>
+      </div>
+      <h2>${esc(e.title)}</h2>
+      <div class="meta">
+        Subject: ${esc(e.subject || "—")} · Topic: ${esc(e.topic || "—")}<br>
+        Questions: ${e.questionCount ?? "unknown"} ·
+        Duration: ${esc(e.duration_minutes)} min ·
+        Attempts allowed: ${esc(e.max_attempts)}<br>
+        Negative marking: ${e.negative_marking ? "On" : "Off"}<br>
+        Created: ${esc(new Date(e.created_at).toLocaleString())}<br>
+        Exam ID: ${esc(e.id)}
+      </div>
+      <div class="row">
+        ${!e.is_published
+          ? `<button class="primary" onclick="publishExam('${e.id}')">Publish exam</button>`
+          : `<button class="secondary" onclick="unpublishExam('${e.id}')">Return to draft</button>`}
+        <button class="light" onclick="copyId('${e.id}')">Copy exam ID</button>
+      </div>
+    </article>
+  `).join("");
+
+  say(qs.length + " exam(s) loaded.", "ok");
+}
+
 async function publishExam(id){if(!confirm("Publish this exam? Students may be able to see it. Confirm that the questions and answer-key security have been reviewed."))return;say("Publishing…");const {error}=await db.from("exams").update({is_published:true}).eq("id",id).eq("created_by",user.id);if(error){say("Publish failed: "+error.message,"error");return;}say("Exam published. Important: only use this after answer-key security and server-side marking have been verified.","ok");await loadExams();}
 async function unpublishExam(id){if(!confirm("Return this exam to draft so students cannot start new attempts?"))return;say("Updating exam…");const {error}=await db.from("exams").update({is_published:false}).eq("id",id).eq("created_by",user.id);if(error){say("Update failed: "+error.message,"error");return;}say("Exam returned to draft.","ok");await loadExams();}
 async function copyId(id){try{await navigator.clipboard.writeText(id);say("Exam ID copied.","ok");}catch(e){say("Exam ID: "+id);}}
