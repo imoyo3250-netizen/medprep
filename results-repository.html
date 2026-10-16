@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MedStudy Hub Results Repository</title>
+<style>
+body{font:16px Arial;background:#f3f6fa;color:#172033;padding:16px}main{max-width:1100px;margin:auto;background:white;padding:20px;border-radius:12px}header{background:#10243a;color:white;padding:16px;border-radius:10px}button,select{padding:10px;margin:5px;border-radius:7px}button{background:#175cd3;color:white;border:0}table{border-collapse:collapse;width:100%;margin-top:18px}th,td{text-align:left;border-bottom:1px solid #ddd;padding:9px}.wrap{overflow:auto}.note{background:#fff4d6;padding:12px;border-radius:8px}#status{white-space:pre-wrap}
+</style></head><body><main>
+<header><h1>MedStudy Hub</h1><h2>Results Repository</h2><p>Separate PDF for each test</p></header>
+<p class="note">PASS = 50% or above. FAIL = below 50%. Results are shown as percentages only.</p>
+<p id="who">Checking lecturer login…</p>
+<label for="examSelect">Test:</label><select id="examSelect" disabled><option>Loading…</option></select>
+<button id="refresh" disabled>Refresh</button><button id="pdf" disabled>Download test PDF</button>
+<p id="status"></p>
+<div class="wrap"><table><thead><tr><th>Registration number</th><th>Full name</th><th>Programme</th><th>Result (%)</th><th>Pass/Fail</th></tr></thead><tbody id="rows"><tr><td colspan="5">No results loaded.</td></tr></tbody></table></div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script>
+const db=supabase.createClient("https://igxmvgcqpcngkzrppqms.supabase.co","sb_publishable_EtS5E2K4bnibaqkZSoTQiQ_SQCUf6-b",{auth:{persistSession:true,autoRefreshToken:true,storage:sessionStorage}});
+const $=id=>document.getElementById(id);let results=[],current=[];
+async function init(){try{const {data:{session},error}=await db.auth.getSession();if(error)throw error;if(!session){$("who").textContent="Sign in to the professor account in this browser tab first.";return}
+const {data:p,error:pe}=await db.from("profiles").select("username,full_name,role").eq("id",session.user.id).maybeSingle();if(pe)throw pe;if(!p||!["admin","administrator","professor"].includes(String(p.role||"").toLowerCase()))throw Error("Lecturer/administrator access only");
+$("who").textContent="Signed in: "+(p.full_name||p.username||session.user.email)+" ("+p.role+")";$("refresh").disabled=false;await load()
+}catch(e){$("status").textContent=e.message}}
+async function load(){ $("status").textContent="Loading results…";$("pdf").disabled=true;try{const {data,error}=await db.rpc("get_exam_results_repository");if(error)throw error;results=data||[];const sel=$("examSelect");sel.innerHTML="";const groups=new Map();results.forEach(r=>{if(r.exam_id){if(!groups.has(r.exam_id))groups.set(r.exam_id,{title:r.exam_title||"Exam",rows:[]});groups.get(r.exam_id).rows.push(r)}});if(!groups.size){sel.add(new Option("No results yet",""));$("rows").innerHTML='<tr><td colspan="5">No saved results found.</td></tr>';$("status").textContent="No results returned. Check the SQL function and submitted exam results.";return}for(const [id,g] of groups)sel.add(new Option(g.title+" ("+g.rows.length+")",id));sel.disabled=false;sel.onchange=render;render();$("status").textContent="Loaded "+results.length+" result(s)."}catch(e){$("status").textContent="Could not load: "+e.message+" — the get_exam_results_repository SQL function must exist."}}
+function render(){current=results.filter(r=>String(r.exam_id)===String($("examSelect").value));$("rows").innerHTML="";current.sort((a,b)=>String(a.registration_number||"").localeCompare(String(b.registration_number||"")));current.forEach(r=>{const tr=document.createElement("tr");[r.registration_number,r.full_name,r.programme,(Number(r.percentage)||0).toFixed(1)+"%",Number(r.percentage||0)>=50?"PASS":"FAIL"].forEach(v=>{const td=document.createElement("td");td.textContent=v==null?"":String(v);tr.appendChild(td)});$("rows").appendChild(tr)});$("pdf").disabled=!current.length}
+function makePDF(){if(!current.length)return;if(!window.jspdf){$("status").textContent="PDF library failed to load; check internet.";return}const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:"landscape"}),title=current[0].exam_title||"Exam";doc.setFontSize(16);doc.text("MEDSTUDY HUB — EXAMINATION RESULTS",14,15);doc.setFontSize(12);doc.text("Test: "+title,14,23);doc.setFontSize(9);doc.text("Pass mark: 50% | Generated: "+new Date().toLocaleString(),14,30);const headers=["Registration number","Full name","Programme","Result (%)","Pass/Fail"],xpos=[14,62,130,190,230];let y=42;doc.setFont(undefined,"bold");headers.forEach((h,i)=>doc.text(h,xpos[i],y));doc.setFont(undefined,"normal");y+=8;current.forEach(r=>{if(y>190){doc.addPage();y=18}const vals=[r.registration_number,r.full_name,r.programme,(Number(r.percentage)||0).toFixed(1)+"%",Number(r.percentage||0)>=50?"PASS":"FAIL"];vals.forEach((v,i)=>doc.text(String(v==null?"":v).slice(0,32),xpos[i],y));y+=7});doc.save(title.replace(/[^a-z0-9_-]/gi,"_")+"_results.pdf")}
+$("refresh").onclick=load;$("pdf").onclick=makePDF;init();
+</script></body></html>
