@@ -1,28 +1,76 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#123b70">
-<title>MedStudy Hub — PDF Exam Import</title>
+<title>MedStudy Hub — Professor Upload</title>
 <style>
-*{box-sizing:border-box}body{margin:0;padding:16px;background:#f3f7fc;color:#172b46;font-family:system-ui,Arial,sans-serif}main{max-width:1000px;margin:auto}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:#f3f7fc;color:#172b46;font-family:system-ui,Arial,sans-serif}
+main{max-width:1000px;margin:auto}
 .panel{background:white;border:1px solid #dce6f2;border-radius:15px;padding:17px;margin:12px 0}
 input,select,textarea{display:block;width:100%;padding:11px;border:1px solid #cbd7e6;border-radius:8px;font:inherit;margin:6px 0 13px}
-label{font-weight:700;font-size:13px}button,a.btn{display:inline-block;padding:11px 14px;border:0;border-radius:9px;margin:5px 5px 5px 0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none}
-.primary{background:#1675d1;color:white}.secondary{background:#eaf2fc;color:#123b70}.light{background:#f0f3f8;color:#172b46}.hidden{display:none!important}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.muted{color:#617087;line-height:1.5}.status{padding:11px;border-radius:8px;background:#edf3fa;margin:10px 0;overflow-wrap:anywhere}.error{background:#fff0ef;color:#b42318}.ok{background:#eaf8f0;color:#18794e}
-.qcard{border:1px solid #dce6f2;border-radius:10px;padding:12px;margin:10px 0}.qcard input,.qcard textarea{margin-bottom:8px}.tiny{font-size:12px}.preview{white-space:pre-wrap;max-height:240px;overflow:auto;background:#f7f9fc;padding:10px;border-radius:8px;font-size:13px}
+label{font-weight:700;font-size:13px}
+button,a.btn{display:inline-block;padding:11px 14px;border:0;border-radius:9px;margin:5px 5px 5px 0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none}
+.primary{background:#1675d1;color:white}
+.secondary{background:#eaf2fc;color:#123b70}
+.light{background:#f0f3f8;color:#172b46}
+.hidden{display:none!important}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.muted{color:#617087;line-height:1.5}
+.status{padding:11px;border-radius:8px;background:#edf3fa;margin:10px 0;overflow-wrap:anywhere}
+.error{background:#fff0ef;color:#b42318}
+.ok{background:#eaf8f0;color:#18794e}
+.qcard{border:1px solid #dce6f2;border-radius:10px;padding:12px;margin:10px 0}
+.qcard input,.qcard textarea{margin-bottom:8px}
+.tiny{font-size:12px}
+.preview{white-space:pre-wrap;max-height:240px;overflow:auto;background:#f7f9fc;padding:10px;border-radius:8px;font-size:13px}
 </style>
 </head>
-<body><main>
-<header class="panel"><h1>🩺 Professor PDF Exam Import</h1>
+<body>
+<main>
+<header class="panel">
+<h1>🩺 MedStudy Hub — Professor Upload</h1>
 <p id="identity" class="muted">Checking professor login…</p>
-<p class="muted">Upload the questions PDF and the separate answer-key PDF. The importer extracts text in your browser, parses common numbered MCQs, and lets you review everything before saving. Scanned/image-only PDFs need OCR and are not supported by this first version.</p>
+<p class="muted">Choose where to upload. Examination import keeps the existing Supabase workflow. Repository upload commits an HTML/PDF file to GitHub; the repository workflow then refreshes papers.json.</p>
 <a class="btn light" href="./medstudy.html">Back to login</a>
-<button class="light" onclick="signOut()">Sign Out</button><div id="status" class="status" role="status"></div></header>
-<section class="panel">
-<h2>1. Upload both PDFs</h2>
+<button class="light" onclick="signOut()">Sign Out</button>
+<div id="status" class="status" role="status"></div>
+<div class="grid">
+<button class="primary" type="button" onclick="showMode('githubPanel')">Upload to GitHub</button>
+<button class="secondary" type="button" onclick="showMode('examPanel')">Upload to Examinations</button>
+</div>
+</header>
+
+<section class="panel hidden" id="githubPanel">
+<h2>Upload file to repository</h2>
+<p class="muted">Choose an HTML or PDF test and a subject. The file is committed to the existing medprep repository. Your GitHub Actions workflow should then rebuild papers.json.</p>
+
+<label for="githubFile">HTML or PDF file</label>
+<input id="githubFile" type="file" accept=".html,.htm,.pdf">
+
+<label for="githubCategory">Subject / folder</label>
+<select id="githubCategory">
+<option value="Anatomy">Anatomy</option>
+<option value="Physiology">Physiology</option>
+<option value="Histology">Histology</option>
+<option value="Embryology">Embryology</option>
+<option value="Clinical_Correlations">Clinical Correlations</option>
+</select>
+
+<label for="githubToken">Temporary GitHub token</label>
+<input id="githubToken" type="password" autocomplete="off" placeholder="Paste your fine-grained token">
+<p class="muted tiny">Enter your token only when uploading. It is cleared from this field after the upload attempt. Never commit a real token to a public repository.</p>
+
+<button class="primary" type="button" onclick="uploadFileToGitHub()">Upload file to GitHub</button>
+<div id="githubUploadStatus" class="status" role="status"></div>
+</section>
+
+<section class="panel" id="examPanel">
+<h2>1. Upload both PDFs to Examinations</h2>
+<p class="muted">Upload the questions PDF and the separate answer-key PDF. The importer extracts selectable text in your browser, parses common numbered MCQs, and lets you review everything before saving. Scanned/image-only PDFs need OCR and are not supported by this version.</p>
 <div class="grid">
 <div><label>Questions PDF</label><input id="testPdf" type="file" accept="application/pdf"></div>
 <div><label>Answer-key PDF</label><input id="answerPdf" type="file" accept="application/pdf"></div>
@@ -36,17 +84,28 @@ label{font-weight:700;font-size:13px}button,a.btn{display:inline-block;padding:1
 </div>
 <button class="primary" onclick="extractPdfs()">Read PDFs and prepare preview</button>
 </section>
+
 <section id="reviewPanel" class="panel hidden">
 <h2>2. Review imported questions and answers</h2>
-<p class="muted">Check every question, option and answer carefully. Supported question layout: numbered questions such as “1. Question text”, with options such as “A. Option text” on separate lines. Supported answer layout: “1. A”, “1) A”, or “1 - A”. You must correct any parsing errors before saving.</p>
+<p class="muted">Check every question, option and answer carefully. Supported question layout: numbered questions such as “1. Question text”, with options such as “A. Option text” on separate lines. Supported answer layout: “1. A”, “1) A”, or “1 - A”. Correct any parsing errors before saving.</p>
 <div id="parseSummary" class="status"></div>
 <div id="questionsReview"></div>
 <label><input id="publishNow" type="checkbox" style="display:inline;width:auto"> Publish immediately after saving (only tick after checking all questions)</label>
-<br><button class="primary" onclick="saveExam()">Save exam and answer key to Supabase</button>
+<br>
+<button class="primary" onclick="saveExam()">Save exam and answer key to Supabase</button>
 <button class="secondary" onclick="downloadReview()">Download parsed JSON backup</button>
 </section>
-<section class="panel"><h2>PDF text extraction preview</h2><p class="muted tiny">This preview helps identify PDFs that could not be read correctly.</p><h3>Questions PDF text</h3><div id="testText" class="preview">Not extracted yet.</div><h3>Answer-key PDF text</h3><div id="answerText" class="preview">Not extracted yet.</div></section>
+
+<section class="panel">
+<h2>PDF text extraction preview</h2>
+<p class="muted tiny">This preview helps identify PDFs that could not be read correctly.</p>
+<h3>Questions PDF text</h3>
+<div id="testText" class="preview">Not extracted yet.</div>
+<h3>Answer-key PDF text</h3>
+<div id="answerText" class="preview">Not extracted yet.</div>
+</section>
 </main>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
@@ -54,27 +113,278 @@ const SUPABASE_URL="https://igxmvgcqpcngkzrppqms.supabase.co";
 const SUPABASE_KEY="sb_publishable_EtS5E2K4bnibaqkZSoTQiQ_SQCUf6-b";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storage:window.sessionStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-const $=id=>document.getElementById(id);let user=null,profile=null,questions=[],answerMap={};
-function say(t,type=""){$("status").textContent=t;$("status").className="status "+type}
-async function init(){const {data:{session},error}=await db.auth.getSession();if(error||!session){location.replace("./medstudy.html");return}
-const r=await db.from("profiles").select("username,role").eq("id",session.user.id).maybeSingle();
-if(r.error||!r.data||!["admin","professor","administrator"].includes(String(r.data.role||"").toLowerCase())){say("Access denied. Use an authorised professor/admin account.","error");await db.auth.signOut();return}
-user=session.user;profile=r.data;$("identity").textContent=(profile.username||session.user.email)+" · "+profile.role;say("Professor verified. Upload both PDFs to begin.","ok")}
-async function pdfText(file){const bytes=await file.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:bytes}).promise;let out=[];for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const content=await page.getTextContent();let line="",lastY=null;for(const item of content.items){const y=item.transform?item.transform[5]:null;if(lastY!==null&&y!==null&&Math.abs(y-lastY)>3){out.push(line.trim());line=""}line+=(item.str||"")+" ";lastY=y}if(line.trim())out.push(line.trim());out.push("")}return out.join("\n").replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim()}
-function parseQuestions(text){const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);const starts=[];for(let i=0;i<lines.length;i++){const m=lines[i].match(/^(\d{1,4})\s*[.)]\s*(.+)$/);if(m)starts.push({i,num:Number(m[1]),first:m[2]})}
-let result=[];for(let s=0;s<starts.length;s++){const st=starts[s],end=s+1<starts.length?starts[s+1].i:lines.length;let block=[st.first,...lines.slice(st.i+1,end)];let stem=[],opts=[],currentOpt=null;for(const line of block){const om=line.match(/^([A-H])\s*[.)]\s*(.+)$/i);if(om){if(currentOpt)opts.push(currentOpt);currentOpt={letter:om[1].toUpperCase(),text:om[2].trim()}}else if(currentOpt){currentOpt.text+=" "+line}else if(!/^page\s+\d+/i.test(line)){stem.push(line)}}if(currentOpt)opts.push(currentOpt);let optionValues=opts.map(o=>o.letter+". "+o.text);result.push({number:st.num,question_text:stem.join(" ").trim(),options:optionValues.length?optionValues:["True","False"],correct_answer:null,explanation:""})}
-return result.filter(q=>q.question_text)}
-function parseAnswers(text){let map={};for(const line of text.split(/\r?\n/)){const m=line.trim().match(/^(\d{1,4})\s*(?:[.)]|[-:])\s*(.+?)\s*$/);if(m){let val=m[2].trim();const letter=val.match(/^([A-H])(?:\s*[.)\-:]|\s|$)/i);map[Number(m[1])]=letter?letter[1].toUpperCase():val}}return map}
-function normalizeAnswer(raw,q){if(raw==null)return null;let val=String(raw).trim();const letter=val.match(/^([A-H])(?:\s*[.)\-:]|\s|$)/i);if(letter){const found=q.options.find(o=>o.match(new RegExp("^"+letter[1].toUpperCase()+"\\s*[.)]")));if(found)return found}
-const exact=q.options.find(o=>o.toLowerCase()===val.toLowerCase());if(exact)return exact;if(["true","false"].includes(val.toLowerCase()))return val[0].toUpperCase()+val.slice(1).toLowerCase();return val}
-async function extractPdfs(){try{const tf=$("testPdf").files[0],af=$("answerPdf").files[0];if(!tf||!af)throw Error("Choose both the questions PDF and answer-key PDF.");if(!$("examTitle").value.trim())throw Error("Enter an exam title.");say("Extracting text from PDFs…");const [t,a]=await Promise.all([pdfText(tf),pdfText(af)]);$("testText").textContent=t||"No selectable text found. This may be a scanned PDF."; $("answerText").textContent=a||"No selectable text found. This may be a scanned PDF.";if(!t||!a)throw Error("Text could not be extracted from one PDF. This first version cannot OCR scanned/image-only PDFs.");questions=parseQuestions(t);answerMap=parseAnswers(a);if(!questions.length)throw Error("No numbered questions were detected. Format questions like “1. Question text” and place options A. / B. / C. on separate lines.");let matched=0;questions.forEach(q=>{const raw=answerMap[q.number];if(raw!==undefined){q.correct_answer=normalizeAnswer(raw,q);if(q.correct_answer!==null)matched++}});renderReview();$("reviewPanel").classList.remove("hidden");$("parseSummary").textContent=questions.length+" question(s) detected; "+matched+" answer(s) matched by question number. Missing or incorrect matches must be fixed manually.";say("PDFs extracted. Review every item before saving.","ok");$("reviewPanel").scrollIntoView({behavior:"smooth"})}catch(e){say(e.message||String(e),"error")}}
-function renderReview(){const root=$("questionsReview");root.innerHTML="";questions.forEach((q,i)=>{const d=document.createElement("div");d.className="qcard";d.innerHTML='<h3>Question '+q.number+'</h3><label>Question text</label><textarea class="stem"></textarea><label>Options (one per line; keep A. / B. labels)</label><textarea class="opts"></textarea><label>Correct answer (must match an option exactly, or True/False)</label><input class="answer" placeholder="e.g. A. Nucleus"><label>Explanation (optional)</label><textarea class="explain"></textarea>';d.querySelector(".stem").value=q.question_text;d.querySelector(".opts").value=q.options.join("\n");d.querySelector(".answer").value=q.correct_answer===null?"":String(q.correct_answer);d.querySelector(".explain").value=q.explanation||"";d.dataset.index=i;root.appendChild(d)})}
-function readReview(){const cards=[...$("questionsReview").querySelectorAll(".qcard")];return cards.map((d,i)=>{const stem=d.querySelector(".stem").value.trim(),opts=d.querySelector(".opts").value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),answer=d.querySelector(".answer").value.trim(),explanation=d.querySelector(".explain").value.trim();if(!stem)throw Error("Question "+(i+1)+" has no text.");if(!opts.length)throw Error("Question "+(i+1)+" has no options.");if(!answer)throw Error("Enter the correct answer for question "+(i+1)+".");if(!opts.some(o=>o.toLowerCase()===answer.toLowerCase())&&!["true","false"].includes(answer.toLowerCase()))throw Error("The answer for question "+(i+1)+" must exactly match one of its options. Use the full option, such as A. Nucleus.");return {number:questions[i].number,question_text:stem,options:opts,correct_answer:answer,explanation,position:i+1}})}
-async function saveExam(){if(!user){say("Please sign in again.","error");return}let qs;try{qs=readReview()}catch(e){say(e.message,"error");return}say("Creating exam as a draft…");const payload={title:$("examTitle").value.trim(),subject:$("subject").value.trim()||null,topic:$("topic").value.trim()||null,question_type:$("questionType").value,negative_marking:$("negative").value==="true",duration_minutes:Math.max(1,Number($("duration").value)||30),max_attempts:Math.max(1,Number($("maxAttempts").value)||1),is_published:false,created_by:user.id};const er=await db.from("exams").insert(payload).select("id").single();if(er.error){say("Exam record could not be created: "+er.error.message+". Check admin RLS and table grants.","error");return}const examId=er.data.id;
-for(const q of qs){const qi=await db.from("exam_questions").insert({exam_id:examId,question_text:q.question_text,options:q.options,position:q.position,explanation:q.explanation||null}).select("id").single();if(qi.error){say("Import stopped while saving question "+q.number+": "+qi.error.message+". Exam remains an unpublished draft (ID "+examId+").","error");return}const ak=await db.from("exam_answer_keys").insert({question_id:qi.data.id,correct_answer:q.correct_answer});if(ak.error){say("Question saved but answer-key insert failed: "+ak.error.message+". Exam remains an unpublished draft (ID "+examId+").","error");return}}
-if($("publishNow").checked){say("Questions and private answer keys saved. Attempting to publish…");const pub=await db.from("exams").update({is_published:true}).eq("id",examId).select("id").single();if(pub.error){say("Saved as a draft, but publishing failed: "+pub.error.message+". Exam ID "+examId,"error");return}}
-say("Import complete: "+qs.length+" questions saved. "+($("publishNow").checked?"Exam published.":"Exam saved as draft; publish after final review.")+" Exam ID: "+examId,"ok")}
-function downloadReview(){try{const data={title:$("examTitle").value,subject:$("subject").value,topic:$("topic").value,questions:readReview()};const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="medstudy-exam-review.json";a.click();URL.revokeObjectURL(url)}catch(e){say(e.message,"error")}}
+const $=id=>document.getElementById(id);
+let user=null,profile=null,questions=[],answerMap={};
+
+function say(t,type=""){
+  $("status").textContent=t;
+  $("status").className="status "+type;
+}
+
+function showMode(id){
+  $("githubPanel").classList.toggle("hidden",id!=="githubPanel");
+  $("examPanel").classList.toggle("hidden",id!=="examPanel");
+  if(id==="githubPanel") $("githubPanel").scrollIntoView({behavior:"smooth"});
+  else $("examPanel").scrollIntoView({behavior:"smooth"});
+}
+
+async function init(){
+  const {data:{session},error}=await db.auth.getSession();
+  if(error||!session){location.replace("./medstudy.html");return}
+  const r=await db.from("profiles").select("username,role").eq("id",session.user.id).maybeSingle();
+  if(r.error||!r.data||!["admin","professor","administrator"].includes(String(r.data.role||"").toLowerCase())){
+    say("Access denied. Use an authorised professor/admin account.","error");
+    await db.auth.signOut();
+    return;
+  }
+  user=session.user;
+  profile=r.data;
+  $("identity").textContent=(profile.username||session.user.email)+" · "+profile.role;
+  say("Professor verified. Choose an upload option.","ok");
+}
+
+async function pdfText(file){
+  const bytes=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:bytes}).promise;
+  let out=[];
+  for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i);
+    const content=await page.getTextContent();
+    let line="",lastY=null;
+    for(const item of content.items){
+      const y=item.transform?item.transform[5]:null;
+      if(lastY!==null&&y!==null&&Math.abs(y-lastY)>3){out.push(line.trim());line=""}
+      line+=(item.str||"")+" ";
+      lastY=y;
+    }
+    if(line.trim())out.push(line.trim());
+    out.push("");
+  }
+  return out.join("\n").replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
+}
+
+function parseQuestions(text){
+  const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  const starts=[];
+  for(let i=0;i<lines.length;i++){
+    const m=lines[i].match(/^(\d{1,4})\s*[.)]\s*(.+)$/);
+    if(m)starts.push({i,num:Number(m[1]),first:m[2]});
+  }
+  let result=[];
+  for(let s=0;s<starts.length;s++){
+    const st=starts[s],end=s+1<starts.length?starts[s+1].i:lines.length;
+    let block=[st.first,...lines.slice(st.i+1,end)];
+    let stem=[],opts=[],currentOpt=null;
+    for(const line of block){
+      const om=line.match(/^([A-H])\s*[.)]\s*(.+)$/i);
+      if(om){
+        if(currentOpt)opts.push(currentOpt);
+        currentOpt={letter:om[1].toUpperCase(),text:om[2].trim()};
+      }else if(currentOpt){currentOpt.text+=" "+line}
+      else if(!/^page\s+\d+/i.test(line)){stem.push(line)}
+    }
+    if(currentOpt)opts.push(currentOpt);
+    let optionValues=opts.map(o=>o.letter+". "+o.text);
+    result.push({number:st.num,question_text:stem.join(" ").trim(),options:optionValues.length?optionValues:["True","False"],correct_answer:null,explanation:""});
+  }
+  return result.filter(q=>q.question_text);
+}
+
+function parseAnswers(text){
+  let map={};
+  for(const line of text.split(/\r?\n/)){
+    const m=line.trim().match(/^(\d{1,4})\s*(?:[.)]|[-:])\s*(.+?)\s*$/);
+    if(m){
+      let val=m[2].trim();
+      const letter=val.match(/^([A-H])(?:\s*[.)\-:]|\s|$)/i);
+      map[Number(m[1])]=letter?letter[1].toUpperCase():val;
+    }
+  }
+  return map;
+}
+
+function normalizeAnswer(raw,q){
+  if(raw==null)return null;
+  let val=String(raw).trim();
+  const letter=val.match(/^([A-H])(?:\s*[.)\-:]|\s|$)/i);
+  if(letter){
+    const found=q.options.find(o=>o.match(new RegExp("^"+letter[1].toUpperCase()+"\\s*[.)]")));
+    if(found)return found;
+  }
+  const exact=q.options.find(o=>o.toLowerCase()===val.toLowerCase());
+  if(exact)return exact;
+  if(["true","false"].includes(val.toLowerCase()))return val[0].toUpperCase()+val.slice(1).toLowerCase();
+  return val;
+}
+
+async function extractPdfs(){
+  try{
+    const tf=$("testPdf").files[0],af=$("answerPdf").files[0];
+    if(!tf||!af)throw Error("Choose both the questions PDF and answer-key PDF.");
+    if(!$("examTitle").value.trim())throw Error("Enter an exam title.");
+    say("Extracting text from PDFs…");
+    const [t,a]=await Promise.all([pdfText(tf),pdfText(af)]);
+    $("testText").textContent=t||"No selectable text found. This may be a scanned PDF.";
+    $("answerText").textContent=a||"No selectable text found. This may be a scanned PDF.";
+    if(!t||!a)throw Error("Text could not be extracted from one PDF. This version cannot OCR scanned/image-only PDFs.");
+    questions=parseQuestions(t);
+    answerMap=parseAnswers(a);
+    if(!questions.length)throw Error("No numbered questions were detected. Format questions like “1. Question text” and place options A. / B. / C. on separate lines.");
+    let matched=0;
+    questions.forEach(q=>{
+      const raw=answerMap[q.number];
+      if(raw!==undefined){q.correct_answer=normalizeAnswer(raw,q);if(q.correct_answer!==null)matched++}
+    });
+    renderReview();
+    $("reviewPanel").classList.remove("hidden");
+    $("parseSummary").textContent=questions.length+" question(s) detected; "+matched+" answer(s) matched by question number. Missing or incorrect matches must be fixed manually.";
+    say("PDFs extracted. Review every item before saving.","ok");
+    $("reviewPanel").scrollIntoView({behavior:"smooth"});
+  }catch(e){say(e.message||String(e),"error")}
+}
+
+function renderReview(){
+  const root=$("questionsReview");
+  root.innerHTML="";
+  questions.forEach((q,i)=>{
+    const d=document.createElement("div");
+    d.className="qcard";
+    d.innerHTML='<h3>Question '+q.number+'</h3><label>Question text</label><textarea class="stem"></textarea><label>Options (one per line; keep A. / B. labels)</label><textarea class="opts"></textarea><label>Correct answer (must match an option exactly, or True/False)</label><input class="answer" placeholder="e.g. A. Nucleus"><label>Explanation (optional)</label><textarea class="explain"></textarea>';
+    d.querySelector(".stem").value=q.question_text;
+    d.querySelector(".opts").value=q.options.join("\n");
+    d.querySelector(".answer").value=q.correct_answer===null?"":String(q.correct_answer);
+    d.querySelector(".explain").value=q.explanation||"";
+    d.dataset.index=i;
+    root.appendChild(d);
+  });
+}
+
+function readReview(){
+  const cards=[...$("questionsReview").querySelectorAll(".qcard")];
+  return cards.map((d,i)=>{
+    const stem=d.querySelector(".stem").value.trim();
+    const opts=d.querySelector(".opts").value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    const answer=d.querySelector(".answer").value.trim();
+    const explanation=d.querySelector(".explain").value.trim();
+    if(!stem)throw Error("Question "+(i+1)+" has no text.");
+    if(!opts.length)throw Error("Question "+(i+1)+" has no options.");
+    if(!answer)throw Error("Enter the correct answer for question "+(i+1)+".");
+    if(!opts.some(o=>o.toLowerCase()===answer.toLowerCase())&&!["true","false"].includes(answer.toLowerCase()))
+      throw Error("The answer for question "+(i+1)+" must exactly match one of its options. Use the full option, such as A. Nucleus.");
+    return {number:questions[i].number,question_text:stem,options:opts,correct_answer:answer,explanation,position:i+1};
+  });
+}
+
+async function saveExam(){
+  if(!user){say("Please sign in again.","error");return}
+  let qs;
+  try{qs=readReview()}catch(e){say(e.message,"error");return}
+  say("Creating exam as a draft…");
+  const payload={
+    title:$("examTitle").value.trim(),
+    subject:$("subject").value.trim()||null,
+    topic:$("topic").value.trim()||null,
+    question_type:$("questionType").value,
+    negative_marking:$("negative").value==="true",
+    duration_minutes:Math.max(1,Number($("duration").value)||30),
+    max_attempts:Math.max(1,Number($("maxAttempts").value)||1),
+    is_published:false,created_by:user.id
+  };
+  const er=await db.from("exams").insert(payload).select("id").single();
+  if(er.error){say("Exam record could not be created: "+er.error.message+". Check admin RLS and table grants.","error");return}
+  const examId=er.data.id;
+  for(const q of qs){
+    const qi=await db.from("exam_questions").insert({
+      exam_id:examId,question_text:q.question_text,options:q.options,
+      position:q.position,explanation:q.explanation||null
+    }).select("id").single();
+    if(qi.error){say("Import stopped while saving question "+q.number+": "+qi.error.message+". Exam remains an unpublished draft (ID "+examId+").","error");return}
+    const ak=await db.from("exam_answer_keys").insert({question_id:qi.data.id,correct_answer:q.correct_answer});
+    if(ak.error){say("Question saved but answer-key insert failed: "+ak.error.message+". Exam remains an unpublished draft (ID "+examId+").","error");return}
+  }
+  if($("publishNow").checked){
+    say("Questions and private answer keys saved. Attempting to publish…");
+    const pub=await db.from("exams").update({is_published:true}).eq("id",examId).select("id").single();
+    if(pub.error){say("Saved as a draft, but publishing failed: "+pub.error.message+". Exam ID "+examId,"error");return}
+  }
+  say("Import complete: "+qs.length+" questions saved. "+($("publishNow").checked?"Exam published.":"Exam saved as draft; publish after final review.")+" Exam ID: "+examId,"ok");
+}
+
+function downloadReview(){
+  try{
+    const data={title:$("examTitle").value,subject:$("subject").value,topic:$("topic").value,questions:readReview()};
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");a.href=url;a.download="medstudy-exam-review.json";a.click();
+    URL.revokeObjectURL(url);
+  }catch(e){say(e.message,"error")}
+}
+
 async function signOut(){await db.auth.signOut();location.replace("./medstudy.html")}
+
+/*
+  GitHub upload:
+  Paste the temporary token in the field at upload time.
+  Do not hard-code the token into this public HTML.
+*/
+async function uploadFileToGitHub(){
+  const file=$("githubFile").files[0];
+  const token=$("githubToken").value.trim();
+  const category=$("githubCategory").value;
+  const out=$("githubUploadStatus");
+  const status=(m,t="")=>{out.textContent=m;out.className="status "+t};
+
+  if(!user){status("Your professor session is not verified. Sign in again.","error");return}
+  if(!file){status("Choose an HTML or PDF file first.","error");return}
+  if(!token){status("Paste your GitHub token into the token field.","error");return}
+  if(!/\.(html?|pdf)$/i.test(file.name)){status("Only HTML, HTM and PDF files are supported.","error");return}
+  if(file.size>20*1024*1024){status("This browser uploader is limited to 20 MB per file.","error");return}
+
+  const safe=file.name.normalize("NFKD").replace(/[^\w.\- ]/g,"").trim().replace(/\s+/g,"_");
+  if(!safe||safe==="."||safe===".."){status("The filename is invalid.","error");return}
+  const path=category+"/"+safe;
+  const url="https://api.github.com/repos/imoyo3250-netizen/medprep/contents/"+path.split("/").map(encodeURIComponent).join("/");
+  const headers={
+    "Accept":"application/vnd.github+json",
+    "Authorization":"Bearer "+token,
+    "X-GitHub-Api-Version":"2022-11-28",
+    "Content-Type":"application/json"
+  };
+
+  try{
+    status("Reading file and uploading to GitHub…");
+    const bytes=new Uint8Array(await file.arrayBuffer());
+    let binary="";
+    for(let i=0;i<bytes.length;i+=0x8000)
+      binary+=String.fromCharCode(...bytes.subarray(i,i+0x8000));
+    const content=btoa(binary);
+
+    // If a same-named file exists, retrieve its SHA so GitHub can update it.
+    const existing=await fetch(url,{headers});
+    let sha;
+    if(existing.ok){
+      const old=await existing.json();
+      sha=old.sha;
+    }else if(existing.status!==404){
+      const err=await existing.json().catch(()=>({}));
+      throw Error(err.message||("Could not check target file (HTTP "+existing.status+")"));
+    }
+
+    const body={message:"Upload test "+safe+" ("+category+")",content,branch:"main"};
+    if(sha)body.sha=sha;
+    const response=await fetch(url,{method:"PUT",headers,body:JSON.stringify(body)});
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok)throw Error(result.message||("GitHub upload failed (HTTP "+response.status+")"));
+
+    status("Upload successful: "+path+". GitHub Actions should now rebuild papers.json.","ok");
+  }catch(e){
+    status("Upload failed: "+(e.message||String(e)),"error");
+  }finally{
+    $("githubToken").value="";
+  }
+}
+
 init();
-</script></body></html>
+</script>
+</body>
+</html>
