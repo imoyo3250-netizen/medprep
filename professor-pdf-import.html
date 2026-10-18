@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,6 +16,7 @@ button,a.btn{display:inline-block;padding:11px 14px;border:0;border-radius:9px;m
 .primary{background:#1675d1;color:white}
 .secondary{background:#eaf2fc;color:#123b70}
 .light{background:#f0f3f8;color:#172b46}
+.danger{background:#c62828;color:white}
 .hidden{display:none!important}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
 .muted{color:#617087;line-height:1.5}
@@ -41,8 +41,29 @@ button,a.btn{display:inline-block;padding:11px 14px;border:0;border-radius:9px;m
 <div class="grid">
 <button class="primary" type="button" onclick="showMode('githubPanel')">Upload to GitHub</button>
 <button class="secondary" type="button" onclick="showMode('examPanel')">Upload to Examinations</button>
+<button class="secondary" type="button" onclick="showMode('manageGithubPanel')">🗑️ Manage / Delete GitHub Tests</button>
 </div>
 </header>
+
+<!-- NEW FEATURE: MANAGE AND DELETE GITHUB TESTS -->
+<section class="panel hidden" id="manageGithubPanel">
+<h2>🗑️ Manage Uploaded GitHub Tests</h2>
+<p class="muted">View, search and delete HTML/PDF files directly inside the five subject folders used by the existing uploader.</p>
+
+<label for="manageGithubToken">Temporary GitHub token</label>
+<input id="manageGithubToken" type="password" autocomplete="off" placeholder="Enter your existing fine-grained token">
+
+<p class="muted tiny">Use the same GitHub token you use for uploading. It is entered temporarily and is not saved by this feature.</p>
+
+<button class="primary" type="button" onclick="loadGithubTests()">Load / Refresh Tests</button>
+<button class="light" type="button" onclick="clearManagerToken()">Clear Token</button>
+
+<label for="githubTestSearch">Search uploaded tests</label>
+<input id="githubTestSearch" type="search" placeholder="Search filename or subject" oninput="renderGithubTests()">
+
+<div id="githubManagerStatus" class="status" role="status">Enter your token and select Load / Refresh Tests.</div>
+<div id="githubTestList"></div>
+</section>
 
 <section class="panel hidden" id="githubPanel">
 <h2>Upload file to repository</h2>
@@ -121,11 +142,12 @@ function say(t,type=""){
   $("status").className="status "+type;
 }
 
+/* Updated only to support the third panel */
 function showMode(id){
-  $("githubPanel").classList.toggle("hidden",id!=="githubPanel");
-  $("examPanel").classList.toggle("hidden",id!=="examPanel");
-  if(id==="githubPanel") $("githubPanel").scrollIntoView({behavior:"smooth"});
-  else $("examPanel").scrollIntoView({behavior:"smooth"});
+  ["githubPanel","examPanel","manageGithubPanel"].forEach(panelId=>{
+    $(panelId).classList.toggle("hidden",panelId!==id);
+  });
+  $(id).scrollIntoView({behavior:"smooth"});
 }
 
 async function init(){
@@ -323,9 +345,7 @@ function downloadReview(){
 async function signOut(){await db.auth.signOut();location.replace("./medstudy.html")}
 
 /*
-  GitHub upload:
-  Paste the temporary token in the field at upload time.
-  Do not hard-code the token into this public HTML.
+  EXISTING GITHUB UPLOAD FUNCTION — PRESERVED
 */
 async function uploadFileToGitHub(){
   const file=$("githubFile").files[0];
@@ -359,7 +379,6 @@ async function uploadFileToGitHub(){
       binary+=String.fromCharCode(...bytes.subarray(i,i+0x8000));
     const content=btoa(binary);
 
-    // If a same-named file exists, retrieve its SHA so GitHub can update it.
     const existing=await fetch(url,{headers});
     let sha;
     if(existing.ok){
@@ -381,6 +400,201 @@ async function uploadFileToGitHub(){
     status("Upload failed: "+(e.message||String(e)),"error");
   }finally{
     $("githubToken").value="";
+  }
+}
+
+/* NEW FUNCTION: LIST, SEARCH AND DELETE GITHUB TESTS */
+const GH_DELETE_FOLDERS=["Anatomy","Physiology","Histology","Embryology","Clinical_Correlations"];
+let githubTestsCache=[];
+
+function managerStatus(message,type=""){
+  $("githubManagerStatus").textContent=message;
+  $("githubManagerStatus").className="status "+type;
+}
+
+function clearManagerToken(){
+  $("manageGithubToken").value="";
+  managerStatus("Token cleared.");
+}
+
+function managerHeaders(){
+  const token=$("manageGithubToken").value.trim();
+  if(!token)throw Error("Enter your GitHub token first.");
+  return {
+    "Accept":"application/vnd.github+json",
+    "Authorization":"Bearer "+token,
+    "X-GitHub-Api-Version":"2022-11-28",
+    "Content-Type":"application/json"
+  };
+}
+
+function managerFileUrl(path){
+  return "https://api.github.com/repos/imoyo3250-netizen/medprep/contents/"+
+    path.split("/").map(encodeURIComponent).join("/");
+}
+
+async function loadGithubTests(){
+  if(!user){
+    managerStatus("Your professor session is not verified. Sign in again.","error");
+    return;
+  }
+
+  const button=[...$("manageGithubPanel").querySelectorAll("button")]
+    .find(b=>b.textContent.includes("Load / Refresh"));
+
+  if(button){button.disabled=true;button.textContent="Loading...";}
+
+  $("githubTestList").replaceChildren();
+  githubTestsCache=[];
+  managerStatus("Loading uploaded files from GitHub...");
+
+  try{
+    const headers=managerHeaders();
+
+    for(const folder of GH_DELETE_FOLDERS){
+      const response=await fetch(managerFileUrl(folder)+"?ref=main",{headers});
+
+      if(response.status===404)continue;
+
+      if(!response.ok){
+        const err=await response.json().catch(()=>({}));
+        throw Error(err.message||("Could not list "+folder+" (HTTP "+response.status+")"));
+      }
+
+      const files=await response.json();
+      if(!Array.isArray(files))continue;
+
+      for(const file of files){
+        if(file.type==="file"&&/\.(html?|pdf)$/i.test(file.name)){
+          githubTestsCache.push({
+            name:file.name,
+            path:file.path,
+            sha:file.sha,
+            folder:folder
+          });
+        }
+      }
+    }
+
+    githubTestsCache.sort((a,b)=>a.path.localeCompare(b.path));
+    renderGithubTests();
+    managerStatus("Found "+githubTestsCache.length+" HTML/PDF file(s).","ok");
+
+  }catch(error){
+    managerStatus("Could not load tests: "+error.message,"error");
+  }finally{
+    if(button){
+      button.disabled=false;
+      button.textContent="Load / Refresh Tests";
+    }
+  }
+}
+
+function renderGithubTests(){
+  const root=$("githubTestList");
+  root.replaceChildren();
+
+  const query=$("githubTestSearch").value.trim().toLowerCase();
+
+  const files=githubTestsCache.filter(file=>
+    (file.name+" "+file.folder+" "+file.path).toLowerCase().includes(query)
+  );
+
+  if(!files.length){
+    const p=document.createElement("p");
+    p.className="muted";
+    p.textContent=githubTestsCache.length
+      ?"No tests match your search."
+      :"No tests loaded yet. Enter your token and press Load / Refresh Tests.";
+    root.appendChild(p);
+    return;
+  }
+
+  for(const file of files){
+    const row=document.createElement("div");
+    row.className="qcard";
+
+    const name=document.createElement("strong");
+    name.textContent=file.name;
+
+    const path=document.createElement("p");
+    path.className="muted tiny";
+    path.textContent=file.path;
+
+    const button=document.createElement("button");
+    button.className="danger";
+    button.type="button";
+    button.textContent="🗑️ Delete Test";
+    button.addEventListener("click",()=>deleteGithubTest(file,button));
+
+    row.append(name,path,button);
+    root.appendChild(row);
+  }
+}
+
+async function deleteGithubTest(file,button){
+  if(!user){
+    managerStatus("Your professor session is not verified. Sign in again.","error");
+    return;
+  }
+
+  const confirmed=confirm(
+    "Permanently delete this file from the main branch?\n\n"+
+    file.path+
+    "\n\nThis removes the file from current repository contents."
+  );
+
+  if(!confirmed)return;
+
+  const token=$("manageGithubToken").value.trim();
+  if(!token){
+    managerStatus("Enter your GitHub token first.","error");
+    return;
+  }
+
+  button.disabled=true;
+  button.textContent="Deleting...";
+
+  try{
+    const headers=managerHeaders();
+
+    const check=await fetch(managerFileUrl(file.path)+"?ref=main",{headers});
+
+    if(!check.ok){
+      const err=await check.json().catch(()=>({}));
+      throw Error(err.message||"Could not verify the current file.");
+    }
+
+    const current=await check.json();
+
+    const response=await fetch(managerFileUrl(file.path),{
+      method:"DELETE",
+      headers,
+      body:JSON.stringify({
+        message:"Delete uploaded test "+file.path,
+        sha:current.sha,
+        branch:"main"
+      })
+    });
+
+    const result=await response.json().catch(()=>({}));
+
+    if(!response.ok){
+      throw Error(result.message||("GitHub deletion failed (HTTP "+response.status+")"));
+    }
+
+    githubTestsCache=githubTestsCache.filter(item=>item.path!==file.path);
+    renderGithubTests();
+
+    managerStatus(
+      "Deleted "+file.path+". Wait for GitHub Actions to refresh papers.json.",
+      "ok"
+    );
+
+  }catch(error){
+    managerStatus("Delete failed: "+error.message,"error");
+    button.disabled=false;
+    button.textContent="🗑️ Delete Test";
   }
 }
 
